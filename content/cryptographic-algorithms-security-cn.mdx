@@ -1,0 +1,344 @@
+---
+title: "Network Security, Cryptography (DES, AES, RSA), Diffie-Hellman & Signatures"
+unit: "Unit 7: Computer Networks"
+examType: "Common"
+priority: "Med"
+readTime: "45 min"
+slug: "cryptographic-algorithms-security-cn"
+description: "Comprehensive guide to network security and modern cryptography: Symmetric vs Asymmetric systems, DES/AES block cipher architectures, RSA algorithm key generation and modular arithmetic, Diffie-Hellman Key Exchange, SHA-256, and Digital Signatures."
+tags: ["Computer Networks", "Network Security", "Cryptography", "RSA", "DES", "AES", "Diffie-Hellman", "Digital Signatures"]
+---
+
+# Network Security, Cryptography (DES, AES, RSA), Diffie-Hellman & Signatures
+
+## 1. Foundations of Cryptography & The CIA Triad
+
+Network security ensures the safe transmission and storage of data across untrusted networks. The core security requirements are formalized by the **CIA Triad** and extended services:
+
+```text
+                               Core Security Goals
+                                       |
+        +------------------------------+------------------------------+
+        |                              |                              |
+        v                              v                              v
+  Confidentiality                  Integrity                     Availability
+(Protection against           (Protection against            (Authorized users
+ unauthorized reading)        unauthorized alteration)       have timely access)
+```
+
+1. **Confidentiality**: Concealing information from unauthorized entities (enforced via **Encryption**).
+2. **Integrity**: Ensuring data has not been altered, fabricated, or deleted in transit (enforced via **Cryptographic Hashes & Message Authentication Codes**).
+3. **Availability**: Ensuring computing systems and network resources remain accessible to authorized parties.
+4. **Authentication**: Verifying the true identity of the communicating counterparties.
+5. **Non-Repudiation**: Preventing a sender from falsely denying having sent a message (enforced via **Digital Signatures**).
+
+---
+
+### 1.1 Symmetric vs. Asymmetric Cryptosystems
+
+| Parameter | Symmetric (Secret-Key) Cryptography | Asymmetric (Public-Key) Cryptography |
+|---|---|---|
+| **Number of Keys** | Single shared secret key for both encryption & decryption | Key pair per user: **Public Key** (known to all) + **Private Key** (kept secret) |
+| **Total Keys in Network of $n$ Users** | $$\frac{n(n - 1)}{2} \quad [O(n^2)]$$ | $$2n \quad [O(n)]$$ |
+| **Computational Speed** | Extremely fast (Megabytes/sec in hardware) | Slow (typically $1000\times$ slower due to modular exponentiation) |
+| **Key Distribution** | Difficult (requires secure out-of-band exchange) | Simple (Public keys published in open directories/PKI) |
+| **Primary Use Cases** | Bulk data encryption (TLS records, file systems) | Key exchange, digital signatures, session setup |
+| **Standard Algorithms** | **DES, 3DES, AES, Blowfish, RC4** | **RSA, Diffie-Hellman, ECC (Elliptic Curve)** |
+
+---
+
+## 2. Symmetric Block Ciphers: DES and AES Architecture
+
+Symmetric block ciphers transform a fixed-size block of plaintext into a ciphertext block of identical size using two fundamental principles defined by **Claude Shannon**:
+- **Confusion**: Obscures the relationship between the key and the ciphertext (implemented via non-linear substitution S-boxes).
+- **Diffusion**: Spreads the statistical influence of a single plaintext bit across multiple ciphertext bits (implemented via permutations and transposition).
+
+---
+
+### 2.1 Data Encryption Standard (DES)
+
+Developed by IBM and adopted as a federal standard (FIPS PUB 46) in 1977:
+- **Cipher Type**: Symmetric **Feistel Cipher**.
+- **Plaintext Block Size**: **64 bits**.
+- **Ciphertext Block Size**: **64 bits**.
+- **Key Length**: **64 bits total**, but only **56 bits are active**. Every 8th bit (bits 8, 16, 24, 32, 40, 48, 56, 64) is discarded as a parity check bit!
+- **Number of Rounds**: **16 identical rounds** of Feistel processing.
+- **Round Key Size**: 48 bits generated per round from the 56-bit key via a key-schedule algorithm.
+- **Vulnerability**: Exhaustive brute-force key search over $2^{56} \approx 7.2 \times 10^{16}$ keys is trivially breakable on modern hardware.
+
+#### Triple DES (3DES):
+To protect legacy infrastructure, Triple DES applies three stages with two or three independent keys:
+$$C = E_{K1}(D_{K2}(E_{K1}(P)))$$
+Using Encrypt-Decrypt-Encrypt (EDE) allows backward compatibility with single DES when $K_1 = K_2$.
+
+---
+
+### 2.2 Advanced Encryption Standard (AES - Rijndael)
+
+Selected by NIST in 2001 to replace DES:
+- **Cipher Type**: **Substitution-Permutation Network (SPN)** (Non-Feistel; entire 128-bit block is transformed in parallel).
+- **Plaintext Block Size**: Fixed at **128 bits** (organized as a $4 \times 4$ byte matrix called the **State**).
+
+#### AES Key Variants & Rounds:
+
+| AES Version | Key Length (Bits) | Key Size (32-bit Words) | Number of Rounds ($N_r$) |
+|:---:|:---:|:---:|:---:|
+| **AES-128** | **128 bits** | 4 words | **10 rounds** |
+| **AES-192** | **192 bits** | 6 words | **12 rounds** |
+| **AES-256** | **256 bits** | 8 words | **14 rounds** |
+
+#### The Four Round Transformations:
+In each round (except the final round), the State matrix undergoes four operations:
+1. `SubBytes`: Non-linear byte substitution using an 8-bit S-box invertible lookup table (Confusion).
+2. `ShiftRows`: Cyclic left-byte shift on rows (Row 0: 0 bytes, Row 1: 1 byte, Row 2: 2 bytes, Row 3: 3 bytes) (Diffusion).
+3. `MixColumns`: Matrix multiplication over Galois Field $GF(2^8)$ mixing the 4 bytes in each column. *(**Crucial Exam Point**: `MixColumns` is OMITTED in the final round $N_r$!)*.
+4. `AddRoundKey`: XOR of the State matrix with a 128-bit round key derived from the master key.
+
+---
+
+## 3. The RSA Public-Key Cryptosystem
+
+Invented in 1977 by **Ron Rivest, Adi Shamir, and Leonard Adleman**, RSA is the foundation of modern internet encryption and digital signatures.
+
+### 3.1 Mathematical Foundation
+RSA relies on the **computational asymmetry** of prime multiplication vs. factorization:
+- Multiplying two large prime numbers $p \times q = n$ is computationally trivial ($O(\log^2 n)$).
+- Factoring a massive composite integer $n$ into its constituent prime factors $p$ and $q$ is **computationally infeasible** (no known polynomial-time classical algorithm).
+
+---
+
+### 3.2 RSA Key Generation Algorithm (Step-by-Step)
+
+```text
+Step 1: Choose two large distinct prime numbers p and q
+        |
+Step 2: Compute Modulus: n = p × q
+        |
+Step 3: Compute Euler's Totient: φ(n) = (p - 1) × (q - 1)
+        |
+Step 4: Select Public Exponent e such that:
+        1 < e < φ(n)  AND  gcd(e, φ(n)) = 1
+        |
+Step 5: Compute Private Exponent d such that:
+        d · e ≡ 1 (mod φ(n))  [Extended Euclidean Algorithm]
+        |
+Output: Public Key KU = {e, n}    Private Key KR = {d, n}
+```
+
+### 3.3 Encryption and Decryption Formulas
+
+- **Encryption (Performed by Sender with Recipient's Public Key $\{e, n\}$)**:
+$$C = M^e \pmod n \quad (0 \le M < n)$$
+
+- **Decryption (Performed by Recipient with their Private Key $\{d, n\}$)**:
+$$M = C^d \pmod n$$
+
+---
+
+### 3.4 Comprehensive Worked Numerical: RSA Key Generation & Encryption
+
+**Problem (UGC NET Style)**:
+Given two prime numbers $p = 3$ and $q = 11$:
+1. Determine the public key $\{e, n\}$ for $e = 7$.
+2. Compute the private key $d$.
+3. Encrypt the plaintext message $M = 5$.
+4. Verify decryption of the resulting ciphertext.
+
+**Step-by-Step Solution**:
+1. **Compute Modulus ($n$)**:
+$$n = p \times q = 3 \times 11 = \mathbf{33}$$
+2. **Compute Euler's Totient ($\phi(n)$)**:
+$$\phi(n) = (p - 1) \times (q - 1) = (3 - 1) \times (11 - 1) = 2 \times 10 = \mathbf{20}$$
+3. **Check validity of $e = 7$**:
+$$\gcd(7, 20) = 1 \implies \text{Valid!}$$
+   Public Key: $\mathbf{KU = \{7, 33\}}$.
+4. **Compute Private Exponent ($d$)**:
+$$d \times e \equiv 1 \pmod{\phi(n)} \implies 7d \equiv 1 \pmod{20}$$
+   We search for integer $k$ such that $7d = 20k + 1$:
+   - For $k = 1$: $7d = 21 \implies d = \frac{21}{7} = \mathbf{3}$.
+   Private Key: $\mathbf{KR = \{3, 33\}}$.
+5. **Encryption of $M = 5$**:
+$$C = M^e \pmod n = 5^7 \pmod{33}$$
+   Using modular arithmetic:
+$$5^1 = 5$$
+$$5^2 = 25 \equiv -8 \pmod{33}$$
+$$5^4 = (-8)^2 = 64 \equiv -2 \pmod{33}$$
+$$5^7 = 5^4 \times 5^2 \times 5^1 \equiv (-2) \times (-8) \times 5 = 16 \times 5 = 80 \equiv \mathbf{14} \pmod{33}$$
+   Ciphertext: $\mathbf{C = 14}$.
+6. **Decryption Verification**:
+$$M = C^d \pmod n = 14^3 \pmod{33}$$
+$$14^2 = 196 = (5 \times 33) + 31 \equiv -2 \pmod{33}$$
+$$14^3 = 14^2 \times 14 \equiv (-2) \times 14 = -28 \equiv 33 - 28 = \mathbf{5}$$
+   *Decrypted message matches original plaintext $M = 5$!*
+
+---
+
+## 4. The Diffie-Hellman Key Exchange Protocol
+
+Proposed by **Whitfield Diffie and Martin Hellman** in 1976, this protocol enables two parties to negotiate a shared secret key across a public, unencrypted channel.
+
+### 4.1 Protocol Execution Steps
+
+1. **Global Public Domain Parameters**:
+   - A large prime number $q$.
+   - An integer $\alpha$ that is a **primitive root** modulo $q$.
+2. **Alice's Key Generation**:
+   - Picks secret private key: $X_A < q$.
+   - Computes public key: $Y_A = \alpha^{X_A} \pmod q$.
+   - Sends $Y_A$ over the network to Bob.
+3. **Bob's Key Generation**:
+   - Picks secret private key: $X_B < q$.
+   - Computes public key: $Y_B = \alpha^{X_B} \pmod q$.
+   - Sends $Y_B$ over the network to Alice.
+4. **Shared Symmetric Key Computation**:
+   - Alice computes: $K = (Y_B)^{X_A} \pmod q$.
+   - Bob computes: $K = (Y_A)^{X_B} \pmod q$.
+
+$$\text{Why they match: } K = (\alpha^{X_B})^{X_A} = (\alpha^{X_A})^{X_B} = \alpha^{X_A \cdot X_B} \pmod q$$
+
+---
+
+### 4.2 Security & The Man-in-the-Middle (MitM) Vulnerability
+
+- **Mathematical Security**: Based on the **Discrete Logarithm Problem**: given $\alpha, q,$ and $Y_A = \alpha^{X_A} \pmod q$, it is computationally intractable to solve for private key $X_A$.
+- **Vulnerability**: Diffie-Hellman does **not authenticate participants**. An active eavesdropper (Darth) can intercept exchanges, establishing two independent shared keys ($K_1$ with Alice, $K_2$ with Bob), decrypting and re-encrypting all traffic transparently.
+  - *Defense*: Digital Certificates signed by a trusted Certificate Authority (PKI).
+
+---
+
+## 5. Cryptographic Hash Functions & Digital Signatures
+
+A cryptographic hash function $H(M)$ maps an arbitrary-length message $M$ to a fixed-length string called a **Message Digest**.
+
+### 5.1 Three Required Security Properties
+
+1. **Pre-image Resistance (One-Way Property)**:
+   Given a hash value $h$, it is computationally infeasible to find any message $x$ such that $H(x) = h$.
+2. **Second Pre-image Resistance (Weak Collision Resistance)**:
+   Given a specific input $x$, it is computationally infeasible to find a different input $y \neq x$ such that $H(y) = H(x)$.
+3. **Collision Resistance (Strong Collision Resistance)**:
+   It is computationally infeasible to find **any arbitrary pair** of distinct inputs $x \neq y$ such that $H(x) = H(y)$.
+   *(By the **Birthday Paradox**, an $n$-bit hash function requires only $2^{n/2}$ random trials to find a collision with $50\%$ probability).*
+
+---
+
+### 5.2 Digital Signature Architecture
+
+A digital signature provides **Authentication**, **Message Integrity**, and **Non-Repudiation**:
+
+```text
+Sender (Alice) Signing:
+Message M ------> [ Hash H ] --------> Hash Digest H(M)
+                                              |
+                                              v [ Encrypt with Alice's PRIVATE Key KR_A ]
+                                              |
+                                       Digital Signature S
+                                              |
+Transmission: Send (Message M + Signature S) -+
+                                              |
+Receiver (Bob) Verification:                  v
+Message M ------> [ Hash H ] --------> Hash Digest 1
+                                              |
+Signature S ----> [ Decrypt with ] --> Hash Digest 2 (Compare: Digest 1 == Digest 2?)
+                  [ Alice's PUBLIC Key KU_A ]
+```
+
+> **Fundamental Principle**:
+> - **Encryption for Confidentiality**: Encrypt with the **Recipient's Public Key** (Only recipient can decrypt with their private key).
+> - **Encryption for Digital Signature**: Encrypt with the **Sender's Private Key** (Anyone can verify with sender's public key, proving it came from the sender).
+
+---
+
+## 6. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET 2021 — Number of Keys in Cryptosystems)
+In a company with 100 employees, how many symmetric keys are needed for every pair of employees to communicate securely? How many keys are needed if asymmetric encryption is used instead?
+
+**Solution**:
+1. For Symmetric Encryption:
+$$\text{Keys} = \frac{n(n - 1)}{2} = \frac{100 \times 99}{2} = \mathbf{4950 \text{ keys}}$$
+2. For Asymmetric Encryption:
+$$\text{Keys} = 2 \times n = 2 \times 100 = \mathbf{200 \text{ keys}}$$
+   *(Each employee has 1 public key + 1 private key).*
+**Answer**: Symmetric = 4,950; Asymmetric = 200.
+
+### Question 2 (UGC NET 2020 — RSA Private Key Calculation)
+In an RSA cryptosystem, $p = 5$, $q = 11$, and the encryption key $e = 3$. What is the decryption key $d$?
+
+**Solution**:
+1. $n = p \times q = 55$.
+2. $\phi(n) = (p - 1)(q - 1) = 4 \times 10 = 40$.
+3. We need $d \times e \equiv 1 \pmod{\phi(n)} \implies 3d \equiv 1 \pmod{40}$.
+4. $3d = 40k + 1$:
+   - For $k = 1$: $3d = 41$ (not divisible).
+   - For $k = 2$: $3d = 81 \implies d = \frac{81}{3} = \mathbf{27}$.
+**Answer**: $d = 27$.
+
+### Question 3 (UGC NET 2019 — DES Block and Key Sizes)
+What is the plaintext block size and effective key length in the Data Encryption Standard (DES)?
+
+**Solution**:
+- Plaintext block size $= \mathbf{64 \text{ bits}}$.
+- Total key size $= 64$ bits, but 8 bits are discarded for parity, yielding an effective key length of $\mathbf{56 \text{ bits}}$.
+**Answer**: Block size = 64 bits; Effective key size = 56 bits.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="In the RSA public-key cryptosystem, prime numbers are chosen as p = 7 and q = 11. If the public encryption key is chosen as e = 13, what is the private decryption key d?"
+  optionA="17"
+  optionB="37"
+  optionC="43"
+  optionD="53"
+  correctOption="B"
+  explanation="n = p × q = 7 × 11 = 77. φ(n) = (p - 1)(q - 1) = 6 × 10 = 60. The decryption key d must satisfy: e · d ≡ 1 (mod φ(n)) ⟹ 13 · d ≡ 1 (mod 60). Testing multiples: 13 × 37 = 481 = (8 × 60) + 1 ≡ 1 (mod 60). Hence d = 37."
+  examBadge="UGC NET Dec 2020 / Official PYQ"
+/>
+
+<Quiz
+  question="In Diffie-Hellman Key Exchange with public prime p = 23 and primitive root g = 5, Alice chooses secret private key a = 6 and Bob chooses secret private key b = 15. What is the shared secret cryptographic key K established between them?"
+  optionA="2"
+  optionB="6"
+  optionC="9"
+  optionD="12"
+  correctOption="A"
+  explanation="Alice computes public value A = g^a mod p = 5^6 mod 23 = 15625 mod 23 = 8. Bob computes public value B = g^b mod p = 5^15 mod 23 = 19. Shared key K = B^a mod p = 19^6 mod 23 = 2 (or A^b mod p = 8^15 mod 23 = 2). Shared secret key K = 2."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="Which symmetric block cipher operational mode generates identical ciphertext blocks for identical plaintext blocks, making it susceptible to statistical pattern attacks?"
+  optionA="Cipher Block Chaining (CBC)"
+  optionB="Electronic Codebook (ECB)"
+  optionC="Counter (CTR) Mode"
+  optionD="Cipher Feedback (CFB)"
+  correctOption="B"
+  explanation="Electronic Codebook (ECB) encrypts each 64-bit or 128-bit plaintext block independently using the exact same key without an Initialization Vector (IV). Identical plaintext blocks produce identical ciphertext blocks, exposing data patterns."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="A cryptographic hash function H is defined as strongly Collision Resistant if it is computationally infeasible to find:"
+  optionA="Preimage x given hash h such that H(x) = h"
+  optionB="Any two distinct inputs x and y such that H(x) = H(y)"
+  optionC="A key of length 256 bits"
+  optionD="The encryption algorithm"
+  correctOption="B"
+  explanation="Collision Resistance requires that it is computationally infeasible to find ANY pair of distinct messages x1 ≠ x2 such that H(x1) = H(x2). (Preimage resistance means finding x given H(x); Second preimage resistance means finding y ≠ x for a specific given x)."
+  examBadge="UGC NET Dec 2022"
+/>
+
+<Quiz
+  question="How does a Digital Signature provide Non-Repudiation for an electronic message?"
+  optionA="The sender encrypts the message with the recipient's public key"
+  optionB="The sender encrypts the message digest with their own private key, which can only be verified using their public key"
+  optionC="The sender uses symmetric DES encryption"
+  optionD="The message is hashed using SHA-1"
+  correctOption="B"
+  explanation="Because the private key is strictly unique and held exclusively by the sender, encrypting the hash with the sender's private key proves the message originated from that sender and was not forged, legally preventing the sender from denying authoring the message."
+  examBadge="UGC NET June 2020"
+/>
+

@@ -1,0 +1,346 @@
+---
+title: "E-Commerce Frameworks, EDI, and Secure Electronic Payment Systems"
+unit: "Unit 14: Fundamentals of E-Commerce"
+examType: "STET"
+priority: "High"
+readTime: "30 min"
+slug: "ecommerce-frameworks"
+description: "Exhaustive coverage of E-Commerce architectures (B2B, B2C, C2C), Electronic Data Interchange (EDI ANSI X12/EDIFACT), Secure Payment Gateways, Smart Cards, Tokenization, and SET protocol with Dual Signatures for Bihar STET Paper 2."
+tags: ["E-Commerce", "EDI", "Payment Systems", "Smart Cards", "SET Protocol", "Dual Signature", "STET"]
+---
+
+# E-Commerce Frameworks, EDI, and Secure Electronic Payment Systems
+
+Electronic Commerce encompasses the buying, selling, and marketing of products and services over telecommunication networks, supported by secure data exchange and financial clearing infrastructures. In the **Bihar STET Paper 2 Computer Science** syllabus, **Unit 14 (Fundamentals of E-Commerce)** tests critical enterprise concepts:
+1. **E-Commerce Business Models & Multitier Architectural Frameworks** (B2B, B2C, C2C, B2G).
+2. **Electronic Data Interchange (EDI)**: Architecture, Translation mechanisms, and Standards (**ANSI ASC X12** vs. **UN/EDIFACT**).
+3. **Electronic Payment Systems**: Card transaction processing lifecycle, **Smart Cards (EMV vs. Magnetic Stripe)**, and **Tokenization**.
+4. **The SET (Secure Electronic Transaction) Protocol**: The cryptographic mechanics of **Dual Signatures**, digital certificates, and participant privacy.
+
+---
+
+## 1. Architectural Frameworks & Business Models
+
+E-commerce infrastructure relies on layered software architectures bridging distributed client devices to enterprise transaction databases and payment settlement networks:
+
+```
++---------------------------------------------------------------------------------------+
+|  Presentation Tier: Web Browser, Mobile App (HTTPS, TLS 1.3, React, iOS, Android)     |
++---------------------------------------------------------------------------------------+
+                                           ▲
+                                           │ Web / REST Requests
++---------------------------------------------------------------------------------------+
+|  Application / Web Server Tier: Nginx, Apache, Node.js, Spring Boot, Session Engine   |
+|  (Catalog Navigation, Shopping Cart State, Recommendation Engine, Inventory Check)    |
++---------------------------------------------------------------------------------------+
+                     ▲                                             ▲
+                     │ Database Queries                            │ PCI-DSS API Calls
++--------------------------------------+      +-----------------------------------------+
+|  Enterprise Data / ERP Tier:         |      |  Payment Processing Tier:               |
+|  Relational DBMS, Distributed Cache, |      |  Payment Gateway (Razorpay, Stripe),    |
+|  Supply Chain Warehouse Integration  |      |  Card Networks (Visa, RuPay), Core Bank |
++--------------------------------------+      +-----------------------------------------+
+```
+
+### 1.1 Classification by Market Participant
+
+```
++---------------+-----------------------+-----------------------------------+---------------------------------------+
+| Model         | Relationship          | Operational Characteristics       | Typical Market Examples               |
++---------------+-----------------------+-----------------------------------+---------------------------------------+
+| **B2B**       | Business-to-Business  | High-volume bulk transactions,    | Alibaba Wholesale, IndiaMART,         |
+|               |                       | negotiated contracts, EDI ordering| Cisco procurement portal              |
++---------------+-----------------------+-----------------------------------+---------------------------------------+
+| **B2C**       | Business-to-Consumer  | Retail storefronts, catalog       | Amazon, Flipkart, Myntra              |
+|               |                       | browsing, immediate card checkout |                                       |
++---------------+-----------------------+-----------------------------------+---------------------------------------+
+| **C2C**       | Consumer-to-Consumer  | Peer-to-peer marketplaces,        | eBay, OLX, Quikr, Facebook            |
+|               |                       | intermediary platform commission  | Marketplace                           |
++---------------+-----------------------+-----------------------------------+---------------------------------------+
+| **C2B**       | Consumer-to-Business  | Crowdsourcing, freelance gigs,    | Upwork, Shutterstock (photographers   |
+|               |                       | consumer bidding on contracts     | selling stock images to companies)    |
++---------------+-----------------------+-----------------------------------+---------------------------------------+
+| **B2G**       | Business-to-Govt      | E-procurement, tender submissions,| GeM (Government e-Marketplace, India),|
+|               |                       | compliance tax document filing    | Defense vendor bidding portals        |
++---------------+-----------------------+-----------------------------------+---------------------------------------+
+```
+
+---
+
+## 2. Electronic Data Interchange (EDI)
+
+**Electronic Data Interchange (EDI)** is the inter-company, computer-to-computer exchange of strictly formatted business documents (such as purchase orders, invoices, and advance shipping notices) directly between partner software applications without human transcription.
+
+```
+ Traditional Paper Flow:
+   Buyer System ──► Print PO ──► Mail/Courier ──► Open Mail ──► Re-key PO into Seller System
+                                                                    (Slow, Error-Prone)
+
+ Electronic Data Interchange (EDI):
+   Buyer ERP ──► EDI Translator ──► Secure VAN / AS2 ──► EDI Translator ──► Seller ERP
+   (Instantaneous, Zero Human Data Entry, Cryptographically Validated)
+```
+
+### 2.1 The Four Pillars of EDI Architecture
+
+1. **Standard Document Format**: Replaces non-standard proprietary invoices with standardized numeric tags.
+2. **EDI Translation Software**: Converts internal company database schemas (e.g., SAP IDoc or Oracle table) into standard EDI syntax and vice-versa.
+3. **Communications Channel**: 
+   - **VAN (Value-Added Network)**: A dedicated private telecommunications network that acts as a secure electronic post office, buffering EDI messages.
+   - **Internet EDI (AS2 - Applicability Statement 2)**: Transmits encrypted EDI payloads over standard HTTPS with digital signatures and MDN (Message Disposition Notification) return receipts.
+4. **Trading Partner Agreement (TPA)**: A legal contract establishing communications protocols, error-handling responsibilities, and dispute resolution terms.
+
+### 2.2 EDI Standards: ANSI ASC X12 vs. UN/EDIFACT
+
+```
++------------------------+------------------------------------------+------------------------------------------+
+| Feature                | ANSI ASC X12                             | UN/EDIFACT                               |
++------------------------+------------------------------------------+------------------------------------------+
+| Full Name              | American National Standards Institute    | United Nations Electronic Data           |
+|                        | Accredited Standards Committee X12       | Interchange for Admin, Commerce & Transp.|
+| Geographic Adoption    | **North America** (United States, Canada)| **International** (Europe, Asia, Global) |
+| Document Terminology   | **Transaction Set** (e.g., 850 = PO)     | **Message** (e.g., ORDERS = PO)          |
+| Structural Hierarchy   | Interchange (ISA/IEA) $\to$              | Interchange (UNB/UNZ) $\to$              |
+|                        | Functional Group (GS/GE) $\to$           | Functional Group (UNG/UNE) $\to$         |
+|                        | Transaction Set (ST/SE) $\to$ Segment    | Message (UNH/UNT) $\to$ Segment          |
+| Key Identifiers        | 850 (Purchase Order), 810 (Invoice),     | ORDERS (Purchase Order), INVOIC (Invoice)|
+|                        | 856 (Advance Ship Notice)                | DESADV (Despatch Advice)                 |
++------------------------+------------------------------------------+------------------------------------------+
+```
+
+---
+
+## 3. Secure Electronic Payment Systems
+
+Electronic payments require four cryptographic guarantees: **Authenticity**, **Confidentiality**, **Integrity**, and **Non-Repudiation**.
+
+### 3.1 Card Transaction Settlement Lifecycle
+
+```
+    [ Cardholder ] ────────── Card Swiped / Web Checkout ──────────► [ Merchant Store ]
+                                                                             │
+                                                                             ▼ (Encrypted Auth Request)
+    [ Issuer Bank ] ◄────── Interchange Network ────── [ Acquirer Bank ] ◄── [ Payment Gateway ]
+    (Customer Bank)       (Visa, Mastercard, RuPay)     (Merchant Bank)
+           │
+           ▼
+    Balance Approved ─────► Cryptographic Auth Token Returned ─────► Order Placed
+```
+
+1. **Authorization**: The merchant verifies in real time with the Issuer that the card is valid and sufficient credit/balance exists. An authorization hold is placed.
+2. **Clearing**: The merchant batch-uploads approved transaction records at the close of business to the Acquirer, who routes them through the card network to the Issuer.
+3. **Settlement**: The Issuer transfers gross funds minus **interchange fees** to the Acquirer, who credits the merchant's account minus the **Merchant Discount Rate (MDR)**.
+
+---
+
+### 3.2 Smart Cards: Magnetic Stripe vs. Contact vs. Contactless (EMV)
+
+```
++---------------------+-------------------------------+-------------------------------+-------------------------------+
+| Attribute           | Magnetic Stripe Card          | Contact Smart Card (EMV)      | Contactless Smart Card        |
++---------------------+-------------------------------+-------------------------------+-------------------------------+
+| Embedded Hardware   | Magnetic particle stripe      | Integrated silicon chip       | Integrated microchip + RF     |
+|                     | (Tracks 1, 2, and 3)          | (Microcontroller + ROM + RAM) | antenna loop coil             |
+| Governing Standard  | ISO/IEC 7810, 7813            | **ISO/IEC 7816**              | **ISO/IEC 14443** (NFC)       |
+| Cryptographic Logic | **None** (Static plaintext)   | **Dynamic ARQC Cryptogram**   | **Dynamic Cryptogram** over   |
+|                     | easily cloned via skimmer     | generated per transaction     | 13.56 MHz RF induction        |
+| Authentication Mode | Static CVV1 / PIN             | Dynamic cryptogram + Chip PIN | Dynamic token / tap-and-pay   |
+| Vulnerability Level | High (Skimming & cloning)     | Extremely Low (Tamper-proof)  | Extremely Low (Encrypted NFC) |
++---------------------+-------------------------------+-------------------------------+-------------------------------+
+```
+
+### 3.3 Payment Tokenization
+
+Tokenization is the process of replacing sensitive **Primary Account Numbers (PAN)** (the 16-digit credit card number) with a mathematically unrelated surrogate alphanumeric string called a **Token**.
+- **Key Invariant**: Unlike symmetric encryption (which can be mathematically reversed using the secret key $K$), a token cannot be decrypted through algorithmic reversal. The mapping between token and PAN resides strictly within a hardened, PCI-DSS compliant **Token Vault** operated by a certified Token Service Provider (TSP).
+
+---
+
+## 4. The SET Protocol & Dual Signatures
+
+The **Secure Electronic Transaction (SET)** protocol was engineered by Visa, Mastercard, Netscape, and Microsoft in 1996 as an open cryptographic standard for safeguarding credit card purchases over open, insecure networks like the Internet.
+
+### 4.1 The Fundamental Privacy Dilemma in Online Commerce
+
+In a naive online credit card transaction:
+- If the **Merchant** receives the customer's credit card number, rogue employees can steal card details.
+- If the **Bank** receives the detailed shopping basket, the bank gains unwarranted surveillance over the consumer's private lifestyle and itemized purchasing choices.
+
+```
+  Traditional Danger:
+    Customer ──► [ Order Info + Full Credit Card ] ──► Merchant (Can steal card!)
+                                                           │
+                                                           ▼
+                                                    Bank (Can spy on purchases!)
+```
+
+### 4.2 The Dual Signature Solution
+
+The **Dual Signature** links two distinct messages intended for two different recipients:
+1. **Order Information ($\text{OI}$)**: Intended for the **Merchant** (item descriptions, quantities, delivery address).
+2. **Payment Information ($\text{PI}$)**: Intended for the **Bank / Payment Gateway** (credit card number, expiration date, card security code, amount billed).
+
+```
+  Customer generates:
+      OI ──► [ Hash H ] ──► OIMD (Order Info Message Digest)
+                                  │
+                                  ├──► Concatenate: (PIMD || OIMD) ──► [ Hash H ] ──► POMD
+                                  │                                                     │
+      PI ──► [ Hash H ] ──► PIMD (Payment Info Message Digest)                          ▼
+                                                                                [ Encrypt with ]
+                                                                                [ Customer's   ]
+                                                                                [ Private Key  ]
+                                                                                        │
+                                                                                        ▼
+                                                                               DUAL SIGNATURE (DS)
+```
+
+### 4.3 Mathematical Formulation of Dual Signature
+
+Let $H$ be a cryptographically secure hash function (e.g., SHA-1 in the original specification or SHA-256 in modern profiles), and let $PR_C$ be the **Cardholder's Private Key**:
+
+1. Calculate Message Digests for both components:
+$$\text{OIMD} = H(\text{OI})$$
+$$\text{PIMD} = H(\text{PI})$$
+
+2. Form the Combined Payment-Order Message Digest ($\text{POMD}$):
+$$\text{POMD} = H(\text{PIMD} \,||\, \text{OIMD})$$
+   *(where $||$ represents string concatenation)*
+
+3. Generate the Dual Signature ($\text{DS}$) by encrypting $\text{POMD}$ with the cardholder's private key:
+$$\text{DS} = E_{PR_C}[\text{POMD}]$$
+
+---
+
+### 4.4 Transmission & Independent Verification
+
+The customer transmits:
+- To the **Merchant**: $\text{OI}$, $\text{PIMD}$, and $\text{DS}$. *(Notice $\text{PI}$ is NOT sent to the merchant)*.
+- To the **Payment Gateway / Bank**: $\text{PI}$, $\text{OIMD}$, and $\text{DS}$. *(Notice $\text{OI}$ is NOT sent to the bank)*.
+
+#### Merchant Verification Steps:
+1. Computes $H(\text{OI})$ from the received $\text{OI}$.
+2. Concatenates the received $\text{PIMD}$ with the computed $H(\text{OI})$ to evaluate:
+$$\text{POMD}' = H(\text{PIMD} \,||\, H(\text{OI}))$$
+3. Decrypts the Dual Signature using the Cardholder's Public Key $PU_C$:
+$$\text{POMD} = D_{PU_C}[\text{DS}]$$
+4. Asserts $\text{POMD}' \stackrel{?}{=} \text{POMD}$. If equal, the merchant is mathematically guaranteed that:
+   - The cardholder authorized this exact purchase.
+   - The payment information held by the bank corresponds to this exact order, without the merchant ever knowing the credit card number!
+
+#### Bank Verification Steps:
+1. Computes $H(\text{PI})$ from the received $\text{PI}$.
+2. Concatenates the computed $H(\text{PI})$ with the received $\text{OIMD}$:
+$$\text{POMD}'' = H(H(\text{PI}) \,||\, \text{OIMD})$$
+3. Decrypts $\text{DS}$ with $PU_C$ and verifies equality. If valid, the bank charges the card without ever discovering what items were purchased!
+
+---
+
+## 5. Worked Numerical Examples & Computations
+
+### Numerical 1: Dual Signature Hash Concatenation
+**Problem**: An e-commerce buyer generates a SET transaction using SHA-256 as the underlying cryptographic hash function. Calculate the bit length of $\text{PIMD}$, $\text{OIMD}$, the concatenated preimage input to $\text{POMD}$, and the output length of $\text{POMD}$.
+
+#### Solution:
+1. **Output of SHA-256**:
+$$\text{Length}(\text{PIMD}) = 256\,\text{bits} = 32\,\text{bytes}$$
+$$\text{Length}(\text{OIMD}) = 256\,\text{bits} = 32\,\text{bytes}$$
+
+2. **Concatenated Preimage Input**:
+$$\text{Preimage} = \text{PIMD} \,||\, \text{OIMD}$$
+$$\text{Length}(\text{Preimage}) = 256 + 256 = 512\,\text{bits} = 64\,\text{bytes}$$
+
+3. **Output Length of $\text{POMD} = H(\text{Preimage})$**:
+   Since SHA-256 hashes any arbitrary-length input down to 256 bits:
+$$\text{Length}(\text{POMD}) = 256\,\text{bits} = 32\,\text{bytes}$$
+
+---
+
+### Numerical 2: Merchant Payout under MDR
+**Problem**: An online bookstore completes retail transactions totaling Rs. $500,000$ in a day. The acquiring payment gateway charges a Merchant Discount Rate (MDR) of $1.85\%$ plus a fixed fee of Rs. $3.00$ per transaction. If the total volume comprised $250$ distinct orders, calculate the total processing fees deducted and the net settlement credited to the merchant's bank account.
+
+#### Solution:
+1. **Variable MDR Fee**:
+$$\text{Fee}_{\text{variable}} = 1.85\% \times 500,000 = \frac{1.85}{100} \times 500,000 = \text{Rs. } 9,250$$
+
+2. **Fixed Transaction Fee**:
+$$\text{Fee}_{\text{fixed}} = 250 \times \text{Rs. } 3.00 = \text{Rs. } 750$$
+
+3. **Total Gateway Deduction**:
+$$\text{Total Deductions} = \text{Rs. } 9,250 + \text{Rs. } 750 = \text{Rs. } 10,000$$
+
+4. **Net Merchant Settlement**:
+$$\text{Net Payout} = \text{Rs. } 500,000 - \text{Rs. } 10,000 = \text{Rs. } 490,000$$
+
+---
+
+## 6. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="In the Secure Electronic Transaction (SET) protocol, what is the fundamental purpose of the Dual Signature mechanism?"
+  optionA="To encrypt the merchant's catalog database with two independent symmetric keys"
+  optionB="To link Order Information and Payment Information so that the merchant cannot read card details and the bank cannot inspect item details"
+  optionC="To require two separate cardholders to co-sign high-value corporate transactions"
+  optionD="To replace digital certificates with dual password authentication"
+  correctOption="B"
+  explanation="The Dual Signature binds the Order Information (OI) and Payment Information (PI) cryptographically. It allows the merchant to verify the order without seeing credit card numbers, and allows the bank to verify the payment without seeing what goods were purchased."
+  examBadge="Bihar STET Target PYQ"
+/>
+
+<Quiz
+  question="Which EDI standard is predominantly adopted across North America and uses the term 'Transaction Set 850' to designate a Purchase Order?"
+  optionA="UN/EDIFACT"
+  optionB="ISO 20022"
+  optionC="ANSI ASC X12"
+  optionD="RosettaNet"
+  correctOption="C"
+  explanation="ANSI ASC X12 is the primary North American EDI standard developed by the American National Standards Institute. In X12, transaction documents are named 'Transaction Sets', with 850 representing a Purchase Order."
+  examBadge="UGC NET / STET Common"
+/>
+
+<Quiz
+  question="How does Payment Tokenization fundamentally differ from Symmetric Data Encryption?"
+  optionA="Tokens can be reversed mathematically using a public key, whereas encrypted data cannot"
+  optionB="Tokens are randomly generated surrogates with no algorithmic mathematical relationship to the PAN and cannot be decrypted without the Token Vault"
+  optionC="Tokenization requires 2048-bit RSA keys for each transaction"
+  optionD="Tokenization can only be used on magnetic stripe cards"
+  correctOption="B"
+  explanation="Unlike encryption where plaintext can be mathematically derived from ciphertext using a decryption key, tokens bear no cryptographic or algorithmic relationship to the underlying data. The mapping resides exclusively within a secure, PCI-DSS compliant Token Vault."
+  examBadge="Fintech & Security Standard"
+/>
+
+<Quiz
+  question="Which ISO standard specifies the physical dimensions, contact locations, and electrical interfaces for contact-based integrated circuit Smart Cards (EMV)?"
+  optionA="ISO/IEC 7816"
+  optionB="ISO/IEC 14443"
+  optionC="ISO/IEC 802.11"
+  optionD="ISO/IEC 9001"
+  correctOption="A"
+  explanation="ISO/IEC 7816 is the international standard governing contact smart cards. In contrast, ISO/IEC 14443 governs contactless proximity smart cards operating at 13.56 MHz (NFC)."
+  examBadge="Hardware & Standards Official"
+/>
+
+<Quiz
+  question="In electronic commerce transactions, how does Business-to-Business (B2B) fundamentally contrast with Business-to-Consumer (B2C) transactions?"
+  optionA="B2B has smaller order values and higher order frequency than B2C"
+  optionB="B2B involves high-volume bulk purchasing, negotiated contracts, and automated EDI integration with higher average transaction value than B2C"
+  optionC="B2C uses only smart cards while B2B uses only cash"
+  optionD="B2B is exclusively conducted through mobile apps"
+  correctOption="B"
+  explanation="B2B commerce is characterized by high average transaction volumes, enterprise supply-chain integration, strict trade agreements, and automated document exchange via EDI (e.g. ANSI X12 / EDIFACT), whereas B2C involves retail catalog shopping with immediate card/UPI payment."
+  examBadge="E-Commerce Enterprise Standard"
+/>
+
+
+---
+
+## 7. High-Yield Revision Matrix
+
+| Topic Element | Critical Invariant / Formula | Common Exam Pitfall |
+|---|---|---|
+| **Dual Signature** | $\text{DS} = E_{PR_C}[H(H(\text{PI}) \,||\, H(\text{OI}))]$ | Thinking the merchant decrypts the customer's credit card number |
+| **EDI Standards** | X12 = North America (850); EDIFACT = International (ORDERS) | Mixing up regional standards (EDIFACT is global, X12 is US) |
+| **Smart Card Standards** | Contact = **ISO 7816**; Contactless = **ISO 14443** | Confusing ISO 7816 with ISO 14443 NFC contactless |
+| **EMV Security** | Dynamic cryptogram generated per transaction | Assuming EMV transmits static CVV data like magnetic stripes |
+| **Tokenization** | Irreversible without Token Vault mapping | Believing tokens can be decrypted using an AES secret key |
+| **E-Commerce Models** | Upwork/Freelancer = C2B; eBay = C2C; GeM = B2G | Misidentifying freelancer bidding as standard B2C |

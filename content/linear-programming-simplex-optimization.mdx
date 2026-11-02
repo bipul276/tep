@@ -1,0 +1,403 @@
+---
+title: "Linear Programming, Simplex Method, Duality, and Optimization"
+unit: "Unit 1: Digital Logic & Discrete Structures"
+examType: "UGC-NET"
+priority: "Low"
+readTime: "34 min"
+slug: "linear-programming-simplex-optimization"
+description: "Master Linear Programming formulation, Graphical solutions, the Simplex algorithm, Primal-to-Dual conversion rules, Duality theorems, and Transportation/Assignment algorithms for UGC NET and Bihar STET."
+tags: ["Optimization", "Linear Programming", "Simplex", "Duality", "Transportation Problem", "Hungarian Method", "UGC-NET", "STET"]
+---
+
+# Linear Programming, Simplex Method, Duality, and Optimization
+
+Linear Programming Problems (LPP) and combinatorial optimization constitute an indispensable, mathematically rigorous section of the **UGC NET** (Unit 1: Discrete Mathematics and Optimization) and **Bihar STET Computer Science** curricula. Examiners routinely test candidates on **graphical edge cases (degeneracy, unboundedness, infeasibility)**, the **mechanics of the Simplex tableau**, **Primal-to-Dual transformation rules**, and **initial basic feasible solutions (IBFS) in Transportation models**.
+
+---
+
+## 1. Linear Programming Problem (LPP) Formulation
+
+The canonical optimization model seeks to maximize or minimize a linear objective function subject to linear equality or inequality constraints:
+
+$$
+\begin{aligned}
+\text{Optimize (Max / Min)} \quad &Z = \sum_{j=1}^n c_j x_j \\
+\text{Subject to} \quad &\sum_{j=1}^n a_{ij} x_j \; (\le, =, \ge) \; b_i \quad \text{for } i = 1, 2, \dots, m \\
+\text{Non-negativity} \quad &x_j \ge 0 \quad \text{for } j = 1, 2, \dots, n
+\end{aligned}
+$$
+
+- $x_j$: Decision variables ($n$ total).
+- $c_j$: Objective function cost/profit coefficients.
+- $a_{ij}$: Technological / input-output coefficients.
+- $b_i$: Right-hand side (RHS) resource capacities ($b_i \ge 0$ in standard form).
+
+---
+
+## 2. The Graphical Method & Solution Geometries
+
+Applicable to problems with two decision variables ($x_1, x_2$). The solution space is determined by plotting constraint boundary lines on the Cartesian plane.
+
+```
++-----------------------------------------------------------------------------------------+
+|                               GRAPHICAL SOLUTION TAXONOMY                               |
++---------------------+-----------------------------------+-------------------------------+
+| Outcome Type        | Geometric Feasible Region Shape   | Analytical Meaning            |
++---------------------+-----------------------------------+-------------------------------+
+| 1. Unique Optimal   | Convex polygon / polyhedron with  | Objective line touches a      |
+|    Solution         | bounded feasible area.            | single extreme corner point.  |
++---------------------+-----------------------------------+-------------------------------+
+| 2. Multiple (Infinite)| Objective line is parallel to an | Infinite optimal points exist |
+|    Optimal Solutions| active (binding) constraint line. | along the connecting segment. |
++---------------------+-----------------------------------+-------------------------------+
+| 3. Unbounded        | Feasible space extends infinitely | $Z$ can increase (or decrease)|
+|    Solution         | in the direction of optimization. | without bound ($\pm \infty$). |
++---------------------+-----------------------------------+-------------------------------+
+| 4. Infeasible       | Constraints are contradictory; no | System has NO common feasible |
+|    Solution         | point satisfies all restrictions. | solution ($S = \emptyset$).   |
++---------------------+-----------------------------------+-------------------------------+
+| 5. Degenerate       | Three or more constraint lines    | One or more basic variables   |
+|    Solution         | intersect at the same vertex.     | equal zero in the BFS.        |
++---------------------+-----------------------------------+-------------------------------+
+```
+
+### The Fundamental Extreme Point Theorem
+If a linear programming problem has an optimal solution, it must occur at at least one **extreme (corner) point** of the convex feasible region. If the optimal value occurs at two distinct vertices, it also occurs at every point on the line segment joining them.
+
+---
+
+## 3. The Simplex Algorithm (George Dantzig)
+
+The Simplex algorithm solves high-dimensional LPPs by iteratively moving along the edges of the convex polyhedral feasible region from one **Basic Feasible Solution (BFS)** to an adjacent BFS with an improved objective value.
+
+### 3.1 Standard Form Conversion
+To apply Simplex, the problem must be converted into standard equality form:
+1. All RHS constants must be non-negative ($b_i \ge 0$). If $b_i < 0$, multiply the constraint by $-1$ and flip the inequality sign ($\le \ \to \ \ge$).
+2. **Slack Variable ($s_i \ge 0$)**: Added to a "$\le$" constraint to represent unused resource capacity:
+$$a_{i1}x_1 + a_{i2}x_2 \le b_i \implies a_{i1}x_1 + a_{i2}x_2 + s_i = b_i$$
+3. **Surplus Variable ($e_i \ge 0$)**: Subtracted from a "$\ge$" constraint to represent excess over minimum requirement:
+$$a_{i1}x_1 + a_{i2}x_2 \ge b_i \implies a_{i1}x_1 + a_{i2}x_2 - e_i = b_i$$
+4. **Artificial Variable ($A_i \ge 0$)**: Added to "$\ge$" or "$=$" constraints to construct an initial identity matrix (initial BFS). Handled via **Big-M Method** (penalty $-M \cdot A_i$ for max) or the **Two-Phase Method**.
+
+---
+
+### 3.2 Simplex Tableau Mechanics and Invariants
+
+```
++-----------+--------+---------+-----------------------+--------+
+| $c_B$     | Basis  | $X_B$   | $x_1 \quad x_2 \dots$ | Ratio  |
++-----------+--------+---------+-----------------------+--------+
+| $c_{B1}$  | $s_1$  | $b_1$   | $a_{11} \quad a_{12}$ | $\theta_1 = b_1 / a_{1j}$ |
+| $c_{B2}$  | $s_2$  | $b_2$   | $a_{21} \quad a_{22}$ | $\theta_2 = b_2 / a_{2j}$ |
++-----------+--------+---------+-----------------------+--------+
+|           |        | $Z$     | $\Delta_j = c_j - z_j$|        |
++-----------+--------+---------+-----------------------+--------+
+```
+
+1. **Evaluation Index ($\Delta_j = c_j - z_j$)**:
+   Where $z_j = \sum (c_B)_i \cdot a_{ij}$.
+   - **Optimality Condition (Maximization)**: The current BFS is optimal if:
+$$\Delta_j = c_j - z_j \le 0 \quad \forall j$$
+2. **Key / Pivot Column (Entering Variable)**:
+   Select the non-basic variable with the **most positive** $\Delta_j$ (for maximization):
+$$\text{Incoming Variable } x_r \implies \max_j (\Delta_j) \quad \text{such that } \Delta_j > 0$$
+3. **Key / Pivot Row (Leaving Variable)**:
+   Determined by the **Minimum Positive Ratio ($\theta$) Test**:
+$$\theta = \min_{i} \left\{ \frac{X_{Bi}}{a_{ir}} \;\Bigg|\; a_{ir} > 0 \right\}$$
+   *(Negative and zero denominators are strictly excluded from the ratio test).*
+4. **Key / Pivot Element**: The intersection element $a_{kr}$ between the pivot row and pivot column.
+5. **Unboundedness Test**: If all technological entries in the incoming pivot column are non-positive ($a_{ir} \le 0 \ \forall i$), the problem is **unbounded**.
+
+---
+
+## 4. Duality Theory
+
+Every Linear Programming Problem (the **Primal**) has an associated twin problem (the **Dual**) derived from the exact same technological data.
+
+```
+                          PRIMAL - DUAL RELATIONSHIP
+          Primal (P): Maximize Z = cᵀx  subject to  Ax <= b,  x >= 0
+                                    ↕
+          Dual (D):   Minimize W = bᵀy  subject to  Aᵀy >= c,  y >= 0
+```
+
+### Comprehensive Primal-Dual Conversion Rules
+
+```
++-----------------------------------------------------------------------------------------+
+|                               PRIMAL-DUAL MAPPING MATRIX                                |
++------------------------------------+----------------------------------------------------+
+| Primal Problem (Maximization)      | Dual Problem (Minimization)                        |
++------------------------------------+----------------------------------------------------+
+| Objective: Maximize $Z = c^T x$    | Objective: Minimize $W = b^T y$                    |
++------------------------------------+----------------------------------------------------+
+| Number of variables ($n$)          | Number of constraints ($n$)                        |
++------------------------------------+----------------------------------------------------+
+| Number of constraints ($m$)        | Number of variables ($m$)                          |
++------------------------------------+----------------------------------------------------+
+| Constraint RHS coefficients ($b$)  | Objective cost vector ($b$)                        |
++------------------------------------+----------------------------------------------------+
+| Objective coefficients ($c$)       | Constraint RHS vector ($c$)                        |
++------------------------------------+----------------------------------------------------+
+| Constraint matrix $A$              | Transpose constraint matrix $A^T$                  |
++------------------------------------+----------------------------------------------------+
+| $i$-th constraint is $\le$         | $i$-th dual variable $y_i \ge 0$                   |
++------------------------------------+----------------------------------------------------+
+| $i$-th constraint is $\ge$         | $i$-th dual variable $y_i \le 0$                   |
++------------------------------------+----------------------------------------------------+
+| $i$-th constraint is $=$           | $i$-th dual variable $y_i$ is **unrestricted**     |
++------------------------------------+----------------------------------------------------+
+| $j$-th variable $x_j \ge 0$        | $j$-th dual constraint is $\ge$                    |
++------------------------------------+----------------------------------------------------+
+| $j$-th variable $x_j$ unrestricted | $j$-th dual constraint is $=$                      |
++------------------------------------+----------------------------------------------------+
+```
+
+### Core Duality Theorems (High-Frequency Exam Targets)
+
+1. **Weak Duality Theorem**: If $x$ is any feasible solution to the Primal (Max) and $y$ is any feasible solution to the Dual (Min):
+$$c^T x \le b^T y \quad \implies \quad Z_{\text{primal}} \le W_{\text{dual}}$$
+2. **Strong Duality Theorem**: If either the Primal or the Dual has a finite optimal solution, the other also has a finite optimal solution, and their optimal objective values are **strictly identical**:
+$$Z_{\text{max}} = W_{\text{min}}$$
+3. **Unboundedness Relationship**:
+   - If Primal is **unbounded**, the Dual is **infeasible**.
+   - If Dual is **unbounded**, the Primal is **infeasible**.
+   - If Primal is **infeasible**, the Dual may be **unbounded OR infeasible**. (Exam trap: Both can be infeasible!).
+4. **Complementary Slackness Theorem**: For optimal primal solutions $x^*$ and dual solutions $y^*$:
+$$y_i^* \cdot \Big( \sum_{j=1}^n a_{ij} x_j^* - b_i \Big) = 0 \quad \text{and} \quad x_j^* \cdot \Big( \sum_{i=1}^m a_{ij} y_i^* - c_j \Big) = 0$$
+   *(If a primal constraint is non-binding with slack $> 0$, the corresponding dual variable is zero; if a dual variable is positive, the primal constraint is strictly binding with zero slack).*
+
+---
+
+## 5. Transportation and Assignment Models
+
+The Transportation Problem is a specialized linear programming model for distributing a homogeneous commodity from $m$ sources to $n$ destinations at minimum total cost.
+
+### 5.1 Basic Feasible Solution (BFS) Properties
+- **Feasibility Condition**: The problem must be **balanced**:
+$$\sum_{i=1}^m a_i (\text{Total Supply}) = \sum_{j=1}^n b_j (\text{Total Demand})$$
+  *(If unbalanced, introduce a dummy row or dummy column with zero transportation costs).*
+- **Total Basic Variables**: Any non-degenerate BFS must contain exactly:
+$$m + n - 1 \quad \text{allocated (basic) cells}$$
+  *(A solution with fewer than $m + n - 1$ allocations is **degenerate**; resolve by assigning an infinitesimally small quantity $\epsilon > 0$ to an independent non-basic cell).*
+
+---
+
+### 5.2 Initial Basic Feasible Solution (IBFS) Algorithms
+
+```
++-----------------------------------------------------------------------------------------+
+|                                    IBFS ALGORITHMS                                      |
++------------------------+----------------------------------------------------------------+
+| Method                 | Algorithmic Strategy & Quality                                 |
++------------------------+----------------------------------------------------------------+
+| 1. North-West Corner   | Purely positional; allocates to cell $(1, 1)$ first, moving    |
+|    Method (NWCM)       | right or down. Completely ignores costs; poorest IBFS.         |
++------------------------+----------------------------------------------------------------+
+| 2. Least Cost Method   | Greedy heuristic; selects the unallocated cell with minimum    |
+|    (LCM)               | unit cost $c_{ij}$ in the entire matrix.                       |
++------------------------+----------------------------------------------------------------+
+| 3. Vogel's             | Computes row and column **penalties** (difference between the  |
+|    Approximation (VAM) | two lowest costs in each line). Allocates to lowest cost cell  |
+|                        | in line with highest penalty. **Best IBFS (often optimal)**.   |
++------------------------+----------------------------------------------------------------+
+```
+
+### 5.3 Optimality Test: The MODI (Modified Distribution) Method
+1. Set $u_i + v_j = c_{ij}$ for all **allocated** cells. (Set $u_1 = 0$ as reference).
+2. Compute opportunity costs (evaluation index) for all **unallocated** cells:
+$$d_{ij} = c_{ij} - (u_i + v_j)$$
+3. **Optimality Criterion**:
+   - If $d_{ij} \ge 0 \ \forall (i, j)$, the current solution is **optimal**.
+   - If any $d_{ij} < 0$, the current allocation is not optimal. Create a closed loop starting and ending at the cell with the most negative $d_{ij}$, alternately adding and subtracting $\theta$.
+
+---
+
+### 5.4 The Assignment Problem & Hungarian Algorithm
+Special case of transportation where $m = n$ and each supply $a_i = 1$, each demand $b_j = 1$.
+- Any non-degenerate solution has $n$ allocations (one per row and column).
+- **Hungarian Method ($O(n^3)$)**:
+  1. **Row Reduction**: Subtract the minimum element of each row from all elements in that row.
+  2. **Column Reduction**: Subtract the minimum element of each column from all elements in that column.
+  3. **Zero Covering**: Draw the minimum number of horizontal and vertical lines $L$ to cover all zeros.
+  4. If $L = n$, an optimal assignment exists among the zeros.
+  5. If $L < n$, find smallest uncovered element $k$: subtract $k$ from uncovered cells and add $k$ to cells at line intersections. Repeat.
+
+---
+
+## 6. Step-by-Step Worked Problems
+
+### Problem 1: Converting Primal to Dual
+Write the Dual of the following Primal LPP:
+$$
+\begin{aligned}
+\text{Maximize } \quad &Z = 5x_1 + 3x_2 \\
+\text{Subject to:} \quad &2x_1 + 4x_2 \le 12 \\
+&3x_1 - x_2 = 6 \\
+&x_1 \ge 0, \quad x_2 \text{ unrestricted}
+\end{aligned}
+$$
+
+#### Step-by-step Dual Construction:
+1. Primal is **Maximization** with 2 variables ($x_1, x_2$) and 2 constraints.
+   - Dual will be **Minimization** ($W$) with 2 variables ($y_1, y_2$) and 2 constraints.
+2. RHS of Primal constraints becomes Dual objective coefficients:
+$$\text{Minimize } W = 12y_1 + 6y_2$$
+3. First Primal constraint is $\le \implies$ Dual variable $y_1 \ge 0$.
+4. Second Primal constraint is $=\ \implies$ Dual variable $y_2$ is **unrestricted in sign**.
+5. First Primal variable $x_1 \ge 0 \implies$ First Dual constraint is $\ge$:
+$$2y_1 + 3y_2 \ge 5$$
+6. Second Primal variable $x_2$ is **unrestricted** $\implies$ Second Dual constraint is an **equality ($=$)**:
+$$4y_1 - y_2 = 3$$
+
+**Final Dual Problem**:
+$$
+\begin{aligned}
+\text{Minimize } \quad &W = 12y_1 + 6y_2 \\
+\text{Subject to:} \quad &2y_1 + 3y_2 \ge 5 \\
+&4y_1 - y_2 = 3 \\
+&y_1 \ge 0, \quad y_2 \text{ unrestricted}
+\end{aligned}
+$$
+
+---
+
+### Problem 2: Vogel's Approximation Method (VAM) Penalty Calculation
+Consider the cost matrix with Supply $S = [20, 30]$ and Demand $D = [15, 20, 15]$:
+
+| Source | $D_1$ | $D_2$ | $D_3$ | Supply |
+|:---:|:---:|:---:|:---:|:---:|
+| $S_1$ | 2 | 7 | 4 | 20 |
+| $S_2$ | 3 | 3 | 1 | 30 |
+| **Demand** | 15 | 20 | 15 | Total: 50 |
+
+*Task: Find the initial allocation step using VAM.*
+
+1. **Calculate Row Penalties (Difference of 2 smallest costs)**:
+   - Row $S_1$: Costs $\{2, 4, 7\} \implies \text{Penalty} = 4 - 2 = \mathbf{2}$
+   - Row $S_2$: Costs $\{1, 3, 3\} \implies \text{Penalty} = 3 - 1 = \mathbf{2}$
+2. **Calculate Column Penalties**:
+   - Column $D_1$: Costs $\{2, 3\} \implies \text{Penalty} = 3 - 2 = \mathbf{1}$
+   - Column $D_2$: Costs $\{3, 7\} \implies \text{Penalty} = 7 - 3 = \mathbf{4}$
+   - Column $D_3$: Costs $\{1, 4\} \implies \text{Penalty} = 4 - 1 = \mathbf{3}$
+3. **Select Maximum Penalty**:
+$$\max(\text{Row penalties, Column penalties}) = \max(2, 2, 1, 4, 3) = \mathbf{4} \quad (\text{Column } D_2)$$
+4. **Allocate to Smallest Cost in Column $D_2$**:
+   - Costs in $D_2$: $S_1(7)$ and $S_2(3)$. Smallest is cell $(S_2, D_2)$ with cost $3$.
+   - Supply at $S_2 = 30$, Demand at $D_2 = 20$.
+   - Allocate $\min(30, 20) = \mathbf{20}$ units to $(S_2, D_2)$.
+   - Demand of $D_2$ is completely satisfied ($0$ remaining); Column $D_2$ is crossed out. Remaining supply at $S_2 = 10$.
+
+---
+
+## 7. UGC NET & Bihar STET PYQ Analysis & Practice
+
+### Question 1 (UGC NET Official PYQ)
+If an LPP has an unbounded objective function in its Primal formulation, then its corresponding Dual problem must have:
+- **A)** An unbounded solution
+- **B)** A unique optimal solution
+- **C)** An infeasible solution
+- **D)** Multiple optimal solutions
+
+**Answer**: **C**
+**Explanation**: By the Fundamental Duality Theorem, if the Primal problem is unbounded, its Dual problem is guaranteed to have **no feasible solution (infeasible)**.
+
+---
+
+### Question 2 (Bihar STET Higher Secondary Exam)
+In a transportation problem with $m$ sources and $n$ destinations, a basic feasible solution is termed non-degenerate if the number of positive allocations is exactly equal to:
+- **A)** $m \times n$
+- **B)** $m + n$
+- **C)** $m + n - 1$
+- **D)** $m + n + 1$
+
+**Answer**: **C**
+**Explanation**: A non-degenerate basic feasible solution in an $m \times n$ transportation tableau requires exactly $m + n - 1$ independent allocated cells.
+
+---
+
+### Question 3 (UGC NET Simplex Degeneracy)
+Degeneracy in the Simplex method occurs during iterations when:
+- **A)** An incoming variable cannot be identified
+- **B)** There is a tie in the minimum positive ratio test ($\theta$)
+- **C)** All $c_j - z_j$ values are strictly zero
+- **D)** An artificial variable remains in the basis with value zero
+
+**Answer**: **B**
+**Explanation**: A tie in the minimum ratio test causes two or more basic variables to become zero simultaneously in the next iteration, resulting in a **degenerate basic feasible solution** (a basic variable having value zero), which can theoretically lead to cycling.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="What is the Dual of the following Linear Programming Problem (Primal)? Maximize Z = 3x1 + 5x2 subject to: x1 + 2x2 ≤ 10,  2x1 + x2 ≤ 12,  x1, x2 ≥ 0"
+  optionA="Minimize W = 10y1 + 12y2 subject to: y1 + 2y2 ≥ 3, 2y1 + y2 ≥ 5, y1, y2 ≥ 0"
+  optionB="Maximize W = 10y1 + 12y2 subject to: y1 + 2y2 ≤ 3, 2y1 + y2 ≤ 5, y1, y2 ≥ 0"
+  optionC="Minimize W = 12y1 + 10y2 subject to: 2y1 + y2 ≥ 3, y1 + 2y2 ≥ 5, y1, y2 ≥ 0"
+  optionD="Minimize W = 3y1 + 5y2 subject to: y1 + 2y2 ≥ 10, 2y1 + y2 ≥ 12, y1, y2 ≥ 0"
+  correctOption="A"
+  explanation="Primal RHS constants become Dual objective coefficients (10, 12). Primal objective coefficients become Dual RHS constants (3, 5). Maximize becomes Minimize. Constraint matrix A is transposed: row 1 is [1, 2], row 2 is [2, 1]. Signs flip from ≤ to ≥."
+  examBadge="UGC NET Dec 2021"
+/>
+
+<Quiz
+  question="In a balanced transportation problem with m sources and n destinations, what is the exact number of basic variables (allocated cells) required for a non-degenerate basic feasible solution?"
+  optionA="m × n"
+  optionB="m + n - 1"
+  optionC="m + n + 1"
+  optionD="m + n"
+  correctOption="B"
+  explanation="A transportation problem has m + n constraints, but one constraint is redundant due to total supply = total demand balance. Hence, exactly m + n - 1 linearly independent allocations are required for a non-degenerate basic feasible solution."
+  examBadge="UGC NET Dec 2020"
+/>
+
+<Quiz
+  question="During the Simplex algorithm, what does it signify if an entering non-basic variable has all non-positive entries (a_ir ≤ 0 for all i) in its pivot column?"
+  optionA="The problem has an unbounded optimal solution"
+  optionB="The problem has no feasible solution (infeasible)"
+  optionC="Degeneracy has occurred"
+  optionD="Alternative optimal solutions exist"
+  correctOption="A"
+  explanation="The minimum ratio test θ = min{X_Bi / a_ir : a_ir > 0} cannot be computed if all a_ir ≤ 0. This indicates the entering variable can increase without bound without violating any constraint, meaning the objective value is unbounded."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="According to the Fundamental Duality Theorem, if the Primal problem has an optimal solution with objective value Z*, then:"
+  optionA="The Dual is infeasible"
+  optionB="The Dual also has an optimal solution with objective value W* and Z* = W*"
+  optionC="The Dual is unbounded"
+  optionD="Z* > W*"
+  correctOption="B"
+  explanation="The Strong Duality Theorem states that if either the primal or dual problem has a finite optimal solution, then the other also has a finite optimal solution, and their optimal objective function values are strictly equal: Max Z* = Min W*."
+  examBadge="UGC NET June 2020"
+/>
+
+<Quiz
+  question="The Hungarian Method is specifically designed to solve which type of optimization problem in O(n^3) time?"
+  optionA="Knapsack Problem"
+  optionB="Assignment Problem"
+  optionC="Shortest Path Problem"
+  optionD="Quadratic Programming"
+  correctOption="B"
+  explanation="The Hungarian Method (Kuhn-Munkres algorithm) is a combinatorial optimization algorithm that solves the bipartite weighted matching or Assignment Problem in O(n^3) polynomial time."
+  examBadge="Bihar STET / NET Official"
+/>
+
+
+---
+
+## 8. High-Yield Revision Matrix
+
+| Optimization Concept | Key Invariant / Formula | Common Exam Trap |
+|---|---|---|
+| **Corner Point Theorem** | Optimal solution always includes a vertex | Ignoring unbounded direction where $Z \to \infty$ |
+| **Simplex Entering Variable** | Most positive $c_j - z_j$ (Maximization) | Confusing $c_j - z_j$ with $z_j - c_j$ signs |
+| **Simplex Leaving Variable** | $\min \{X_B / a_{ir} : a_{ir} > 0\}$ | Dividing by negative or zero coefficients |
+| **Weak Duality** | $Z_{\text{primal}} \le W_{\text{dual}}$ always | Assuming $Z_{\text{primal}} \ge W_{\text{dual}}$ |
+| **Strong Duality** | $Z^*_{\text{max}} = W^*_{\text{min}}$ at optimality | Believing dual optimal value differs from primal |
+| **Transportation Allocations** | Exactly $m + n - 1$ basic cells | Forgetting $-1$, calculating $m + n$ |
+| **VAM Penalty** | Difference between 2 lowest costs | Taking difference between highest and lowest |
+| **Hungarian Algorithm** | Minimum lines to cover zeros equals matrix order $n$ | Subtracting $k$ from intersection cells (must ADD $k$) |

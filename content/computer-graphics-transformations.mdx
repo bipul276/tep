@@ -1,0 +1,407 @@
+---
+title: "Computer Graphics: 2D & 3D Geometric Transformations and Homogeneous Coordinates"
+unit: "Unit 15: Computer Graphics & Multimedia"
+examType: "UGC-NET"
+priority: "High"
+readTime: "35 min"
+slug: "computer-graphics-transformations"
+description: "Comprehensive mathematical guide to 2D and 3D affine transformations: Translation, Rotation, Scaling, Reflection, Shear, Homogeneous Coordinate representations, Matrix Concatenation, and 3D Euler rotation matrices for UGC NET."
+tags: ["Computer Graphics", "Transformations", "Homogeneous Coordinates", "Matrix Multiplication", "2D Graphics", "3D Graphics", "UGC-NET"]
+---
+
+# Computer Graphics: 2D & 3D Geometric Transformations and Homogeneous Coordinates
+
+In Computer Graphics, geometric transformations alter the position, orientation, size, or shape of geometric primitives. In the **UGC NET Computer Science** syllabus (Unit 3: Computer Graphics segment), **Geometric Transformations and Homogeneous Coordinates** form a core numerical and theoretical testing area.
+
+Examiners frequently test:
+1. **Mathematical derivation of 2D and 3D Transformation Matrices** (Translation, Rotation, Scaling, Shearing, Reflection).
+2. **Homogeneous Coordinates and Affine Spaces** (unifying vector addition and matrix multiplication into a single linear algebra framework).
+3. **Composite Transformations** (sequence order, non-commutativity, and pivot-point transformations).
+4. **3D Coordinate Systems & Euler Angle Rotations**.
+
+---
+
+## 1. Affine Transformations & The Projective Coordinate System
+
+An **Affine Transformation** is a linear mapping that preserves points, straight lines, and planes. Parallel lines remain parallel after an affine transformation.
+
+In standard 2D Cartesian coordinates $(x, y)$, basic operations display inconsistent mathematical forms:
+- **Scaling / Rotation / Shear**: Can be expressed as a linear matrix multiplication:
+$$
+\begin{bmatrix} x' \\ y' \end{bmatrix} = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix}
+$$
+- **Translation**: Cannot be represented as a $2 \times 2$ matrix multiplication; it requires vector addition:
+$$
+\begin{bmatrix} x' \\ y' \end{bmatrix} = \begin{bmatrix} x \\ y \end{bmatrix} + \begin{bmatrix} t_x \\ t_y \end{bmatrix}
+$$
+
+This mathematical mismatch prevents the compounding of successive translations, rotations, and scalings into a single composite matrix via standard matrix multiplication.
+
+### The Homogeneous Coordinates Solution
+
+To express all geometric operations as pure matrix multiplications, we embed 2D Euclidean space $\mathbb{R}^2$ into a 3D Projective space $\mathbb{P}^2$ by augmenting coordinates with a scale factor $w$:
+
+$$(x, y) \implies (x_h, y_h, w) \quad \text{where } x = \frac{x_h}{w}, \; y = \frac{y_h}{w} \quad (w \ne 0)$$
+
+For standard affine transformations, we set the homogeneous parameter $w = 1$:
+
+$$\mathbf{P} = \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
+$$
+
+---
+
+## 2. 2D Affine Transformation Matrices ($3 \times 3$)
+
+### 2.1 2D Translation
+
+Translation moves an entity by offsets $t_x$ along the X-axis and $t_y$ along the Y-axis:
+$$x' = x + t_x, \quad y' = y + t_y$$
+
+In homogeneous matrix formulation:
+
+$$
+\begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} = \mathbf{T}(t_x, t_y) \cdot \begin{bmatrix} x \\ y \\ 1 \end{bmatrix} = \begin{bmatrix} 1 & 0 & t_x \\ 0 & 1 & t_y \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
+$$
+
+**Inverse Translation Matrix**:
+$$\mathbf{T}^{-1}(t_x, t_y) = \mathbf{T}(-t_x, -t_y) = \begin{bmatrix} 1 & 0 & -t_x \\ 0 & 1 & -t_y \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+---
+
+### 2.2 2D Rotation (About the Origin)
+
+Rotation rotates points by an angle $\theta$ counter-clockwise (positive direction) about the origin $(0, 0)$.
+
+```
+           Y
+           │          P'(x', y')
+           │         /
+           │        / 
+           │       / ) θ
+           │      /   )
+           │     P(x, y)
+           │    / ) ϕ
+           └───/──)─────── X
+              O (Origin)
+```
+
+#### Mathematical Derivation:
+Representing point $P(x, y)$ in polar coordinates with radial distance $r$ and initial phase angle $\phi$:
+$$x = r \cos \phi, \quad y = r \sin \phi$$
+
+After rotating counter-clockwise by $\theta$:
+$$x' = r \cos(\phi + \theta) = r \cos \phi \cos \theta - r \sin \phi \sin \theta = x \cos \theta - y \sin \theta$$
+$$y' = r \sin(\phi + \theta) = r \sin \phi \cos \theta + r \cos \phi \sin \theta = x \sin \theta + y \cos \theta$$
+
+In homogeneous matrix form:
+
+$$\mathbf{R}(\theta) = \begin{bmatrix} \cos \theta & -\sin \theta & 0 \\ \sin \theta & \cos \theta & 0 \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+**Inverse Rotation Matrix**:
+$$\mathbf{R}^{-1}(\theta) = \mathbf{R}(-\theta) = \mathbf{R}^T(\theta) = \begin{bmatrix} \cos \theta & \sin \theta & 0 \\ -\sin \theta & \cos \theta & 0 \\ 0 & 0 & 1 \end{bmatrix}
+$$
+*(Since $\mathbf{R}$ is an orthogonal matrix, $\mathbf{R}^{-1} = \mathbf{R}^T$ and $\det(\mathbf{R}) = 1$)*.
+
+---
+
+### 2.3 2D Scaling (About the Origin)
+
+Scaling alters the size of an object relative to the origin by scale factors $s_x$ and $s_y$:
+$$x' = x \cdot s_x, \quad y' = y \cdot s_y$$
+
+In homogeneous matrix form:
+
+$$\mathbf{S}(s_x, s_y) = \begin{bmatrix} s_x & 0 & 0 \\ 0 & s_y & 0 \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+- If $s_x = s_y$, the scaling is **Uniform** (preserves aspect ratio).
+- If $s_x \ne s_y$, the scaling is **Differential** (distorts proportions).
+- If $s_x > 1, s_y > 1$: Expansion / Magnification.
+- If $0 < s_x < 1, 0 < s_y < 1$: Contraction / Demagnification.
+
+**Inverse Scaling Matrix**:
+$$\mathbf{S}^{-1}(s_x, s_y) = \mathbf{S}\left(\frac{1}{s_x}, \frac{1}{s_y}\right) = \begin{bmatrix} \frac{1}{s_x} & 0 & 0 \\ 0 & \frac{1}{s_y} & 0 \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+---
+
+### 2.4 2D Reflection
+
+Reflection produces a mirror image of an object across a specified reflection axis:
+
+```
++------------------------------------+---------------------------------------------------+
+| Reflection Axis                    | Transformation Matrix M_ref                       |
++------------------------------------+---------------------------------------------------+
+| About X-axis                       | [ 1   0   0 ]                                     |
+| (y' = -y, x' = x)                  | [ 0  -1   0 ]                                     |
+|                                    | [ 0   0   1 ]                                     |
++------------------------------------+---------------------------------------------------+
+| About Y-axis                       | [-1   0   0 ]                                     |
+| (x' = -x, y' = y)                  | [ 0   1   0 ]                                     |
+|                                    | [ 0   0   1 ]                                     |
++------------------------------------+---------------------------------------------------+
+| About the Origin                   | [-1   0   0 ]                                     |
+| (x' = -x, y' = -y; equivalent to   | [ 0  -1   0 ]                                     |
+| 180° rotation about origin)        | [ 0   0   1 ]                                     |
++------------------------------------+---------------------------------------------------+
+| About the line y = x               | [ 0   1   0 ]                                     |
+| (x' = y, y' = x)                   | [ 1   0   0 ]                                     |
+|                                    | [ 0   0   1 ]                                     |
++------------------------------------+---------------------------------------------------+
+| About the line y = -x              | [ 0  -1   0 ]                                     |
+| (x' = -y, y' = -x)                 | [-1   0   0 ]                                     |
+|                                    | [ 0   0   1 ]                                     |
++------------------------------------+---------------------------------------------------+
+```
+
+> **Key Theoretical Invariant**: The determinant of any reflection matrix is strictly negative ($\det(\mathbf{M}_{\text{ref}}) = -1$). A reflection changes the orientation (handedness) of the coordinate system.
+
+---
+
+### 2.5 2D Shearing
+
+Shearing slants the shape of an object along one axis proportional to the other coordinate:
+
+1. **Shear parallel to the X-axis by factor $sh_x$** ($x' = x + sh_x \cdot y, \; y' = y$):
+$$\mathbf{Sh}_x(sh_x) = \begin{bmatrix} 1 & sh_x & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+2. **Shear parallel to the Y-axis by factor $sh_y$** ($x' = x, \; y' = y + sh_y \cdot x$):
+$$\mathbf{Sh}_y(sh_y) = \begin{bmatrix} 1 & 0 & 0 \\ sh_y & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+---
+
+## 3. Composite Transformations & Matrix Concatenation
+
+Successive transformations can be multiplied together into a single master transformation matrix $\mathbf{M}$:
+
+$$\mathbf{P}' = \mathbf{M}_k \cdot \mathbf{M}_{k-1} \cdots \mathbf{M}_2 \cdot \mathbf{M}_1 \cdot \mathbf{P} = \mathbf{M}_{\text{composite}} \cdot \mathbf{P}$$
+
+### 3.1 Non-Commutativity of Transformations
+
+Matrix multiplication is associative ($(\mathbf{A}\mathbf{B})\mathbf{C} = \mathbf{A}(\mathbf{B}\mathbf{C})$) but **generally non-commutative**:
+
+$$\mathbf{M}_1 \cdot \mathbf{M}_2 \ne \mathbf{M}_2 \cdot \mathbf{M}_1$$
+
+- **Translation followed by Rotation** $\ne$ **Rotation followed by Translation**:
+$$\mathbf{R}(\theta) \cdot \mathbf{T}(t_x, t_y) \ne \mathbf{T}(t_x, t_y) \cdot \mathbf{R}(\theta)$$
+
+---
+
+### 3.2 Rotation About an Arbitrary Pivot Point $(x_r, y_r)$
+
+To rotate an object about an arbitrary point $(x_r, y_r)$ rather than the origin:
+1. **Translate** $(x_r, y_r)$ to the origin: $\mathbf{T}(-x_r, -y_r)$.
+2. **Rotate** by angle $\theta$ about the origin: $\mathbf{R}(\theta)$.
+3. **Translate back** to the original pivot: $\mathbf{T}(x_r, y_r)$.
+
+$$\mathbf{M}_{\text{pivot}} = \mathbf{T}(x_r, y_r) \cdot \mathbf{R}(\theta) \cdot \mathbf{T}(-x_r, -y_r)$$
+
+$$\mathbf{M}_{\text{pivot}} = \begin{bmatrix} 1 & 0 & x_r \\ 0 & 1 & y_r \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} \cos \theta & -\sin \theta & 0 \\ \sin \theta & \cos \theta & 0 \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} 1 & 0 & -x_r \\ 0 & 1 & -y_r \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+Multiplying the matrices yields:
+
+$$\mathbf{M}_{\text{pivot}} = \begin{bmatrix} \cos \theta & -\sin \theta & x_r(1 - \cos \theta) + y_r \sin \theta \\ \sin \theta & \cos \theta & y_r(1 - \cos \theta) - x_r \sin \theta \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+---
+
+### 3.3 Scaling Relative to an Arbitrary Fixed Point $(x_f, y_f)$
+
+$$\mathbf{M}_{\text{fixed}} = \mathbf{T}(x_f, y_f) \cdot \mathbf{S}(s_x, s_y) \cdot \mathbf{T}(-x_f, -y_f)$$
+
+$$\mathbf{M}_{\text{fixed}} = \begin{bmatrix} s_x & 0 & x_f(1 - s_x) \\ 0 & s_y & y_f(1 - s_y) \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+---
+
+## 4. 3D Geometric Transformations ($4 \times 4$ Matrices)
+
+In 3D space, points are represented in 4D homogeneous coordinates:
+
+$$\mathbf{P} = \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix}
+$$
+
+### 4.1 3D Translation & 3D Scaling
+
+$$\mathbf{T}(t_x, t_y, t_z) = \begin{bmatrix} 1 & 0 & 0 & t_x \\ 0 & 1 & 0 & t_y \\ 0 & 0 & 1 & t_z \\ 0 & 0 & 0 & 1 \end{bmatrix}, \quad \mathbf{S}(s_x, s_y, s_z) = \begin{bmatrix} s_x & 0 & 0 & 0 \\ 0 & s_y & 0 & 0 \\ 0 & 0 & s_z & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}
+$$
+
+---
+
+### 4.2 3D Rotations About Principal Coordinate Axes
+
+Using the **Right-Handed Coordinate System** (looking down the positive rotation axis toward the origin, counter-clockwise rotation is positive):
+
+#### 1. Rotation About the X-Axis by $\theta$:
+$$\mathbf{R}_x(\theta) = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & \cos \theta & -\sin \theta & 0 \\ 0 & \sin \theta & \cos \theta & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}
+$$
+
+#### 2. Rotation About the Y-Axis by $\theta$:
+> **Exam Alert**: Notice the sign inversion in $\mathbf{R}_y$! Because the cyclic order of axes is $X \to Y \to Z \to X$, rotating about $Y$ transforms $Z$ into $X$, reversing the traditional sine signs:
+
+$$\mathbf{R}_y(\theta) = \begin{bmatrix} \cos \theta & 0 & \sin \theta & 0 \\ 0 & 1 & 0 & 0 \\ -\sin \theta & 0 & \cos \theta & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}
+$$
+
+#### 3. Rotation About the Z-Axis by $\theta$:
+$$\mathbf{R}_z(\theta) = \begin{bmatrix} \cos \theta & -\sin \theta & 0 & 0 \\ \sin \theta & \cos \theta & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}
+$$
+
+---
+
+## 5. Worked Numerical Examples & Computations
+
+### Numerical 1: Rotating a Point About an Arbitrary Pivot
+**Problem (UGC NET Style)**: Find the new coordinates of a point $P(4, 3)$ after rotating it by $\theta = 90^\circ$ counter-clockwise about the pivot point $C(2, 1)$.
+
+#### Solution:
+For $\theta = 90^\circ$: $\cos 90^\circ = 0$, $\sin 90^\circ = 1$.
+Pivot $(x_r, y_r) = (2, 1)$.
+
+1. **Step 1: Translate Pivot to Origin**:
+$$
+\begin{bmatrix} x_1 \\ y_1 \end{bmatrix} = \begin{bmatrix} 4 - 2 \\ 3 - 1 \end{bmatrix} = \begin{bmatrix} 2 \\ 2 \end{bmatrix}
+$$
+
+2. **Step 2: Rotate $90^\circ$ About Origin**:
+$$
+\begin{bmatrix} x_2 \\ y_2 \end{bmatrix} = \begin{bmatrix} \cos 90^\circ & -\sin 90^\circ \\ \sin 90^\circ & \cos 90^\circ \end{bmatrix} \begin{bmatrix} 2 \\ 2 \end{bmatrix} = \begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix} \begin{bmatrix} 2 \\ 2 \end{bmatrix} = \begin{bmatrix} -2 \\ 2 \end{bmatrix}
+$$
+
+3. **Step 3: Translate Back**:
+$$
+\begin{bmatrix} x' \\ y' \end{bmatrix} = \begin{bmatrix} -2 + 2 \\ 2 + 1 \end{bmatrix} = \begin{bmatrix} 0 \\ 3 \end{bmatrix}
+$$
+
+> **Result**: The transformed coordinates are $P'(0, 3)$.
+
+---
+
+### Numerical 2: Composite Reflection Matrix Equivalence
+**Problem**: Prove that reflecting an object across the line $y = x$ followed immediately by reflecting across the line $y = -x$ is mathematically identical to a $180^\circ$ rotation about the origin.
+
+#### Solution:
+1. Matrix for reflection across $y = x$:
+$$\mathbf{M}_1 = \begin{bmatrix} 0 & 1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+2. Matrix for reflection across $y = -x$:
+$$\mathbf{M}_2 = \begin{bmatrix} 0 & -1 & 0 \\ -1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+3. Composite Matrix $\mathbf{M} = \mathbf{M}_2 \cdot \mathbf{M}_1$:
+$$\mathbf{M} = \begin{bmatrix} 0 & -1 & 0 \\ -1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} 0 & 1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix} = \begin{bmatrix} -1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+Since $\mathbf{R}(180^\circ) = \begin{bmatrix} \cos 180^\circ & -\sin 180^\circ & 0 \\ \sin 180^\circ & \cos 180^\circ & 0 \\ 0 & 0 & 1 \end{bmatrix} = \begin{bmatrix} -1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$, the composite transformation is precisely a $180^\circ$ rotation about the origin.
+
+---
+
+## 6. 3D Projections: Orthographic vs. Oblique (Cavalier & Cabinet)
+
+In Computer Graphics, 3D projections transform 3D world coordinates $(x, y, z)$ onto a 2D projection viewing plane.
+
+### 6.1 Classification of Planar Projections
+1. **Parallel Projections**: Projection lines (projectors) are parallel to each other.
+   - **Orthographic Projection**: Projectors are perpendicular to the projection plane. No foreshortening; distance from viewer does not alter size.
+   - **Oblique Projection**: Projectors intersect the projection plane at an oblique angle $\alpha \ne 90^\circ$.
+
+### 6.2 Oblique Projection Equations
+The projected coordinates $(x_p, y_p)$ are determined by:
+
+$$x_p = x + z \cdot L \cos \alpha$$
+$$y_p = y + z \cdot L \sin \alpha$$
+
+Where:
+- $L$ is the **length ratio (foreshortening factor)** of lines perpendicular to the projection plane.
+- $\alpha$ is the **angle** of projected receding lines with the horizontal axis.
+
+### 6.3 Cavalier vs. Cabinet Projections (Crucial Exam Comparison)
+
+| Parameter | Cavalier Projection | Cabinet Projection |
+| :--- | :--- | :--- |
+| **Angle $\alpha$** | $\alpha = 45^\circ$ ($	an \alpha = 1$) | $\alpha \approx 63.4^\circ$ ($	an \alpha = 2$) |
+| **Receding Axis Scaling ($L$)** | $L = 1.0$ (Full length, **1:1 ratio**) | $L = 0.5$ (Half length, **1:2 ratio**) |
+| **Visual Appearance** | Distorted/elongated appearance | Realistic, natural 3D depth perception |
+| **Matrix Representation** | $\begin{bmatrix} 1 & 0 & \cos 45^\circ & 0 \\ 0 & 1 & \sin 45^\circ & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}$ | $\begin{bmatrix} 1 & 0 & 0.5 \cos 63.4^\circ & 0 \\ 0 & 1 & 0.5 \sin 63.4^\circ & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}$ |
+
+> **UGC NET Exam Key Point:** In **Cavalier projection**, the direction of projection makes a $45^\circ$ angle with the projection plane, resulting in NO foreshortening of receding lines ($L=1$). In **Cabinet projection**, the angle is approximately $63.4^\circ$ ($	an \alpha = 2$), foreshortening receding lines by half ($L=0.5$).
+
+
+---
+
+## 6. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="Why are homogeneous coordinates utilized in 2D and 3D computer graphics transformation pipelines?"
+  optionA="To convert non-linear curves into straight lines"
+  optionB="To represent translation, rotation, and scaling in a uniform matrix multiplication framework, enabling composite matrix concatenation"
+  optionC="To eliminate floating-point rounding errors during rasterization"
+  optionD="To reduce the storage space of 3D polygonal meshes from 4 bytes to 3 bytes"
+  correctOption="B"
+  explanation="In standard Euclidean coordinates, translation is an additive operation while rotation and scaling are multiplicative. Homogeneous coordinates add an extra dimension (w=1), converting translation into matrix multiplication, thereby allowing any arbitrary sequence of transformations to be collapsed into a single composite matrix."
+  examBadge="UGC NET June 2020"
+/>
+
+<Quiz
+  question="What is the determinant of any 2D pure reflection transformation matrix?"
+  optionA="+1"
+  optionB="0"
+  optionC="-1"
+  optionD="Undefined"
+  correctOption="C"
+  explanation="A pure reflection matrix reverses the spatial orientation (handedness) of the coordinate system. Its determinant is strictly -1, unlike a pure rotation matrix whose determinant is strictly +1."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="Which 3D rotation matrix exhibits a positive sine term in the first row (+sin θ) and a negative sine term in the third row (-sin θ)?"
+  optionA="Rotation about the X-axis (Rx)"
+  optionB="Rotation about the Y-axis (Ry)"
+  optionC="Rotation about the Z-axis (Rz)"
+  optionD="Rotation about the line x = y = z"
+  correctOption="B"
+  explanation="In a right-handed coordinate system, the cyclic order of axes is X -> Y -> Z -> X. When rotating about the Y-axis, Z rotates toward X, making the matrix: Ry = [[cos θ, 0, sin θ, 0], [0, 1, 0, 0], [-sin θ, 0, cos θ, 0], [0, 0, 0, 1]]."
+  examBadge="UGC NET December 2021"
+/>
+
+<Quiz
+  question="An object is scaled by Sx = 2, Sy = 3 about a fixed point (4, 2). What is the resulting composite transformation matrix?"
+  optionA="[[2, 0, -4], [0, 3, -4], [0, 0, 1]]"
+  optionB="[[2, 0, 4], [0, 3, 2], [0, 0, 1]]"
+  optionC="[[2, 0, -4], [0, 3, -2], [0, 0, 1]]"
+  optionD="[[2, 0, 8], [0, 3, 6], [0, 0, 1]]"
+  correctOption="A"
+  explanation="Using the fixed-point scaling formula: M = [[sx, 0, xf(1 - sx)], [0, sy, yf(1 - sy)], [0, 0, 1]]. Substituting sx=2, sy=3, xf=4, yf=2: M[0][2] = 4(1 - 2) = -4, and M[1][2] = 2(1 - 3) = -4. Hence the matrix is [[2, 0, -4], [0, 3, -4], [0, 0, 1]]."
+  examBadge="UGC NET Computer Graphics Standard"
+/>
+
+<Quiz
+  question="What 3×3 homogeneous transformation matrix represents an X-direction shear by a factor of sh_x = 2?"
+  optionA="[[1, 2, 0], [0, 1, 0], [0, 0, 1]]"
+  optionB="[[2, 0, 0], [0, 1, 0], [0, 0, 1]]"
+  optionC="[[1, 0, 0], [2, 1, 0], [0, 0, 1]]"
+  optionD="[[1, 0, 2], [0, 1, 0], [0, 0, 1]]"
+  correctOption="A"
+  explanation="In an X-direction shear: x' = x + sh_x · y, and y' = y. In 3×3 homogeneous matrix formulation: Sh_x = [[1, sh_x, 0], [0, 1, 0], [0, 0, 1]]. With sh_x = 2, the matrix is [[1, 2, 0], [0, 1, 0], [0, 0, 1]]."
+  examBadge="UGC NET Transformations Standard"
+/>
+
+
+---
+
+## 7. High-Yield Revision Matrix
+
+| Transformation | Mathematical Mapping | Determinant $\det(\mathbf{M})$ | Crucial Exam Invariant |
+|---|---|---|---|
+| **Translation** | $x' = x + t_x, \; y' = y + t_y$ | $1$ | Affine; does not change size or angle |
+| **Rotation** | $x' = x \cos \theta - y \sin \theta$ | $1$ | Orthogonal matrix: $\mathbf{R}^{-1} = \mathbf{R}^T$ |
+| **Scaling** | $x' = x \cdot s_x, \; y' = y \cdot s_y$ | $s_x \cdot s_y$ | $s_x = s_y$ is Uniform; $s_x \ne s_y$ is Differential |
+| **Reflection** | Axis inversion | $-1$ | Reverses handedness / orientation |
+| **Shearing** | $x' = x + sh_x \cdot y$ | $1$ | Preserves area (volume) despite distortion |
+| **Pivot Rotation** | $\mathbf{T}(x_r, y_r) \cdot \mathbf{R}(\theta) \cdot \mathbf{T}(-x_r, -y_r)$ | $1$ | Translate to origin first, rotate, then restore |

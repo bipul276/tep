@@ -1,0 +1,142 @@
+---
+title: "Visible Surface Detection, Hidden Surface Removal, and Shading Models"
+unit: "Unit 15: Computer Graphics & Multimedia"
+examType: "UGC-NET"
+priority: "High"
+readTime: "28 min"
+description: "Master 3D hidden surface removal algorithms (Z-buffer, A-buffer, Back-face culling, Painter's algorithm) and illumination shading models (Flat, Gouraud, Phong) for UGC NET Computer Science."
+tags: ["Computer Graphics", "Z-Buffer", "Shading", "Gouraud Shading", "Phong Shading", "Hidden Surface"]
+---
+
+# Visible Surface Detection, Hidden Surface Removal, and Shading Models
+
+Visible surface detection (hidden surface removal) and surface illumination shading are high-frequency scoring topics in the **UGC NET Computer Science** examination (Unit 15). This topic covers object-space vs. image-space algorithms, Z-buffer mathematical formulation, and illumination models (Flat, Gouraud, and Phong shading).
+
+---
+
+## 1. Classification of Hidden Surface Removal Algorithms
+
+Hidden surface removal determines which surfaces and surface parts are visible from a chosen viewpoint.
+
+### 1.1 Object-Space vs. Image-Space Methods
+- **Object-Space Methods**: Operate at arbitrary precision in the physical object coordinate space. Compare objects directly against each other ($O(N^2)$ complexity for $N$ polygons). Example: **Back-Face Culling**.
+- **Image-Space Methods**: Operate on discrete pixel coordinates on the projection view plane ($O(N \cdot P)$ complexity for $N$ polygons and $P$ display pixels). Examples: **Depth-Buffer (Z-buffer)**, **Scan-Line**, **A-buffer**.
+
+---
+
+## 2. Core Hidden Surface Removal Algorithms
+
+### 2.1 Back-Face Culling (Object-Space)
+For a polygon with outward surface normal vector $\mathbf{N} = (A, B, C)$ and viewing direction vector $\mathbf{V}_{\text{view}} = (0, 0, 1)$:
+A polygon is a back face (hidden from view) if:
+$$\mathbf{N} \cdot \mathbf{V}_{\text{view}} = C \le 0 \quad (\text{or in camera coordinates, } \mathbf{N} \cdot \mathbf{V} > 0)$$
+- **Efficiency**: Eliminates roughly **50% of polygons** from a closed polyhedron before rasterization begins!
+
+### 2.2 Depth-Buffer (Z-Buffer) Algorithm (Image-Space)
+Uses two 2D memory arrays:
+1. **Frame Buffer (`intensity[x, y]`)**: Stores color intensity for every pixel $(x, y)$.
+2. **Depth Buffer (`z_buffer[x, y]`)**: Stores minimum $z$-distance from viewpoint for every pixel $(x, y)$.
+
+```
+Initialize: z_buffer[x, y] = -∞ (or 1.0), intensity[x, y] = Background_Color
+
+For each polygon P:
+  For each pixel (x, y) covered by P:
+    Calculate depth z at (x, y)
+    If z > z_buffer[x, y]:  // Point is closer to camera
+      z_buffer[x, y] = z
+      intensity[x, y] = Color_P(x, y)
+```
+
+- **Incremental Depth Calculation**: If polygon plane equation is $Ax + By + Cz + D = 0$:
+$$z = \frac{-Ax - By - D}{C}$$
+  Moving one pixel right ($x + 1$):
+$$z' = z - \frac{A}{C}$$
+
+<Callout type="note">
+**Advantages & Limitations of Z-Buffer**:
+- *Advantage*: Very simple, easily implemented in GPU hardware; processes polygons in arbitrary order.
+- *Limitation*: Memory intensive ($O(P)$ memory); cannot handle transparent surfaces natively (handled by **A-Buffer**).
+</Callout>
+
+### 2.3 Painter's Algorithm (Depth-Sort)
+1. Sort all polygons in order of decreasing distance from viewpoint (largest $z_{\min}$ first).
+2. Draw polygons on screen from back to front, overwriting earlier pixels.
+- *Ambiguity*: Fails when polygons have cyclical overlaps ($A$ overlaps $B$, $B$ overlaps $C$, $C$ overlaps $A$) or pierce each other, requiring polygon splitting.
+
+---
+
+## 3. Illumination and Shading Models
+
+Shading determines color intensity across polygon surfaces under ambient, diffuse, and specular illumination.
+
+$$\text{Phong Illumination: } I = I_a k_a + I_d k_d (\mathbf{N} \cdot \mathbf{L}) + I_s k_s (\mathbf{R} \cdot \mathbf{V})^n$$
+
+### 3.1 Comparison of Shading Techniques
+
+| Metric | Flat (Constant) Shading | Gouraud (Intensity Interpolation) | Phong (Normal Vector Interpolation) |
+| :--- | :--- | :--- | :--- |
+| **Normal Vector** | 1 normal per polygon | Averaged vertex normals: $\mathbf{N}_v = \frac{\sum \mathbf{N}_i}{\Vert \sum \mathbf{N}_i \Vert}$ | Normal interpolated at **every interior pixel** |
+| **Calculation Point** | Center of polygon | At each vertex, then linearly interpolated | At each pixel across polygon |
+| **Specular Highlights** | Poor / Absent | Distorted / Missed if highlight lies inside polygon | **Accurate, realistic specular highlights** |
+| **Mach Banding** | Severe | **Present** (due to continuous $C^0$ intensity derivative slope discontinuity) | **Eliminated** ($C^1$ smooth normal interpolation) |
+| **Computational Cost** | Lowest | Medium | Highest |
+
+---
+
+## 4. Interactive Examination PYQ Practice
+
+<Quiz
+  question="Which shading model interpolates surface normal vectors across the polygon interior to compute lighting at every individual pixel?"
+  optionA="Phong Shading"
+  optionB="Gouraud Shading"
+  optionC="Flat Shading"
+  optionD="Lambertian Shading"
+  correctOption="A"
+  explanation="Phong shading calculates the surface normal vector at each vertex, linearly interpolates these normal vectors across the interior of the polygon for every pixel, and applies the illumination model at each pixel. Gouraud shading interpolates color intensities rather than normal vectors."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="Why does Gouraud shading fail to accurately reproduce small, concentrated specular highlights on large polygons?"
+  optionA="Because intensities are calculated only at vertices and linearly interpolated, missing highlights that fall entirely inside the polygon"
+  optionB="Because Gouraud shading does not support diffuse reflection"
+  optionC="Because it requires twice as many polygons as Phong shading"
+  optionD="Because Gouraud shading is strictly an object-space method"
+  correctOption="A"
+  explanation="In Gouraud shading, lighting is evaluated only at polygon vertices. If a sharp specular highlight occurs in the interior of a polygon without intersecting any vertex, the linear interpolation across the vertices misses the peak intensity completely, making the highlight invisible."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="The Mach Banding perceptual visual artifact is caused by:"
+  optionA="Discontinuity in the first derivative of color intensity across polygon boundaries"
+  optionB="Insufficient frame buffer memory"
+  optionC="Rounding errors in floating-point Z-buffer coordinates"
+  optionD="Using excessive numbers of polygon vertices"
+  correctOption="A"
+  explanation="Human visual perception (lateral inhibition in the retina) exaggerates brightness contrast wherever the first derivative (slope) of intensity changes discontinuously. In Gouraud shading, intensities are C0 continuous across boundaries but their first derivatives are discontinuous, producing visible bands (Mach bands)."
+  examBadge="UGC NET Dec 2020"
+/>
+
+<Quiz
+  question="In the Z-buffer algorithm, if a polygon plane is given by 2x + 3y + 4z + 10 = 0, what is the depth increment Δz when moving one pixel to the right (x + 1) along the same scanline?"
+  optionA="-0.5"
+  optionB="-0.75"
+  optionC="+0.5"
+  optionD="-2.5"
+  correctOption="A"
+  explanation="Plane equation Ax + By + Cz + D = 0 with A = 2, B = 3, C = 4, D = 10. Depth z = (-Ax - By - D) / C. When moving one pixel right along the scanline (Δx = 1, Δy = 0), the depth change Δz = -A / C = -2 / 4 = -0.5."
+  examBadge="UGC NET Computer Science"
+/>
+
+<Quiz
+  question="Which of the following hidden surface removal algorithms is categorized as an Object-Space method?"
+  optionA="Back-Face Culling"
+  optionB="Z-Buffer Algorithm"
+  optionC="Scan-Line Method"
+  optionD="A-Buffer Algorithm"
+  correctOption="A"
+  explanation="Object-space methods operate in the continuous object coordinate space prior to rasterization, comparing polygons directly against the viewpoint. Back-face culling tests N · V on 3D geometric polygon definitions. Z-buffer, A-buffer, and scan-line are Image-space methods that operate on discrete screen pixel grids."
+  examBadge="UGC NET June 2019"
+/>

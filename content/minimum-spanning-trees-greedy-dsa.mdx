@@ -1,0 +1,312 @@
+---
+title: "Minimum Spanning Trees (Kruskal & Prim), Greedy Choice, DSU & Dijkstra"
+unit: "Unit 4: Algorithms"
+examType: "Common"
+priority: "Med"
+readTime: "45 min"
+slug: "minimum-spanning-trees-greedy-dsa"
+description: "Comprehensive guide to greedy graph algorithms: Cut & Cycle properties, Kruskal's algorithm with Disjoint Set Union (path compression & rank), Prim's algorithm, Minimum Spanning Trees, and Dijkstra's algorithm with negative-edge analysis."
+tags: ["Algorithms", "Data Structures", "Greedy Algorithm", "Minimum Spanning Tree", "MST", "Kruskal", "Prim", "Dijkstra", "Disjoint Set Union"]
+---
+
+# Minimum Spanning Trees (Kruskal & Prim), Greedy Choice, DSU & Dijkstra
+
+## 1. Spanning Trees & The Minimum Spanning Tree (MST) Problem
+
+Let $G = (V, E)$ be a connected, undirected, weighted graph with $V$ vertices and $E$ edges.
+
+### 1.1 Spanning Tree Definition
+A **spanning tree** $T = (V, E')$ is a subgraph of $G$ that satisfies three properties:
+1. It contains **all vertices** of $G$ ($V(T) = V(G)$).
+2. It is **connected**.
+3. It is **acyclic** (contains no cycles).
+$$\text{Number of edges in any spanning tree} = |V| - 1$$
+
+### 1.2 Cayley's Formula for Complete Graphs
+> **Cayley's Theorem (Arthur Cayley, 1889)**:
+> The number of distinct labeled spanning trees in a complete graph $K_n$ on $n$ vertices is:
+> $$\text{Spanning Trees}(K_n) = n^{n - 2}$$
+
+- For $n = 3$ ($K_3$): $3^{3-2} = 3^1 = 3$ spanning trees.
+- For $n = 4$ ($K_4$): $4^{4-2} = 4^2 = 16$ spanning trees.
+- For $n = 5$ ($K_5$): $5^{5-2} = 5^3 = 125$ spanning trees.
+
+---
+
+### 1.3 Minimum Spanning Tree (MST) & Uniqueness
+A **Minimum Spanning Tree (MST)** is a spanning tree whose total sum of edge weights is minimized:
+
+$$w(T) = \sum_{e \in T} w(e) \quad \text{is minimized}$$
+
+> **Uniqueness Theorem**:
+> 1. If every edge in $G$ has a **strictly distinct (unique) weight**, then $G$ possesses **EXACTLY ONE unique MST**.
+> 2. If $G$ contains duplicate edge weights, multiple distinct MSTs may exist, but all such MSTs will have the **exact same total weight**.
+
+---
+
+## 2. Theoretical Foundations: Cut and Cycle Properties
+
+All greedy MST algorithms (Kruskal, Prim, Borůvka) depend on two mathematical properties:
+
+```text
+       Cut Property                                Cycle Property
++------------------------------+            +------------------------------+
+| A cut partitions V into      |            | In any simple cycle C in G,  |
+| subsets S and V \ S.         |            | the edge with the strictly   |
+| The minimum-weight edge      |            | MAXIMUM weight CANNOT belong |
+| crossing the cut MUST belong |            | to any Minimum Spanning Tree.|
+| to every MST.                |            |                              |
++------------------------------+            +------------------------------+
+  (Foundation of Prim's Alg)                  (Foundation of Kruskal's Alg)
+```
+
+---
+
+## 3. Kruskal's Algorithm & Disjoint Set Union (DSU)
+
+Kruskal's algorithm is an **edge-centric greedy algorithm** that constructs an MST by growing a forest of trees until it merges into a single tree.
+
+### 3.1 Algorithm Description
+1. Sort all edges $E$ in non-decreasing order of weight: $w(e_1) \le w(e_2) \le \dots \le w(e_m)$.
+2. Initialize an empty forest $T = \emptyset$. Each vertex forms its own isolated component.
+3. For each edge $e = (u, v)$ in sorted order:
+   - Check if $u$ and $v$ belong to the same connected component.
+   - If they belong to different components (adding $e$ will **not form a cycle**):
+$$T = T \cup \{e\}$$
+     Merge the component of $u$ and the component of $v$.
+   - If they already belong to the same component, **discard edge $e$**.
+4. Stop when $T$ contains exactly $|V| - 1$ edges.
+
+---
+
+### 3.2 Disjoint Set Union (DSU / Union-Find) Optimization
+
+Cycle detection is accelerated from $O(V)$ to nearly $O(1)$ amortized time using a Disjoint Set Union data structure with two optimizations:
+
+1. **Union by Rank (or Size)**:
+   Always attach the root of the smaller tree to the root of the deeper tree, keeping tree height bounded by $O(\log V)$.
+2. **Path Compression**:
+   During the `Find(x)` traversal, flatten the tree by pointing every visited node directly to the set root.
+
+```c
+int find(int i) {
+    if (parent[i] == i)
+        return i;
+    return parent[i] = find(parent[i]); // Path compression
+}
+
+void union_sets(int a, int b) {
+    a = find(a);
+    b = find(b);
+    if (a != b) {
+        if (rank[a] < rank[b])
+            swap(a, b);
+        parent[b] = a;
+        if (rank[a] == rank[b])
+            rank[a]++;
+    }
+}
+```
+
+- **Amortized Complexity**: A sequence of $m$ operations on $n$ elements takes:
+$$O(m \cdot \alpha(n)) \approx O(m)$$
+  where $\alpha(n)$ is the extremely slow-growing **Inverse Ackermann Function** ($\alpha(n) \le 4$ for all $n \le 10^{80}$, the number of atoms in the observable universe!).
+
+### 3.3 Kruskal's Complexity Analysis
+- Sorting $E$ edges: $O(E \log E) = O(E \log V)$ (since $E \le V^2 \implies \log E \le 2 \log V$).
+- $E$ find and union operations: $O(E \cdot \alpha(V))$.
+- **Total Time Complexity**:
+$$T(V, E) = \mathbf{O(E \log V)}$$
+- **Total Space Complexity**: $O(V + E)$ to store graph and DSU arrays.
+
+---
+
+## 4. Prim's Algorithm
+
+Prim's algorithm is a **vertex-centric greedy algorithm** that grows a single continuous tree from an arbitrary root vertex, maintaining the Cut Property at every step.
+
+### 4.1 Algorithm Description
+1. Select an arbitrary starting vertex $s \in V$. Initialize tree $T = \{s\}$.
+2. Maintain a priority queue of candidate vertices outside $T$, keyed by the minimum edge weight connecting them to any vertex in $T$:
+$$\text{key}[v] = \min_{u \in T} \{ w(u, v) \}$$
+3. While $T$ does not contain all vertices:
+   - Extract the vertex $u \notin T$ with the minimum key value from the priority queue.
+   - Add $u$ and its connecting edge to $T$.
+   - **Relaxation**: For every neighbor $v$ of $u$ where $v \notin T$:
+$$\text{if } w(u, v) < \text{key}[v] \implies \text{key}[v] = w(u, v), \quad \text{parent}[v] = u$$
+
+---
+
+### 4.2 Time Complexity of Prim's Algorithm Across Data Structures
+
+| Implementation / Priority Queue | Extract-Min Time | Decrease-Key Time | Total Time Complexity | Best Suited For |
+|---|:---:|:---:|:---:|:---|
+| **Adjacency Matrix + Linear Array** | $O(V)$ | $O(1)$ | **$O(V^2)$** | **Dense Graphs** ($E \approx V^2$) |
+| **Adjacency List + Binary Min-Heap** | $O(\log V)$ | $O(\log V)$ | **$O(E \log V)$** | **Sparse Graphs** ($E \ll V^2$) |
+| **Adjacency List + Fibonacci Heap** | $O(\log V)$ | $O(1)$ amortized | **$O(E + V \log V)$** | Theoretical Optimum |
+
+---
+
+## 5. Master Comparison: Kruskal vs. Prim
+
+| Feature | Kruskal's Algorithm | Prim's Algorithm |
+|---|---|---|
+| **Approach** | Edge-centric (builds forest) | Vertex-centric (grows single tree) |
+| **Cycle Check** | Uses DSU (Find / Union) | Handled by Priority Queue (Visited set) |
+| **Graph Type Preference** | Best for **Sparse Graphs** ($E \approx V$) | Best for **Dense Graphs** ($E \approx V^2$ with matrix) |
+| **Disconnected Graphs** | Computes **Minimum Spanning Forest** automatically | Fails to reach all vertices (stays in one component) |
+| **Pre-processing** | Requires sorting all edges upfront | No global sorting; processes locally |
+
+---
+
+## 6. Dijkstra's Single-Source Shortest Path Algorithm
+
+Dijkstra's algorithm finds the shortest path from a designated source vertex $s$ to all other vertices in a weighted graph with **non-negative edge weights**.
+
+### 6.1 The Relaxation Invariant
+For each vertex $v$, maintain an upper-bound distance estimate $d[v]$ from source $s$.
+Initially: $d[s] = 0$ and $d[v] = \infty$ for all $v \neq s$.
+
+$$\text{Relaxation Step: If } d[u] + w(u, v) < d[v] \implies d[v] = d[u] + w(u, v)$$
+
+```text
+Algorithm Dijkstra(G, w, s):
+  Initialize distances d[v] = ∞, d[s] = 0;
+  Insert all vertices into Priority Queue Q;
+  While Q is not empty:
+    u = Extract_Min(Q); // Finalize shortest distance to u
+    For each neighbor v of u:
+      If d[u] + w(u, v) < d[v]:
+        d[v] = d[u] + w(u, v);
+        Decrease_Key(Q, v, d[v]);
+```
+
+- **Time Complexity with Min-Heap**:
+$$O((V + E) \log V) = \mathbf{O(E \log V)}$$
+
+---
+
+### 6.2 Why Dijkstra FAILS on Negative Edge Weights (Classic Exam Trap)
+
+Dijkstra's algorithm operates on a **greedy assumption**: once a vertex $u$ is extracted from the priority queue (marked "visited"), its shortest path is permanently finalized ($d[u]$ can never decrease further).
+
+**Negative edge weights violate this fundamental greedy assumption**:
+
+```text
+             ( S )
+            /     \
+         5 /       \ 2
+          v         v
+        ( A )       ( B )
+          ^           |
+           \         /
+         -10\       / 1
+             \     v
+              ( C )
+```
+
+1. From $S$, Dijkstra inspects neighbors: $d[A] = 5, d[B] = 2$.
+2. It greedily extracts minimum: $B$ ($d[B] = 2$ is declared final).
+3. From $B$, it relaxes $C$: $d[C] = 2 + 1 = 3$.
+4. Then it extracts $C$ ($d[C] = 3$ is declared final).
+5. Next, it relaxes $A$ from $C$: $d[A] = 3 + (-10) = \mathbf{-7}$.
+6. But if $A$ had already been extracted and its outgoing edges finalized, the cheaper path to $A$ would **never propagate to $A$'s successors**!
+
+> **Remedy**:
+> For graphs with negative edge weights, use the **Bellman-Ford Algorithm** ($O(V \cdot E)$), which can detect negative-weight cycles.
+
+---
+
+## 7. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET 2021 — Cayley's Formula)
+What is the number of distinct spanning trees in a complete graph with 5 vertices ($K_5$)?
+
+**Solution**:
+- Apply Cayley's Formula: $\text{Trees} = n^{n - 2}$.
+- For $n = 5$:
+$$\text{Trees} = 5^{5 - 2} = 5^3 = \mathbf{125}$$
+**Answer**: 125.
+
+### Question 2 (UGC NET 2020 — Kruskal vs Prim Time Complexity)
+Under what condition is Prim's algorithm using an adjacency matrix more efficient than Kruskal's algorithm?
+
+**Solution**:
+- Kruskal takes $O(E \log V)$.
+- Prim with an adjacency matrix takes $O(V^2)$.
+- In a dense graph where $E = \Theta(V^2)$:
+  - Kruskal takes $O(V^2 \log V)$.
+  - Prim takes $O(V^2)$, which is faster by a factor of $\log V$.
+**Answer**: When the graph is **dense** ($E \approx V^2$).
+
+### Question 3 (UGC NET 2019 — Shortest Path on Negative Weights)
+Which of the following algorithms CANNOT correctly find the single-source shortest path in the presence of negative edge weights?
+- (A) Bellman-Ford
+- (B) Floyd-Warshall
+- (C) Dijkstra's Algorithm
+- (D) Johnson's Algorithm
+
+**Solution**:
+- Dijkstra's algorithm relies on the greedy assumption that adding an edge never decreases the path cost, which fails with negative weights.
+**Answer**: **(C) Dijkstra's Algorithm**.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="What is the time complexity of Kruskal's algorithm to compute a Minimum Spanning Tree on a graph with V vertices and E edges using Disjoint-Set Union (DSU) with union by rank and path compression?"
+  optionA="O(V^2)"
+  optionB="O(E log E) or O(E log V)"
+  optionC="O(V · E)"
+  optionD="O(V + E)"
+  correctOption="B"
+  explanation="Sorting the E edges takes O(E log E) time. Performing 2E Find operations and V-1 Union operations with path compression takes O(E · α(V)) where α is the inverse Ackermann function. Since E log E dominates, overall complexity is O(E log E) = O(E log V)."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="If all edge weights in a connected undirected graph G are strictly unique, how many distinct Minimum Spanning Trees does G possess?"
+  optionA="Exactly 1 (Unique MST)"
+  optionB="V - 1"
+  optionC="E - V + 1"
+  optionD="V!"
+  correctOption="A"
+  explanation="Cut Property Theorem: In any cut, the strictly unique minimum-weight crossing edge must belong to every MST. When all edge weights in a graph are distinct, there is always exactly ONE unique Minimum Spanning Tree."
+  examBadge="UGC NET Dec 2020"
+/>
+
+<Quiz
+  question="In Prim's algorithm implemented using an Adjacency Matrix and array for a dense graph with V vertices, what is the running time?"
+  optionA="O(V^2)"
+  optionB="O(V log V)"
+  optionC="O(E log V)"
+  optionD="O(V^3)"
+  correctOption="A"
+  explanation="With an adjacency matrix and simple linear array for min-key extraction, finding the minimum vertex takes O(V) time per step for V steps (total O(V^2)), and updating keys takes O(1) for each edge (total O(V^2)). For dense graphs (E ≈ V^2), O(V^2) is optimal."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="What happens if a constant value c > 0 is added to every edge weight in a connected graph G?"
+  optionA="The MST structure changes completely"
+  optionB="The MST remains identical in structure, but its total weight increases by (V - 1) · c"
+  optionC="The Shortest Paths between all pairs remain identical"
+  optionD="The graph ceases to be connected"
+  correctOption="B"
+  explanation="Every spanning tree has exactly V - 1 edges. Adding c to each edge adds exactly (V - 1)c to every spanning tree equally, preserving the relative weight ordering of all spanning trees. (Notice: Shortest Paths DO change because paths have varying numbers of edges!)."
+  examBadge="UGC NET Dec 2022"
+/>
+
+<Quiz
+  question="Which algorithmic design paradigm is utilized by both Kruskal's algorithm and Prim's algorithm?"
+  optionA="Divide and Conquer"
+  optionB="Greedy Paradigm"
+  optionC="Dynamic Programming"
+  optionD="Backtracking"
+  correctOption="B"
+  explanation="Both Kruskal's and Prim's algorithms are classical greedy algorithms. Kruskal makes a globally greedy choice by picking the lightest available edge that does not form a cycle; Prim makes a locally greedy choice by picking the lightest edge connecting the growing tree to an external vertex."
+  examBadge="Bihar STET Standard"
+/>
+

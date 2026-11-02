@@ -1,0 +1,382 @@
+---
+title: "IoT Architecture, Middleware, and Embedded Protocols: Zigbee, Modbus, and RFID"
+unit: "Unit 12: Internet of Things (IoT)"
+examType: "STET"
+priority: "High"
+readTime: "28 min"
+slug: "iot-architecture-middleware"
+description: "Exhaustive guide to Internet of Things: 4-layer architecture, middleware frameworks, wireless sensor protocols (Zigbee, 802.15.4), industrial Modbus (RTU/ASCII/TCP), RFID technologies, and MQTT vs CoAP for Bihar STET Paper 2."
+tags: ["IoT", "Middleware", "Zigbee", "Modbus", "RFID", "MQTT", "CoAP", "STET"]
+---
+
+# IoT Architecture, Middleware, and Embedded Protocols: Zigbee, Modbus, and RFID
+
+The Internet of Things (IoT) represents a paradigm shift connecting physical physical actuators, sensors, and embedded microcontrollers to packet-switched IP networks and cloud analytics platforms. In the **Bihar STET Paper 2 Computer Science** syllabus, **Unit 12 (Internet of Things)** carries guaranteed weightage across:
+1. **Multi-layer IoT Architectural Models** (Perception, Network, Middleware, Application).
+2. **IoT Middleware Functions & Abstraction Models** (SOA, Pub/Sub, Edge/Fog).
+3. **Wireless Sensor & Fieldbus Protocols**: **Zigbee (IEEE 802.15.4)**, **Modbus (RTU, ASCII, TCP)**, and **RFID (Active vs. Passive, EPC Gen2)**.
+4. **Constrained Application Messaging**: **MQTT** vs. **CoAP**.
+
+---
+
+## 1. Multi-Tier IoT Architecture
+
+While early networking models adapted the standard 7-layer OSI stack, resource-constrained embedded systems require streamlined reference architectures. Standard academic curricula adopt the **4-Layer IoT Architecture**:
+
+```
++--------------------------------------------------------------------------+
+|                     APPLICATION LAYER (Business Logic)                   |
+|   Smart City, Precision Agriculture, Healthcare monitoring, Telematics   |
++--------------------------------------------------------------------------+
+                                     ▲
+                                     │ REST APIs, WebSockets, JSON/CBOR
++--------------------------------------------------------------------------+
+|                     MIDDLEWARE LAYER (Data Processing)                   |
+|   Device virtualization, Data aggregation, Event filtering, Broker (MQTT)|
++--------------------------------------------------------------------------+
+                                     ▲
+                                     │ IPv6 / 6LoWPAN, Routing, Gateways
++--------------------------------------------------------------------------+
+|                     NETWORK / TRANSPORT LAYER                            |
+|   Wi-Fi (802.11), Cellular (4G/5G/NB-IoT), LoRaWAN, Ethernet, Routers    |
++--------------------------------------------------------------------------+
+                                     ▲
+                                     │ Transduction & Modulation
++--------------------------------------------------------------------------+
+|                     PERCEPTION / SENSING LAYER                           |
+|   Sensors (DHT11, Ultrasonic), Actuators (Relays, Servos), RFID Tags,     |
+|   Zigbee End Devices, BLE Beacons, Microcontrollers (ESP32, STM32)       |
++--------------------------------------------------------------------------+
+```
+
+### Layer Breakdown & Exam Traps
+
+```
++-------------------+-----------------------------------------+-----------------------------------------+
+| Architectural     | Primary Functions                       | Representative Technologies             |
+| Layer             |                                         | & Protocols                             |
++-------------------+-----------------------------------------+-----------------------------------------+
+| 1. Perception     | Analog-to-digital signal conversion,    | Capacitive/piezoelectric sensors,       |
+|    (Physical)     | ambient physical transduction, RFID tag | RFID tags (13.56 MHz, 868/915 MHz),    |
+|                   | interrogation, actuator control         | Zigbee PHY (IEEE 802.15.4)              |
++-------------------+-----------------------------------------+-----------------------------------------+
+| 2. Network        | Packet forwarding, internetworking,     | IPv6 over LoWPAN (6LoWPAN), RPL routing,|
+|    (Transport)    | sub-GHz modulation, cellular transport  | LoRaWAN, BLE, NB-IoT, 4G/5G LTE         |
++-------------------+-----------------------------------------+-----------------------------------------+
+| 3. Middleware     | Device virtualization, heterogeneous    | MQTT Broker (Mosquitto), CoAP Server,   |
+|    (Service)      | protocol translation, data buffering,   | Apache Kafka, EdgeX Foundry,            |
+|                   | security authentication, event handling | Fog computing nodes, CEP engines        |
++-------------------+-----------------------------------------+-----------------------------------------+
+| 4. Application    | User interface rendering, historical    | Smart Grid SCADA, Telemedicine portals, |
+|    (Presentation) | reporting, machine learning analytics,  | Mobile dashboards, ERP integration     |
+|                   | domain business logic rules             | (HTTP/HTTPS, GraphQL)                   |
++-------------------+-----------------------------------------+-----------------------------------------+
+```
+
+> **Exam Trap Note**: In questions with a **3-layer model**, the layers are *Perception*, *Network*, and *Application* (the Middleware layer is subsumed under Network/Application). In a **5-layer model**, the 5th layer is the *Business Layer* positioned above the Application layer.
+
+---
+
+## 2. IoT Middleware: Functions & Design Patterns
+
+Heterogeneous IoT nodes feature divergent CPU architectures (8-bit AVR, 32-bit ARM Cortex-M), operating systems (FreeRTOS, Contiki-NG, Zephyr), and communication protocols. **Middleware** provides a standardized software abstraction layer separating underlying hardware details from upper-level software applications.
+
+### 2.1 Core Functions of IoT Middleware
+
+1. **Interoperability & Protocol Abstraction**: Normalizes disparate payload encodings (e.g., Modbus register hex words $\to$ JSON $\to$ CBOR).
+2. **Device Discovery & Management**: Implements device lifecycle tracking, OTA (Over-The-Air) firmware updates, and capability registration.
+3. **Data Aggregation & Filtering**: Performs sliding-window moving averages, eliminating noise and redundant samples at the gateway before bandwidth-expensive cloud uploads.
+4. **Context Awareness & CEP (Complex Event Processing)**: Evaluates threshold rules locally (e.g., $\text{Temp} > 85^\circ\text{C} \land \text{Pressure} > 4.5\,\text{bar} \implies \text{Trigger Emergency Purge Valve}$).
+5. **Security & Cryptographic Offloading**: Terminates lightweight DTLS/TLS sessions and verifies X.509 client certificates or HMAC signatures.
+
+### 2.2 Middleware Architectural Paradigms
+
+```
++---------------------------+-----------------------------------+---------------------------------------+
+| Paradigm                  | Structural Mechanism              | Ideal Use-Case                        |
++---------------------------+-----------------------------------+---------------------------------------+
+| Service-Oriented (SOA)    | Modular, self-contained web       | Enterprise ERP integration, smart     |
+|                           | services exposed via WSDL/REST    | manufacturing workflow orchestration  |
++---------------------------+-----------------------------------+---------------------------------------+
+| Event-Driven / Pub-Sub    | Decoupled spatial/temporal pub/sub| High-throughput telemetry pipelines   |
+|                           | via an intermediary message broker| (e.g., vehicle fleet GPS tracking)    |
++---------------------------+-----------------------------------+---------------------------------------+
+| Edge & Fog Computing      | Compute/storage offloaded to      | Real-time autonomous robotics,        |
+|                           | local gateway nodes near sensors  | computer vision, sub-millisecond loop |
++---------------------------+-----------------------------------+---------------------------------------+
+```
+
+---
+
+## 3. Short-Range Wireless Protocol: Zigbee (IEEE 802.15.4)
+
+**Zigbee** is an open global standard developed by the Zigbee Alliance (now Connectivity Standards Alliance - CSA) designed for low-power, low-data-rate, short-range wireless sensor networks (WSN).
+
+### 3.1 Protocol Stack Architecture
+
+Zigbee builds directly on top of the physical (PHY) and Media Access Control (MAC) layers defined by **IEEE 802.15.4**:
+
+```
++----------------------------------------------------+
+| Application Layer (APL): Profiles, ZDO, Clusters   | ── Defined by Zigbee
++----------------------------------------------------+
+| Network Layer (NWK): Routing, Security, Mesh Mgmt  | ── Defined by Zigbee
++----------------------------------------------------+
+| IEEE 802.15.4 MAC Layer: CSMA/CA, Beacons, ACKs   | ── Defined by IEEE
++----------------------------------------------------+
+| IEEE 802.15.4 PHY Layer: Modulation (O-QPSK, BPSK) | ── Defined by IEEE
++----------------------------------------------------+
+```
+
+### 3.2 IEEE 802.15.4 Physical Layer Specifications
+
+```
++-------------------+------------------+------------------+-----------------------+---------------------+
+| Frequency Band    | Geographic Area  | Channel Count    | Data Rate             | Modulation Scheme   |
++-------------------+------------------+------------------+-----------------------+---------------------+
+| 2.4 GHz ISM       | Worldwide        | 16 channels      | **250 kbps**          | O-QPSK              |
+|                   |                  | (Ch 11 to 26)    |                       | (Offset QPSK)       |
++-------------------+------------------+------------------+-----------------------+---------------------+
+| 868 MHz ISM       | Europe           | 1 channel (Ch 0) | **20 kbps**           | BPSK                |
++-------------------+------------------+------------------+-----------------------+---------------------+
+| 915 MHz ISM       | Americas / Aus   | 10 channels      | **40 kbps**           | BPSK                |
+|                   |                  | (Ch 1 to 10)     |                       |                     |
++-------------------+------------------+------------------+-----------------------+---------------------+
+```
+
+### 3.3 Zigbee Device Types
+
+Every Zigbee network must contain exactly one coordinator and supports three explicit node classes:
+
+```
+                  [ Zigbee Coordinator (ZC) ]  (Tree Root, Trust Center)
+                           /          \
+                          ▼            ▼
+              [ Zigbee Router ]     [ Zigbee Router ]
+                /          \                 \
+               ▼            ▼                 ▼
+          [ ZED 1 ]      [ ZED 2 ]         [ ZED 3 ]
+```
+
+1. **Zigbee Coordinator (ZC)**:
+   - Exactly **one** ZC exists per Zigbee PAN (Personal Area Network).
+   - Initializes the network, selects the radio channel and PAN ID, and serves as the **Trust Center** (holds security keys).
+   - Mains-powered (never sleeps); routes messages across branches.
+2. **Zigbee Router (ZR)**:
+   - Intermediate node that acts as a message relay/hop forwarder.
+   - Executes tree/mesh routing algorithms (AODVjr - Ad-hoc On-Demand Distance Vector).
+   - Mains-powered; coordinates local clusters of end devices.
+3. **Zigbee End Device (ZED)**:
+   - Battery-operated leaf node (e.g., smart door sensor, wireless temperature node).
+   - **Does NOT route packets** for other nodes; communicates solely with its parent (ZR or ZC).
+   - Enters deep sleep modes ($\mu\text{A}$ current draw), achieving multi-year battery life.
+
+---
+
+## 4. Industrial Protocol: Modbus (RTU, ASCII, TCP)
+
+Developed by Modicon (now Schneider Electric) in 1979, **Modbus** is the de-facto industrial communications standard connecting Programmable Logic Controllers (PLCs), Remote Terminal Units (RTUs), and SCADA systems.
+
+### 4.1 Master-Slave Architectural Model
+
+Modbus operates strictly on a **Master-Slave / Request-Response** topology:
+- **Master**: Only the Master initiates requests (polling). Up to 1 master per serial line.
+- **Slave**: Up to 247 individually addressable slave devices (addresses $1$ to $247$; address $0$ is reserved for broadcast messages). Slaves never transmit unsolicited data.
+
+### 4.2 Modbus Variants Compared
+
+```
++------------------------+--------------------------+--------------------------+--------------------------+
+| Specification          | Modbus RTU               | Modbus ASCII             | Modbus TCP               |
++------------------------+--------------------------+--------------------------+--------------------------+
+| Physical Layer         | RS-485 or RS-232 serial  | RS-485 or RS-232 serial  | Ethernet (802.3) / Wi-Fi |
+| Framing Delimiter      | Silent interval $\ge 3.5$| Start: `:` (0x3A)        | MBAP Header (7 bytes),   |
+|                        | character transmission t | End: `CR` `LF` (0x0D0A)  | length encoded explicitly|
+| Data Encoding          | Binary (Raw 8-bit bytes) | ASCII Hex (2 chars/byte) | Binary (Raw bytes)       |
+| Error Check Mechanism  | **CRC-16** (2 bytes)     | **LRC** (1 byte)         | TCP checksum (underlying)|
+| Default Port           | N/A (Serial line)        | N/A (Serial line)        | **TCP Port 502**         |
+| Efficiency             | High (Compact binary)    | Low (2x overhead)        | Very High (Gigabit wire) |
++------------------------+--------------------------+--------------------------+--------------------------+
+```
+
+### 4.3 Data Memory Model & Function Codes
+
+Modbus models device internal memory into four distinct register banks:
+
+```
++--------------------+---------------+--------------------+------------------+----------------------------+
+| Register Type      | Object Type   | Access             | Address Range    | Typical Function Codes     |
++--------------------+---------------+--------------------+------------------+----------------------------+
+| Discrete Inputs    | Single bit    | Read-Only          | 10001 – 19999    | **02** (Read Inputs)       |
+| Coils              | Single bit    | Read-Write         | 00001 – 09999    | **01** (Read), **05/15**   |
+|                    |               |                    |                  | (Write Single/Multi Coil)  |
+| Input Registers    | 16-bit word   | Read-Only          | 30001 – 39999    | **04** (Read Input Regs)   |
+| Holding Registers  | 16-bit word   | Read-Write         | 40001 – 49999    | **03** (Read), **06/16**   |
+|                    |               |                    |                  | (Write Single/Multi Regs)  |
++--------------------+---------------+--------------------+------------------+----------------------------+
+```
+
+---
+
+## 5. Radio-Frequency Identification (RFID)
+
+**RFID** utilizes electromagnetic fields to automatically identify and track tags attached to physical objects without requiring line-of-sight optical alignment (distinguishing it from barcodes).
+
+### 5.1 Tag Classes: Active vs. Passive vs. Semi-Passive
+
+```
++---------------------+-------------------------------+-------------------------------+-------------------------------+
+| Characteristic      | Passive RFID                  | Semi-Passive (BAP)            | Active RFID                   |
++---------------------+-------------------------------+-------------------------------+-------------------------------+
+| Internal Battery    | **None** (Energy harvested)   | Yes (Powers tag circuitry)    | **Yes** (Powers transmitter)  |
+| Operating Power     | Harvests reader's RF field    | Battery powers chip; reflects | Battery powers active RF      |
+| Source              | via inductive/backscatter     | reader's RF carrier wave      | transmission circuitry        |
+| Operational Range   | Up to 5 – 10 meters (UHF)     | Up to 30 – 50 meters          | **Up to 100+ meters**         |
+| Unit Cost           | Very Low (\$0.05 - \$0.20)    | Moderate (\$2 - \$10)         | High (\$15 - \$50+)           |
+| Useful Lifespan     | Virtually Unlimited           | 2 to 5 years (battery-bound)  | 3 to 7 years                  |
+| Typical Use Case    | Retail apparel, toll FASTag   | Cold-chain temp loggers       | Cargo containers, defense     |
++---------------------+-------------------------------+-------------------------------+-------------------------------+
+```
+
+### 5.2 RFID Operating Frequencies
+
+```
++------------------------+----------------------+--------------------+------------------------------------------+
+| Frequency Band         | Operating Range      | Read Distance      | Physical Coupling & Typical Applications |
++------------------------+----------------------+--------------------+------------------------------------------+
+| Low Frequency (LF)     | 125 kHz – 134.2 kHz  | Short (< 10 cm)    | Inductive (Magnetic near-field); animal  |
+|                        |                      |                    | microchipping, vehicle immobilizers      |
++------------------------+----------------------+--------------------+------------------------------------------+
+| High Frequency (HF)    | **13.56 MHz**        | Medium (10 cm – 1m)| Inductive; Smart cards, Passport e-chips,|
+|                        |                      |                    | **NFC (Near Field Communication)**       |
++------------------------+----------------------+--------------------+------------------------------------------+
+| Ultra-High Freq (UHF)  | 860 MHz – 960 MHz    | Long (3 m – 12 m)  | Radiative (EM Backscatter); EPC Gen2,    |
+|                        |                      |                    | Warehouse logistics, Indian FASTag       |
++------------------------+----------------------+--------------------+------------------------------------------+
+```
+
+---
+
+## 6. Constrained Application Protocols: MQTT vs. CoAP
+
+Embedded microcontrollers with only a few kilobytes of RAM cannot efficiently run heavy HTTP/1.1 stacks with multi-kilobyte text headers. Two dominant standards have emerged:
+
+```
++----------------------+------------------------------------------+------------------------------------------+
+| Parameter            | MQTT (Message Queuing Telemetry Trans.)  | CoAP (Constrained Application Protocol)  |
++----------------------+------------------------------------------+------------------------------------------+
+| Primary Standards Org| OASIS / ISO/IEC 20922                    | IETF RFC 7252                            |
+| Transport Layer      | **TCP** (Connection-oriented, reliable)  | **UDP** (Connectionless, low-overhead)   |
+| Communication Model  | **Publish / Subscribe** via Central      | **Client / Server (RESTful)**            |
+|                      | Broker (Spatial/temporal decoupling)     | (GET, POST, PUT, DELETE) + Observe opt   |
+| Security Protocol    | TLS / SSL                                | **DTLS** (Datagram TLS)                  |
+| Fixed Header Size    | **2 Bytes**                              | **4 Bytes**                              |
+| Reliability Levels   | **QoS 0** (At most once)                 | **Confirmable (CON)** with ACK           |
+|                      | **QoS 1** (At least once - PUBACK)       | **Non-Confirmable (NON)** fire-and-forget|
+|                      | **QoS 2** (Exactly once - 4-way handshk) |                                          |
+| Communication Scope  | Many-to-Many via Topic Hierarchies       | One-to-One Request-Response or Multicast |
++----------------------+------------------------------------------+------------------------------------------+
+```
+
+---
+
+## 7. Worked Numerical Problems & Calculations
+
+### Numerical 1: Modbus RTU Silent Inter-Frame Delimiter Timing
+**Problem**: An industrial Modbus RTU serial bus operates at a baud rate of $9600\,\text{bps}$. The serial frame configuration is 1 Start bit, 8 Data bits, No parity, and 1 Stop bit ($10\,\text{bits/character}$). Calculate the minimum silent time interval required by the Modbus specification ($3.5\,\text{character times}$) for frame synchronization.
+
+#### Solution:
+1. **Time to transmit a single character ($T_{\text{char}}$)**:
+$$T_{\text{char}} = \frac{\text{Total Bits per Character}}{\text{Baud Rate}} = \frac{10\,\text{bits}}{9600\,\text{bits/sec}} \approx 1.0417 \times 10^{-3}\,\text{seconds} = 1.0417\,\text{ms}$$
+
+2. **Modbus $3.5$ Character Silent Interval ($T_{3.5}$)**:
+$$T_{3.5} = 3.5 \times T_{\text{char}} = 3.5 \times 1.0417\,\text{ms} = 3.646\,\text{ms}$$
+
+> **Conclusion**: The transmitter and receiver must maintain at least $3.65\,\text{ms}$ of silence between consecutive Modbus packets at $9600\,\text{baud}$. Any silent gap $> 1.5\,\text{char}$ ($1.56\,\text{ms}$) but $< 3.5\,\text{char}$ triggers a frame abortion error.
+
+---
+
+### Numerical 2: Zigbee 2.4 GHz Transmission Delay
+**Problem**: An agricultural sensor broadcasts a telemetry packet containing a $64\text{-byte}$ payload over a $2.4\,\text{GHz}$ Zigbee link. If the total MAC/PHY overhead adds $26\,\text{bytes}$ and the transmission operates at the standard raw bit rate of $250\,\text{kbps}$, find the over-the-air transmission duration ($T_{\text{tx}}$).
+
+#### Solution:
+1. **Total Frame Size in bits**:
+$$\text{Total Bytes} = 64\,\text{bytes (payload)} + 26\,\text{bytes (overhead)} = 90\,\text{bytes}$$
+$$\text{Total Bits} = 90 \times 8 = 720\,\text{bits}$$
+
+2. **Transmission Time ($T_{\text{tx}}$)**:
+$$T_{\text{tx}} = \frac{\text{Total Bits}}{\text{Data Rate}} = \frac{720\,\text{bits}}{250 \times 10^3\,\text{bits/s}} = 0.00288\,\text{seconds} = 2.88\,\text{ms}$$
+
+---
+
+## 8. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="In a Zigbee (IEEE 802.15.4) wireless personal area network, which device role is solely capable of establishing the PAN ID and initializing the network security Trust Center?"
+  optionA="Zigbee Router (ZR)"
+  optionB="Zigbee End Device (ZED)"
+  optionC="Zigbee Coordinator (ZC)"
+  optionD="Full Function Device (FFD) in leaf mode"
+  correctOption="C"
+  explanation="Every Zigbee network must have exactly one Zigbee Coordinator (ZC). The ZC selects the operating frequency channel, assigns the 16-bit PAN ID, and acts as the Trust Center for holding cryptographic network keys."
+  examBadge="Bihar STET Target Question"
+/>
+
+<Quiz
+  question="Which Modbus function code is specifically assigned to read 16-bit Read-Only Input Registers (30001–39999) from an industrial slave device?"
+  optionA="Function Code 01"
+  optionB="Function Code 02"
+  optionC="Function Code 03"
+  optionD="Function Code 04"
+  correctOption="D"
+  explanation="Function Code 04 is used to read Input Registers (16-bit read-only). Function Code 01 reads Read/Write Coils, Code 02 reads Discrete Inputs (1-bit read-only), and Code 03 reads Holding Registers (16-bit read/write)."
+  examBadge="Industrial IoT Exam Standard"
+/>
+
+<Quiz
+  question="What is the primary physical energy source that powers a Passive RFID tag during interrogation by an external reader?"
+  optionA="An onboard button-cell lithium battery"
+  optionB="Electromagnetic energy harvested from the RF carrier field emitted by the reader antenna"
+  optionC="A micro-piezoelectric vibration transducer"
+  optionD="Ambient solar indoor light via a photovoltaic coating"
+  correctOption="B"
+  explanation="Passive RFID tags contain no internal battery. They harvest operating electrical current directly from the incident electromagnetic radio wave transmitted by the RFID reader antenna through inductive or backscatter coupling."
+  examBadge="Bihar STET Official Model"
+/>
+
+<Quiz
+  question="Which statement accurately contrasts MQTT and CoAP protocols for constrained devices?"
+  optionA="MQTT runs over UDP and uses Client/Server REST, while CoAP runs over TCP with Pub/Sub"
+  optionB="MQTT runs over TCP and uses Broker-based Pub/Sub, while CoAP runs over UDP with a RESTful Client/Server model"
+  optionC="MQTT has a 4-byte fixed header, whereas CoAP has a 2-byte fixed header"
+  optionD="Both protocols mandate mandatory 4-way handshakes for all packet transfers"
+  correctOption="B"
+  explanation="MQTT relies on TCP for reliable connection-oriented transport and utilizes a broker-centric Publish/Subscribe topology. CoAP runs over UDP to minimize packet overhead and employs a RESTful request/response paradigm."
+  examBadge="UGC NET / STET Common"
+/>
+
+<Quiz
+  question="In the Zigbee (IEEE 802.15.4) MAC layer, what collision avoidance mechanism is utilized during non-beacon enabled communication?"
+  optionA="Slotted CSMA/CA"
+  optionB="Unslotted CSMA/CA (random exponential backoff)"
+  optionC="Token Ring Passing"
+  optionD="Frequency Hopping Spread Spectrum (FHSS)"
+  correctOption="B"
+  explanation="In non-beacon enabled Zigbee networks, nodes utilize unslotted CSMA/CA. When a node wishes to transmit, it delays for a random backoff period and conducts a Clear Channel Assessment (CCA); if the channel is idle, it immediately transmits."
+  examBadge="IoT Architecture Standard"
+/>
+
+
+---
+
+## 9. High-Yield Revision Matrix
+
+| Topic Domain | Key Formula / Standard Specification | Common Exam Hall Trap |
+|---|---|---|
+| **Zigbee PHY** | IEEE 802.15.4; 2.4 GHz ISM band delivers **250 kbps** | Thinking Zigbee operates at megabit speeds like Wi-Fi |
+| **Zigbee Roles** | 1 Coordinator per network; ZEDs do **NOT** route | Confusing ZED with ZR (ZR forwards; ZED only sleeps) |
+| **Modbus Delimiter** | $3.5$ character transmission silent time interval | Stating Modbus RTU uses start/stop ASCII characters |
+| **Modbus Transport** | Modbus TCP uses standard **Port 502** | Confusing Modbus TCP port with HTTP (80) or MQTT (1883) |
+| **RFID Frequencies** | HF = 13.56 MHz (NFC); UHF = 860-960 MHz (FASTag) | Thinking NFC operates at UHF frequencies |
+| **MQTT vs CoAP** | MQTT = TCP + Pub/Sub; CoAP = UDP + REST | Inverting transport layers (MQTT is TCP, CoAP is UDP) |
+| **MQTT QoS** | QoS 0 (at most once), QoS 1 (at least once), QoS 2 (exact once) | Forgetting that QoS 2 requires a 4-packet handshake |

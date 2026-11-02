@@ -1,0 +1,333 @@
+---
+title: "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense"
+unit: "Unit 10: Web-Based Application Development"
+examType: "STET"
+priority: "Low"
+readTime: "34 min"
+slug: "web-technologies-xml-security"
+description: "Master client-server web architecture, HTTP/1.1 vs HTTP/2, CSS Box Model, JavaScript Event Loop, XML DTD/Schema, DOM vs SAX, and Web Security (XSS, CSRF, SQLi) for UGC NET and Bihar STET."
+tags: ["Web Technologies", "HTML5", "CSS", "JavaScript", "XML", "Security", "XSS", "SQLi", "UGC-NET", "STET"]
+---
+
+# Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense
+
+Web technologies and application security constitute a core, high-scoring section in **UGC NET** (Unit 9/Unit 10) and **Bihar STET Paper 2 Computer Science** (dedicated Web Technologies unit).
+
+Examiners regularly evaluate candidate mastery over **the HTTP request-response cycle and status codes**, **CSS Box Model sizing semantics**, **the JavaScript asynchronous Event Loop (Microtasks vs. Macrotasks)**, **XML Validation (DTD vs. XSD)**, and **the mechanics and defenses for XSS, CSRF, and SQL Injection**.
+
+---
+
+## 1. Client-Server Architecture & The HTTP Protocol
+
+Modern web applications adhere to the **Multi-Tier Client-Server Architecture**:
+
+```
+    [ Client / Presentation Tier ] ──► Web Browser / Mobile App (HTML5, CSS, JS)
+                   │
+                   ▼ (HTTP / HTTPS Request)
+    [ Application / Logic Tier ]  ──► Web/App Server (Node.js, Spring, Django)
+                   │
+                   ▼ (SQL / NoSQL Queries)
+    [ Enterprise Data Tier ]     ──► Relational DBMS / Object Store (PostgreSQL, Oracle)
+```
+
+### 1.1 HTTP Evolution: HTTP/1.1 vs. HTTP/2 vs. HTTP/3
+
+```
++---------------------+-----------------------+-------------------------+-------------------------+
+| Feature             | HTTP/1.1              | HTTP/2 (2015)           | HTTP/3 (2022)           |
++---------------------+-----------------------+-------------------------+-------------------------+
+| Transport Layer     | TCP (Plaintext ASCII) | TCP (Binary Framing)    | **QUIC over UDP**       |
+| Multiplexing        | No (Head-of-Line HOL) | **Yes** (Multiple       | **Yes** (Independent    |
+|                     |                       | streams over 1 TCP)     | packet streams, no HOL) |
+| Header Compression  | None                  | **HPACK** algorithm     | **QPACK** algorithm     |
+| Server Push         | Unsupported           | Supported               | Supported               |
+| Handshake Overhead  | TCP (1 RTT) + TLS     | TCP (1 RTT) + TLS       | **0-RTT or 1-RTT**      |
++---------------------+-----------------------+-------------------------+-------------------------+
+```
+
+---
+
+### 1.2 HTTP Methods & Idempotence
+
+An HTTP method is **Idempotent** if making multiple identical requests has the **exact same side-effects on the server state** as making a single request:
+
+$$f(f(x)) = f(x)$$
+
+```
++-------------+---------------+-----------------+-------------------------------------------------+
+| HTTP Method | Safe?         | Idempotent?     | Operational Purpose                             |
++-------------+---------------+-----------------+-------------------------------------------------+
+| **GET**     | **Yes**       | **Yes**         | Retrieve resource representation without side-effects |
+| **HEAD**    | **Yes**       | **Yes**         | Same as GET, but returns headers only (no body)|
+| **PUT**     | No            | **Yes**         | Replace the target resource entirely with payload|
+| **DELETE**  | No            | **Yes**         | Remove the identified target resource           |
+| **POST**    | No            | **NO**          | Submit data to be processed; creates child entity|
+| **PATCH**   | No            | **NO** (Usually)| Apply partial modifications to a resource       |
++-------------+---------------+-----------------+-------------------------------------------------+
+```
+
+> [!NOTE]
+> `POST` is **NOT idempotent**. Submitting a payment form twice via `POST` results in two discrete transactions (double billing). Submitting a replacement via `PUT` twice leaves the resource in the exact same state.
+
+---
+
+### 1.3 HTTP Status Codes Taxonomy
+
+```
++---------------+-----------------------+---------------------------------------------------------+
+| Code Range    | Category              | Common High-Yield Examples                              |
++---------------+-----------------------+---------------------------------------------------------+
+| **1xx**       | Informational         | `100 Continue`, `101 Switching Protocols`               |
+| **2xx**       | Success               | `200 OK`, `201 Created`, `204 No Content`               |
+| **3xx**       | Redirection           | `301 Moved Permanently`, `302 Found`, `304 Not Modified`|
+| **4xx**       | Client Error          | `400 Bad Request`, `401 Unauthorized` (Needs auth),     |
+|               |                       | `403 Forbidden` (Auth provided, but denied),            |
+|               |                       | `404 Not Found`, `405 Method Not Allowed`               |
+| **5xx**       | Server Error          | `500 Internal Server Error`, `502 Bad Gateway`,         |
+|               |                       | `503 Service Unavailable`, `504 Gateway Timeout`        |
++---------------+-----------------------+---------------------------------------------------------+
+```
+
+---
+
+## 2. CSS Box Model & Specificity
+
+Every rendered HTML element is treated by the browser layout engine as a rectangular box:
+
+```
+    +---------------------------------------------------------+
+    |                         MARGIN                          |
+    |    +-----------------------------------------------+    |
+    |    |                    BORDER                     |    |
+    |    |    +-------------------------------------+    |    |
+    |    |    |               PADDING               |    |    |
+    |    |    |    +---------------------------+    |    |    |
+    |    |    |    |          CONTENT          |    |    |    |
+    |    |    |    |      (width x height)     |    |    |    |
+    |    |    |    +---------------------------+    |    |    |
+    |    |    +-------------------------------------+    |    |
+    |    +-----------------------------------------------+    |
+    +---------------------------------------------------------+
+```
+
+### `box-sizing: content-box` vs `border-box`
+- **`content-box` (CSS Default)**:
+$$\text{Total Rendered Width} = \text{width} + \text{padding}_{\text{left+right}} + \text{border}_{\text{left+right}} + \text{margin}_{\text{left+right}}$$
+- **`border-box` (Modern Standard)**:
+  The specified `width` includes content, padding, and border. Adding padding reduces the inner content area without widening the overall element:
+$$\text{Rendered Outer Box Width} = \text{width} + \text{margin}_{\text{left+right}}$$
+
+### CSS Specificity Calculation Formula
+When conflicting rules target the same element, specificity resolves priority via a 4-tuple:
+$$\mathbf{\text{Specificity} = (a, b, c, d)}$$
+1. **$a$ (Inline styles)**: Style attribute in HTML (`style="..."`).
+2. **$b$ (IDs)**: ID selectors (`#header`).
+3. **$c$ (Classes, Attributes, Pseudo-classes)**: `.btn`, `[type="text"]`, `:hover`.
+4. **$d$ (Elements and Pseudo-elements)**: `div`, `p`, `::before`.
+
+*Example*: `div#main ul.nav li a:hover` has specificity:
+- Inline: $0$
+- IDs: $1$ (`#main`)
+- Classes/Pseudo-classes: $2$ (`.nav`, `:hover`)
+- Elements: $4$ (`div`, `ul`, `li`, `a`)
+$$\mathbf{\text{Specificity}} = (0, 1, 2, 4)$$
+
+---
+
+## 3. JavaScript Runtime Engine & The Event Loop
+
+JavaScript is a **single-threaded**, non-blocking, asynchronous runtime environment powered by an **Event Loop**.
+
+```
+    +-----------------------+                    +------------------------------------+
+    |      CALL STACK       |                    |              WEB APIs              |
+    | (Executes synchronous | ──(Async Calls)──► | (Timers, fetch(), DOM events, DNS) |
+    |  LIFO frames)         |                    +------------------------------------+
+    +-----------------------+                                       │
+                ▲                                                   │ (Event completion)
+                │                                                   ▼
+                │ (Pushed when Stack empty)      +------------------------------------+
+    +───────────────────────+                    |          MICROTASK QUEUE           |
+    |      EVENT LOOP       |                    | (Promise .then, queueMicrotask)    |
+    | (Prioritizes Micro-   |                    | *HIGHEST PRIORITY*                 |
+    |  tasks over Macro)    |                    +------------------------------------+
+    +───────────────────────+                                       │
+                │                                                   ▼
+                │ (Pushed only after Micro empty)+------------------------------------+
+                └─────────────────────────────── |          MACROTASK QUEUE           |
+                                                 | (setTimeout, setInterval, I/O)     |
+                                                 +------------------------------------+
+```
+
+### Event Loop Execution Priority Rule
+1. Execute all synchronous code currently on the **Call Stack**.
+2. When the Call Stack becomes completely empty:
+   - Drain **ALL tasks in the Microtask Queue** until empty (including microtasks spawned during drain).
+3. Execute **ONE task** from the Macrotask Queue.
+4. Rerun render updates, then repeat the loop.
+
+---
+
+## 4. XML Technologies: DTD vs. XML Schema (XSD)
+
+Extensible Markup Language (XML) is a metalanguage for structured hierarchical data exchange.
+
+```
++---------------------+-----------------------------------+-------------------------------+
+| Dimension           | Document Type Definition (DTD)    | XML Schema Definition (XSD)   |
++---------------------+-----------------------------------+-------------------------------+
+| Syntax Format       | Non-XML EBNF grammar format       | Written in standard XML       |
+| Data Types          | Weak / String only (PCDATA, CDATA)| Rich typed (integer, date, etc|
+| Extensibility       | Rigid, non-extensible             | Fully object-oriented & extens|
+| Namespaces          | Does not support namespaces       | Fully namespace-aware         |
++---------------------+-----------------------------------+-------------------------------+
+```
+
+### Well-Formed XML vs. Valid XML
+- **Well-Formed XML**: Meets all structural syntactic grammar rules:
+  1. Exactly one root element.
+  2. All tags must be properly nested and closed (`<item>...</item>`).
+  3. Tags are strictly case-sensitive (`<Tag>` $\neq$ `<tag>`).
+  4. Attribute values must always be enclosed in quotes (`<book id="101">`).
+- **Valid XML**: A well-formed XML document that also strictly conforms to an associated **DTD or XML Schema**.
+
+### XML Parsers: DOM vs. SAX
+
+```
++---------------------+-----------------------------------+-------------------------------+
+| Feature             | DOM (Document Object Model)       | SAX (Simple API for XML)      |
++---------------------+-----------------------------------+-------------------------------+
+| Processing Model    | Tree-based (In-Memory)            | Event-based (Streaming)       |
+| Memory Footprint    | High (Loads entire document tree) | Minimal (Streams tag events)  |
+| Navigation          | Bidirectional (Parent, child, sib)| Forward-only streaming read   |
+| Modifiability       | Read and Write                    | Read-Only                     |
+| Ideal For           | Small-to-medium docs needing edit | Massive gigabyte XML files    |
++---------------------+-----------------------------------+-------------------------------+
+```
+
+---
+
+## 5. Web Application Security: Vulnerabilities & Countermeasures
+
+```
+                          WEB VULNERABILITY TRIAD
+         ┌───────────────────────────┼───────────────────────────┐
+         ▼                           ▼                           ▼
+   SQL Injection (SQLi)     Cross-Site Scripting (XSS)   Cross-Site Request Forgery (CSRF)
+   [Breaches Database]      [Executes script in client]  [Forces unwanted actions]
+```
+
+### 5.1 SQL Injection (SQLi)
+Occurs when untrusted user input is directly concatenated into a dynamic SQL query string without sanitization:
+
+```sql
+-- Vulnerable Code:
+SELECT * FROM Users WHERE username = '" + userInput + "' AND pass = '" + pass + "';
+
+-- Attacker supplies: admin' OR '1'='1
+SELECT * FROM Users WHERE username = 'admin' OR '1'='1' AND pass = '...';
+-- Condition evaluates to TRUE, bypassing authentication!
+```
+
+#### Primary Countermeasure
+**Parameterized Queries (Prepared Statements)**: The SQL engine pre-compiles the query structure. Input parameters are treated strictly as literal data values, never as executable code:
+
+```java
+PreparedStatement ps = conn.prepareStatement("SELECT * FROM Users WHERE username = ? AND pass = ?");
+ps.setString(1, userInput); // Safe against SQLi
+```
+
+---
+
+### 5.2 Cross-Site Scripting (XSS)
+Enables attackers to inject malicious client-side scripts (typically JavaScript) into web pages viewed by other users:
+1. **Stored (Persistent) XSS**: Malicious script is permanently stored in the target database (e.g., in a blog comment) and executed whenever a user loads the page.
+2. **Reflected (Non-persistent) XSS**: Malicious script is reflected off the web server in an immediate response (e.g., in a search result or error message link).
+3. **DOM-based XSS**: Vulnerability exists purely in client-side code where unsafe input writes to sink objects (`document.write()`, `element.innerHTML`).
+
+#### Defense: Context-Aware Output Encoding
+HTML-entity encode all dynamic data prior to rendering (`<` $\to$ `&lt;`, `>` $\to$ `&gt;`, `"` $\to$ `&quot;`), and configure a strict **Content Security Policy (CSP)** HTTP header.
+
+---
+
+### 5.3 Cross-Site Request Forgery (CSRF)
+Tricks an authenticated victim's browser into sending an unauthorized state-changing HTTP request to a vulnerable web application where the user is already logged in (exploiting the browser's automatic inclusion of session cookies).
+
+#### Defense: Anti-CSRF Synchronizer Tokens & SameSite Cookies
+- **CSRF Token**: A cryptographically secure, unpredictable, unique token embedded into user forms; validated on server-side state mutations.
+- **`SameSite` Cookie Attribute**: Setting `SameSite=Strict` or `SameSite=Lax` prevents the browser from attaching session cookies to cross-origin requests.
+
+---
+
+## 6. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="Which HTTP method is defined as idempotent and replaces the entire target resource with the uploaded request payload?"
+  optionA="POST"
+  optionB="PUT"
+  optionC="PATCH"
+  optionD="CONNECT"
+  correctOption="B"
+  explanation="PUT is defined by the HTTP/1.1 specification as idempotent and replaces the target resource entirely with the request payload. POST is not idempotent."
+  examBadge="UGC NET June 2023"
+/>
+
+<Quiz
+  question="What is the primary difference between DOM and SAX XML parsers?"
+  optionA="DOM is streaming and event-based, whereas SAX loads the entire tree into memory"
+  optionB="DOM loads the entire XML document tree into memory, whereas SAX is a stream-based, event-driven parser"
+  optionC="DOM only works with DTD, while SAX only works with XML Schema"
+  optionD="SAX allows bidirectional modification of the XML document, whereas DOM is read-only"
+  correctOption="B"
+  explanation="DOM constructs an in-memory tree representation of the entire XML document allowing random access, while SAX is an event-driven parser that reads sequentially without loading the whole file into RAM."
+  examBadge="Bihar STET 2023"
+/>
+
+<Quiz
+  question="Which technique provides the most effective defense against SQL Injection vulnerabilities?"
+  optionA="Client-side JavaScript form validation"
+  optionB="Parameterized Queries / Prepared Statements"
+  optionC="Storing passwords using MD5 hashing"
+  optionD="Using HTTP GET requests instead of POST"
+  correctOption="B"
+  explanation="Prepared Statements with parameterized queries ensure that user input is never interpreted as executable SQL command syntax, completely neutralizing SQL Injection."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="An HTML element has width: 300px, padding: 20px on all sides, border: 5px solid, and box-sizing: border-box. What is the total rendered visual width of the element on screen?"
+  optionA="350px"
+  optionB="300px"
+  optionC="325px"
+  optionD="340px"
+  correctOption="B"
+  explanation="When CSS 'box-sizing: border-box' is specified, the specified width (300px) encompasses the content, padding, and border combined. The padding (20px left + 20px right = 40px) and borders (5px left + 5px right = 10px) are absorbed within the 300px, keeping the total rendered width strictly at 300px."
+  examBadge="Bihar STET Paper 2 2023"
+/>
+
+<Quiz
+  question="Which HTTP cookie security attribute prevents client-side JavaScript (e.g. document.cookie) from accessing the session cookie, neutralizing token theft via Cross-Site Scripting (XSS)?"
+  optionA="Secure"
+  optionB="HttpOnly"
+  optionC="SameSite=Lax"
+  optionD="Domain"
+  correctOption="B"
+  explanation="The 'HttpOnly' flag instructs the browser that the cookie must never be exposed through client-side scripts like document.cookie. Even if an attacker executes malicious JavaScript via an XSS vulnerability, they cannot read the HttpOnly session cookie."
+  examBadge="UGC NET Dec 2020"
+/>
+
+
+---
+
+## 7. High-Yield Revision Matrix
+
+| Topic | Critical Formulation / Invariant | Common Exam Trap |
+|---|---|---|
+| **Idempotence** | $f(f(x)) = f(x)$: GET, PUT, DELETE are idempotent | Assuming `POST` is idempotent (it is NOT) |
+| **HTTP/2 Transport** | Single TCP connection, binary multiplexed frames | Thinking HTTP/2 uses UDP (HTTP/3 uses UDP/QUIC) |
+| **CSS Box-Sizing** | `border-box` includes padding & border in width | Confusing with `content-box` where padding expands box |
+| **Event Loop Priority** | Microtasks (Promises) drain BEFORE Macrotasks | Believing `setTimeout(fn, 0)` executes before Promise |
+| **Well-Formed XML** | Syntactically correct tags, root, quotes | Valid XML requires conformance to DTD or XSD |
+| **XSS vs CSRF** | XSS steals data via script; CSRF forces unwanted actions | Confusing script execution (XSS) with forced requests (CSRF) |
+| **SQLi Defense** | Parameterized queries / Prepared statements | Relying on client-side validation |

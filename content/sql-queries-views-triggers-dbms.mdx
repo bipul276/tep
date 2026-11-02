@@ -1,0 +1,491 @@
+---
+title: "Advanced SQL: Complex Queries, Subqueries, Views, and Triggers"
+unit: "Unit 6: Database Management System"
+examType: "Common"
+priority: "Med"
+readTime: "32 min"
+slug: "sql-queries-views-triggers-dbms"
+description: "Master advanced SQL query processing, nested and correlated subqueries, NULL three-valued logic, aggregation grouping, join types, view updatability rules, and ECA triggers for UGC NET and Bihar STET."
+tags: ["DBMS", "SQL", "Subqueries", "Joins", "Views", "Triggers", "UGC-NET", "STET"]
+---
+
+# Advanced SQL: Complex Queries, Subqueries, Views, and Triggers
+
+Structured Query Language (SQL) forms the bedrock of relational database operations. For competitive examinations such as **UGC NET** and **Bihar STET Computer Science**, conceptual mastery must extend far beyond basic `SELECT` statements. Examiners frequently focus on the **logical query processing lifecycle**, **Three-Valued Logic (3VL)**, **subquery nesting with NULL evaluation traps**, **join algebra**, and **view updatability invariants**.
+
+---
+
+## 1. SQL Language Subdivisions & Execution Architecture
+
+SQL commands are formally organized into functional subdivisions based on their operational scope on the relational schema and transaction states:
+
+```
++------------------------------------------------------------------------------------+
+|                               SQL COMMAND SUBDIVISIONS                             |
++-------------------+--------------------+--------------------+----------------------+
+| DDL (Definition)  | DML (Manipulation) | DCL (Control)      | TCL (Transaction)    |
++-------------------+--------------------+--------------------+----------------------+
+| CREATE, ALTER,    | INSERT, UPDATE,    | GRANT, REVOKE      | COMMIT, ROLLBACK,    |
+| DROP, TRUNCATE,   | DELETE, MERGE,     | (User permissions  | SAVEPOINT,           |
+| RENAME            | (Modifies data     | and role access)   | SET TRANSACTION      |
+| (Auto-commit)     | rows; rollbackable)|                    |                      |
++-------------------+--------------------+--------------------+----------------------+
+```
+
+> [!NOTE]
+> `TRUNCATE` is a **DDL** statement. It deallocates entire data pages rather than deleting row-by-row. Consequently, in standard engines, `TRUNCATE` cannot fire `DELETE` row-level triggers, is faster than `DELETE`, and resets auto-increment sequences. `DELETE` is a **DML** command that logs every row deletion.
+
+### The Logical Query Processing Lifecycle
+In procedural code, instructions execute top-down. In declarative SQL, the logical evaluation order differs drastically from the lexical (written) order:
+
+```
+Lexical Syntax Order:
+  SELECT [DISTINCT] -> FROM -> JOIN ON -> WHERE -> GROUP BY -> HAVING -> ORDER BY -> LIMIT
+
+Logical Processing Phase Order:
+  Phase 1: FROM <left_table>
+  Phase 2: ON <join_condition>
+  Phase 3: JOIN <right_table> (OUTER joins generate extra rows here)
+  Phase 4: WHERE <row_predicate> (Filters individual base tuples)
+  Phase 5: GROUP BY <grouping_columns> (Forms data buckets)
+  Phase 6: HAVING <group_predicate> (Filters aggregated groups)
+  Phase 7: SELECT (Computes projections, scalar expressions, aliases)
+  Phase 8: DISTINCT (Eliminates duplicate resulting tuples)
+  Phase 9: ORDER BY <sort_columns> (Orders output; can reference SELECT aliases)
+  Phase 10: LIMIT / OFFSET (Paginates output)
+```
+
+> [!WARNING]
+> **Exam Pitfall**: You **cannot** use a column alias defined in the `SELECT` clause inside the `WHERE` or `GROUP BY` clause because `WHERE` and `GROUP BY` execute before `SELECT`. However, an alias **is** valid in `ORDER BY` because `ORDER BY` executes after `SELECT`.
+
+---
+
+## 2. Three-Valued Logic (3VL) and NULL Semantics
+
+Relational databases handle missing, inapplicable, or unknown information using `NULL`. SQL implements **Three-Valued Logic (3VL)** where logical conditions evaluate to `TRUE`, `FALSE`, or `UNKNOWN`.
+
+### Truth Tables for 3VL Operators
+
+| Condition $P$ | Condition $Q$ | $P \text{ AND } Q$ | $P \text{ OR } Q$ | $\text{NOT } P$ |
+|:---:|:---:|:---:|:---:|:---:|
+| `TRUE` | `UNKNOWN` | `UNKNOWN` | `TRUE` | `FALSE` |
+| `FALSE` | `UNKNOWN` | `FALSE` | `UNKNOWN` | `TRUE` |
+| `UNKNOWN` | `UNKNOWN` | `UNKNOWN` | `UNKNOWN` | `UNKNOWN` |
+
+### Critical NULL Invariants
+1. **Arithmetic Expressions**: Any arithmetic operation involving `NULL` yields `NULL`:
+$$\text{val} + \text{NULL} \implies \text{NULL}, \quad \text{val} \times \text{NULL} \implies \text{NULL}$$
+2. **Comparison Predicates**: Direct equality to `NULL` does not return `TRUE` or `FALSE`; it returns `UNKNOWN`:
+$$\text{col} = \text{NULL} \implies \text{UNKNOWN}, \quad \text{col} \neq \text{NULL} \implies \text{UNKNOWN}$$
+   To test for missing values, the explicit predicates `IS NULL` or `IS NOT NULL` must be utilized.
+3. **Filter Rejection**: In `WHERE`, `HAVING`, and `ON` clauses, rows are retained **only if** the predicate evaluates strictly to `TRUE`. Rows evaluating to `FALSE` or `UNKNOWN` are discarded.
+4. **Aggregate Handling**:
+   - `COUNT(*)` counts all rows, including tuples with all `NULL` attributes.
+   - `COUNT(column_name)` counts non-NULL entries only.
+   - `SUM()`, `AVG()`, `MIN()`, `MAX()` eliminate all `NULL` values prior to evaluation. If a column contains only `NULL`s, `SUM(col)` returns `NULL`, whereas `COUNT(col)` returns `0`.
+
+---
+
+## 3. Advanced Grouping: GROUP BY and HAVING
+
+The `GROUP BY` clause condenses tuples sharing identical grouping attributes into a single summary tuple.
+
+```sql
+-- Schema: Employee(EmpId, DeptId, Salary, JobRole)
+SELECT DeptId, JobRole, AVG(Salary) AS AvgSal, COUNT(*) AS HeadCount
+FROM Employee
+WHERE Salary >= 30000          -- Filter individual tuples before grouping
+GROUP BY DeptId, JobRole       -- Multi-column group partition
+HAVING COUNT(*) >= 3;          -- Filter grouped buckets based on aggregate criteria
+```
+
+### Mandatory Rules for Aggregation Queries
+1. **The Single-Value Rule**: Every attribute appearing in the `SELECT` list that is **not** enclosed inside an aggregate function (`SUM`, `AVG`, `MAX`, `MIN`, `COUNT`) must appear explicitly in the `GROUP BY` clause.
+2. **WHERE vs. HAVING Comparison**:
+
+| Dimension | `WHERE` Clause | `HAVING` Clause |
+|---|---|---|
+| **Phase Timing** | Pre-grouping (Row filtering) | Post-grouping (Bucket filtering) |
+| **Aggregates Allowed?** | Strictly Prohibited (`WHERE AVG(Sal) > 5000` is illegal) | Allowed (`HAVING AVG(Sal) > 5000`) |
+| **Target Object** | Individual relation tuples | Aggregated partition buckets |
+| **Index Usage** | Readily uses B-tree/hash indexes on columns | Evaluated over memory/temporary tables |
+
+---
+
+## 4. Joins Taxonomy and Cardinality Invariants
+
+Relational joins combine columns from one or more tables by evaluating predicate logic across matching keys.
+
+```
+       INNER JOIN                   LEFT OUTER JOIN               FULL OUTER JOIN
+    +-------+-------+             +-------+-------+             +-------+-------+
+   /         \     / \           / *******\*******\ \          / *******\*******\*******\
+  |     R     | R∩S | S |       |  R-S    |  R∩S   | S |      |   R-S   |  R∩S   |   S-R   |
+   \         /     \ /           \ *******\*******/ /          \ *******\*******/*******/
+    +-------+-------+             +-------+-------+             +-------+-------+
+```
+
+### Join Types Defined
+
+1. **Inner Join (Theta Join / Equi-Join)**:
+$$R \bowtie_\theta S = \sigma_\theta (R \times S)$$
+   Returns tuples that fulfill the join predicate. Tuples with unmatched keys are dropped.
+2. **Left Outer Join ($R \ \unicode{x27D5}\ S$)**:
+   Preserves all tuples from the left relation $R$. If no corresponding match exists in $S$, attribute fields belonging to $S$ are padded with `NULL`.
+3. **Right Outer Join ($R \ \unicode{x27D6}\ S$)**:
+   Preserves all tuples from right relation $S$, padding missing $R$ fields with `NULL`.
+4. **Full Outer Join ($R \ \unicode{x27D7}\ S$)**:
+   Preserves all records from both relations. Non-matching tuples from either side are padded with `NULL`.
+5. **Cross Join (Cartesian Product $R \times S$)**:
+   Pairs every tuple in $R$ with every tuple in $S$. If $|R| = m$ and $|S| = n$, $|R \times S| = m \cdot n$.
+6. **Natural Join ($R * S$)**:
+   Performs an equi-join over all identically named columns across both schemas and projects out duplicate column names.
+
+### Join Cardinality Bounds (High-Frequency Exam Metric)
+Suppose Relation $R$ has $|R| = m$ tuples and Relation $S$ has $|S| = n$ tuples:
+- **Minimum Tuples in $R \bowtie S$**: $0$ (if no keys match).
+- **Maximum Tuples in $R \bowtie S$**: $m \times n$ (if join condition evaluates to `TRUE` for all pairs, e.g., all foreign key values match all duplicate keys).
+- **If join is on a Foreign Key referencing a Primary Key ($R.\text{FK} \to S.\text{PK}$)**:
+  - Max tuples in $R \bowtie S$: $m$ (every tuple in $R$ references at most one parent in $S$).
+  - Min tuples in $R \bowtie S$: $0$ (if all FK values in $R$ are `NULL`, assuming FK is nullable).
+- **Left Outer Join ($R \ \unicode{x27D5}\ S$)**:
+  - Minimum tuples: $\max(m, \text{number of matches})$. If $m \ge 1$, minimum is always $m$.
+  - Maximum tuples: $m \times n$.
+
+---
+
+## 5. Subqueries: Nested, Quantified, and Correlated
+
+A subquery is a query embedded within the predicate of another SQL statement.
+
+### 5.1 Scalar and Multi-Row Nested Subqueries
+- **Scalar Subquery**: Returns precisely one row and one column (a single atomic value). Used anywhere an expression is legal:
+  ```sql
+  SELECT EmpName, Salary
+  FROM Employee
+  WHERE Salary > (SELECT AVG(Salary) FROM Employee);
+  ```
+- **Multi-Row Subquery**: Evaluates to a single column containing a set of values, requiring set comparison operators:
+  - `IN` / `NOT IN`: Equivalent to `= ANY` / `<> ALL`.
+  - `> ANY`: Greater than at least the minimum element in the set ($> \min(S)$).
+  - `> ALL`: Greater than every element in the set ($> \max(S)$).
+  - `< ANY`: Less than at least the maximum element in the set ($< \max(S)$).
+  - `< ALL`: Less than every element in the set ($< \min(S)$).
+
+### 5.2 The Dangerous "NOT IN with NULL" Trap
+Consider the query:
+```sql
+SELECT EmpName FROM Employee
+WHERE DeptId NOT IN (SELECT DeptId FROM Department);
+```
+If the subquery returns `{10, 20, NULL}`, the `NOT IN` expression expands via De Morgan's Law into:
+$$\text{DeptId} \neq 10 \text{ AND } \text{DeptId} \neq 20 \text{ AND } \text{DeptId} \neq \text{NULL}$$
+Because $\text{DeptId} \neq \text{NULL}$ evaluates to `UNKNOWN`:
+$$\text{Result} = (\text{TRUE/FALSE}) \text{ AND } (\text{TRUE/FALSE}) \text{ AND } \text{UNKNOWN} \implies \text{UNKNOWN}$$
+Since the `WHERE` clause accepts only `TRUE`, **the query returns zero rows**, regardless of the contents of `Employee`!
+
+> [!IMPORTANT]
+> **Defensive SQL Rule**: When using `NOT IN`, ensure the subquery filters out `NULL` values via `WHERE DeptId IS NOT NULL`, or replace the construct with `NOT EXISTS`.
+
+### 5.3 Correlated Subqueries and `EXISTS`
+Unlike independent subqueries executed once prior to the outer query, a **correlated subquery** references columns from the outer query table ($E_{\text{out}}$). It executes repeatedly—conceptually once for each candidate tuple of the outer query:
+
+```sql
+-- Retrieve employees earning more than the average salary of their own department
+SELECT E1.EmpName, E1.DeptId, E1.Salary
+FROM Employee E1
+WHERE E1.Salary > (
+    SELECT AVG(E2.Salary)
+    FROM Employee E2
+    WHERE E2.DeptId = E1.DeptId  -- Correlation binding
+);
+```
+
+### Relational Division via Double `NOT EXISTS`
+To find entities associated with **all** members of a target set (e.g., *Find Students who have enrolled in ALL courses offered by the CS department*):
+
+```sql
+SELECT S.StudentId, S.StudentName
+FROM Student S
+WHERE NOT EXISTS (
+    SELECT C.CourseId
+    FROM Course C
+    WHERE C.Dept = 'CS'
+    AND NOT EXISTS (
+        SELECT E.CourseId
+        FROM Enrollment E
+        WHERE E.StudentId = S.StudentId
+          AND E.CourseId = C.CourseId
+    )
+);
+```
+**Evaluation Logic**: Returns a student $S$ if there is **NO** CS course $C$ for which there does **NOT** exist an enrollment entry linking $S$ and $C$.
+
+---
+
+## 6. Views: Updatability Invariants and Check Options
+
+A View is a stored virtual relation defined by an underlying query. The database stores the SQL definition in the Data Dictionary (Catalog), not physical records.
+
+```sql
+CREATE VIEW HighSal_CS_Dept AS
+SELECT EmpId, EmpName, Salary, DeptId
+FROM Employee
+WHERE DeptId = 'D01' AND Salary > 60000
+WITH CHECK OPTION;
+```
+
+### ISO/ANSI SQL Rules for Updatable Views
+For `INSERT`, `UPDATE`, or `DELETE` operations to execute directly against a View, the view mapping must be **bijective** (one-to-one correspondence between view rows and base table rows). A view is **NOT updatable** if its query specification contains:
+1. Aggregate functions (`COUNT`, `AVG`, `SUM`, etc.).
+2. The `DISTINCT` keyword.
+3. A `GROUP BY` or `HAVING` clause.
+4. Set operators (`UNION`, `INTERSECT`, `EXCEPT`).
+5. Joins of multiple tables (in standard SQL, though some RDBMS allow updates to key-preserved tables).
+6. Computed expressions in the `SELECT` list (e.g., `Salary * 1.10 AS NewSal`) targeted for direct update.
+
+### The `WITH CHECK OPTION` Clause
+When `WITH CHECK OPTION` is declared:
+- Every `INSERT` or `UPDATE` executed through the view is tested against the view's `WHERE` predicate.
+- If an update modifies an employee's `Salary` to `40000`, the DBMS rejects the transaction with an integrity violation because the modified row would disappear from the view.
+
+---
+
+## 7. Triggers and Active Databases (The ECA Model)
+
+A Trigger is a procedural block executed automatically by the DBMS when a specific modification event occurs on a table. Triggers adhere to the **Event-Condition-Action (ECA)** paradigm:
+
+```
+[Event: INSERT / UPDATE / DELETE]
+          │
+          ▼
+[Condition: WHEN clause evaluates to TRUE?]
+          │ Yes
+          ▼
+[Action: Procedural Body executes (PL/SQL or SQL:1999 block)]
+```
+
+### Classification of Triggers
+
+```
+                         TRIGGER CLASSIFICATION
+                       /                       \
+             Execution Level                 Timing Level
+             /             \                 /          \
+      Statement-Level    Row-Level        BEFORE        AFTER
+      (Executes once     (FOR EACH ROW;   (Pre-check;   (Auditing,
+       per SQL command)   executes once    can mutate    cascades,
+                          per tuple)       :NEW values)  logging)
+```
+
+### Transition Pseudorecords
+
+| Pseudorecord | `INSERT` | `UPDATE` | `DELETE` |
+|---|---|---|---|
+| `:OLD.attribute` | `NULL` | Pre-update attribute state | Pre-deletion attribute state |
+| `:NEW.attribute` | Inserted value | Post-update proposed value | `NULL` |
+
+```sql
+-- Audit Trigger: Record significant salary increments
+CREATE OR REPLACE TRIGGER trg_Audit_Salary_Change
+AFTER UPDATE OF Salary ON Employee
+FOR EACH ROW
+WHEN (NEW.Salary > OLD.Salary * 1.25)
+BEGIN
+    INSERT INTO SalaryAuditLog(EmpId, OldSal, NewSal, ChangeTimestamp)
+    VALUES (:OLD.EmpId, :OLD.Salary, :NEW.Salary, SYSDATE);
+END;
+```
+
+---
+
+## 8. Step-by-Step Worked Problems & Query Patterns
+
+### Problem 1: Finding the N-th Highest Salary
+*Task: Write an engine-agnostic SQL query to retrieve the 3rd highest distinct salary without window functions.*
+
+#### Method A: Correlated Subquery
+```sql
+SELECT DISTINCT E1.Salary
+FROM Employee E1
+WHERE 2 = (
+    SELECT COUNT(DISTINCT E2.Salary)
+    FROM Employee E2
+    WHERE E2.Salary > E1.Salary
+);
+```
+**Step-by-Step Execution**:
+1. For each distinct salary in $E_1$, the subquery counts how many distinct salaries in $E_2$ are strictly greater.
+2. For the highest salary, count is $0$.
+3. For the 2nd highest, count is $1$.
+4. For the 3rd highest, count is exactly $2$.
+5. Hence, setting `WHERE (N - 1) = (SELECT COUNT(DISTINCT...))` identifies the $N$-th rank universally.
+
+#### Method B: Modern ANSI SQL (Window Functions)
+```sql
+WITH RankedSalaries AS (
+    SELECT Salary, DENSE_RANK() OVER (ORDER BY Salary DESC) AS SalRank
+    FROM Employee
+)
+SELECT DISTINCT Salary
+FROM RankedSalaries
+WHERE SalRank = 3;
+```
+
+---
+
+### Problem 2: Join Output Tuple Calculation (Numerical)
+
+Given two relations:
+- Relation $R(A, B)$ contains tuples: `{(1, 2), (1, 3), (2, 4), (3, 5)}` ($|R| = 4$)
+- Relation $S(A, C)$ contains tuples: `{(1, 7), (1, 8), (1, 9), (2, 6), (4, 1)}` ($|S| = 5$)
+
+*Question*: Determine the exact tuple counts for:
+1. $R \bowtie_{R.A = S.A} S$ (Inner Join)
+2. $R \ \unicode{x27D5}_{R.A = S.A}\ S$ (Left Outer Join)
+3. $R \ \unicode{x27D7}_{R.A = S.A}\ S$ (Full Outer Join)
+
+#### Step-by-Step Solution:
+Partition tuples by the join key attribute $A$:
+- **For Key $A = 1$**:
+  - $R$ has 2 rows; $S$ has 3 rows.
+  - Inner join product: $2 \times 3 = 6$ tuples.
+- **For Key $A = 2$**:
+  - $R$ has 1 row; $S$ has 1 row.
+  - Inner join product: $1 \times 1 = 1$ tuple.
+- **For Key $A = 3$**:
+  - $R$ has 1 row; $S$ has 0 rows.
+  - Inner join product: $0$ tuples.
+- **For Key $A = 4$**:
+  - $R$ has 0 rows; $S$ has 1 row.
+  - Inner join product: $0$ tuples.
+
+1. **Inner Join Count**:
+$$\text{Total} = 6 + 1 + 0 + 0 = \mathbf{7 \text{ tuples}}$$
+2. **Left Outer Join Count**:
+   - Matches from inner join: $7$ tuples.
+   - Unmatched rows in left table $R$: The tuple $(3, 5)$ has no partner in $S$, so it is retained padded with `NULL`s: $1$ tuple.
+$$\text{Total} = 7 + 1 = \mathbf{8 \text{ tuples}}$$
+3. **Full Outer Join Count**:
+   - Matches from inner join: $7$ tuples.
+   - Unmatched from $R$: $(3, 5, \text{NULL})$: $1$ tuple.
+   - Unmatched from $S$: $(\text{NULL}, 4, 1)$: $1$ tuple.
+$$\text{Total} = 7 + 1 + 1 = \mathbf{9 \text{ tuples}}$$
+
+---
+
+## 9. UGC NET & Bihar STET PYQ Analysis & Practice
+
+### Question 1 (UGC NET Official PYQ)
+Consider a relation $R(A, B, C)$ containing $10$ tuples. What are the minimum and maximum possible number of tuples in the result of the following query?
+```sql
+SELECT DISTINCT A FROM R WHERE B IS NOT NULL;
+```
+- **A)** Min: 0, Max: 10
+- **B)** Min: 1, Max: 10
+- **C)** Min: 0, Max: 1
+- **D)** Min: 10, Max: 10
+
+**Answer**: **A**
+**Explanation**:
+- **Minimum**: If attribute $B$ is `NULL` in all $10$ tuples, the `WHERE` condition evaluates to `FALSE` for every tuple, yielding **0** tuples.
+- **Maximum**: If attribute $B$ is non-NULL in all tuples and attribute $A$ contains $10$ distinct unique values, `DISTINCT A` returns **10** tuples.
+
+---
+
+### Question 2 (Bihar STET Higher Secondary Exam)
+Which of the following SQL conditions is equivalent to `Salary BETWEEN 20000 AND 50000`?
+- **A)** `Salary > 20000 AND Salary < 50000`
+- **B)** `Salary >= 20000 AND Salary <= 50000`
+- **C)** `Salary >= 20000 OR Salary <= 50000`
+- **D)** `Salary > 20000 AND Salary <= 50000`
+
+**Answer**: **B**
+**Explanation**: The SQL `BETWEEN ... AND ...` operator is strictly **inclusive** of both boundary endpoints.
+
+---
+
+### Question 3 (UGC NET Concurrency / SQL Assertion)
+Which statement regarding Views in SQL is **INCORRECT**?
+- **A)** A view can be created from multiple tables using joins.
+- **B)** All views can be updated using standard `INSERT` and `UPDATE` statements.
+- **C)** `WITH CHECK OPTION` ensures modifications satisfy the view definition predicate.
+- **D)** Views do not store physical data tuples permanently, except in the case of Materialized Views.
+
+**Answer**: **B**
+**Explanation**: Views containing aggregates, `DISTINCT`, `GROUP BY`, `UNION`, or complex joins are strictly non-updatable in ANSI SQL.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="What is the primary operational difference between the WHERE clause and the HAVING clause in SQL?"
+  optionA="WHERE operates on individual rows prior to grouping, while HAVING operates on grouped summary rows after GROUP BY"
+  optionB="WHERE can use aggregate functions like AVG(), while HAVING cannot"
+  optionC="HAVING executes before WHERE"
+  optionD="WHERE is only used with INSERT statements"
+  correctOption="A"
+  explanation="WHERE filters base table tuples BEFORE they are grouped. HAVING filters grouped rows AFTER aggregation. Aggregate functions (SUM, AVG, COUNT) are forbidden in WHERE clauses but permitted in HAVING clauses."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="In SQL, what is the evaluated result of the three-valued logic expression: (NULL = NULL) and (NULL OR TRUE)?"
+  optionA="TRUE and TRUE"
+  optionB="UNKNOWN and TRUE"
+  optionC="FALSE and TRUE"
+  optionD="UNKNOWN and UNKNOWN"
+  correctOption="B"
+  explanation="In SQL three-valued logic, comparing anything with NULL (even NULL = NULL) yields UNKNOWN. In logical OR, TRUE OR UNKNOWN evaluates to TRUE. Thus: UNKNOWN and TRUE."
+  examBadge="UGC NET Dec 2021"
+/>
+
+<Quiz
+  question="Under what condition is an SQL View guaranteed to be Updatable (allowing INSERT, UPDATE, and DELETE operations through the view)?"
+  optionA="The view query contains GROUP BY and HAVING clauses"
+  optionB="The view query is defined over a single base table without aggregate functions, DISTINCT, or GROUP BY, and includes the primary key"
+  optionC="The view uses a FULL OUTER JOIN"
+  optionD="The view uses UNION ALL"
+  correctOption="B"
+  explanation="To be updatable without ambiguity, a view must map one-to-one to rows of a single underlying base table. It must not contain aggregation, GROUP BY, DISTINCT, set operations (UNION), or multi-table joins where key preservation fails."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="What is the behavior of a Correlated Subquery during SQL query execution?"
+  optionA="It executes once and caches the result for the outer query"
+  optionB="It re-executes repeatedly for every individual row processed by the outer query"
+  optionC="It runs in parallel threads"
+  optionD="It creates a permanent disk table"
+  correctOption="B"
+  explanation="A correlated subquery references columns from the outer query table. Consequently, the subquery cannot be evaluated once independently; the query engine must evaluate it once for each candidate row produced by the outer query."
+  examBadge="UGC NET June 2020"
+/>
+
+<Quiz
+  question="In SQL DDL, what does the clause 'ON DELETE CASCADE' on a foreign key constraint enforce?"
+  optionA="Prevents deletion of the referenced parent row"
+  optionB="Automatically deletes all child rows referencing the parent row when that parent row is deleted"
+  optionC="Sets foreign keys in child rows to NULL"
+  optionD="Rolls back the entire transaction"
+  correctOption="B"
+  explanation="ON DELETE CASCADE maintains referential integrity by automatically propagating the deletion of a parent table tuple to all child table tuples that reference its primary key, preventing orphaned records."
+  examBadge="Bihar STET Paper 2 2023"
+/>
+
+
+---
+
+## 10. High-Yield Revision Matrix
+
+| Topic Concept | Primary Exam Invariant | Common Trap / Pitfall |
+|---|---|---|
+| **`COUNT(*)` vs `COUNT(A)`** | `COUNT(*)` counts all rows; `COUNT(A)` ignores `NULL`s | Assuming `COUNT(A)` counts `NULL`s when non-null values exist |
+| **`NOT IN (subquery)`** | Fails completely if subquery returns even one `NULL` | Always check for `NULL` in target sets or prefer `NOT EXISTS` |
+| **Lexical vs Logical Order** | `WHERE` runs before `SELECT` | Attempting to filter on a `SELECT` column alias inside `WHERE` |
+| **`HAVING` vs `WHERE`** | `WHERE` filters rows; `HAVING` filters group partitions | Writing `WHERE MAX(Sal) > 5000` instead of using `HAVING` |
+| **Natural Join ($*$)** | Equi-joins across all identically named columns | Unintended joins when unrelated tables share common attribute names (e.g. `Id`) |
+| **Updatable Views** | Requires bijective 1:1 row mapping with base table | Attempting `INSERT` on a view defined with `SUM()` or `GROUP BY` |
+| **Triggers** | `BEFORE` can mutate `:NEW`; `AFTER` cannot modify `:NEW` | Attempting to assign values to `:NEW` inside an `AFTER` trigger |

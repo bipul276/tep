@@ -1,0 +1,278 @@
+---
+title: "Chomsky Hierarchy, Pushdown Automata (PDA), Decidability & Closure Properties"
+unit: "Unit 11: Theory of Computation & Compilers"
+examType: "Common"
+priority: "Med"
+readTime: "45 min"
+slug: "chomsky-hierarchy-pda-toc"
+description: "Exhaustive theoretical computer science guide: Chomsky Hierarchy (Types 0-3), Grammar forms, DPDA vs NPDA power difference, DCFL vs CFL, complete closure properties matrix, and decidability table with PYQs."
+tags: ["Theory of Computation", "TOC", "Chomsky Hierarchy", "Grammars", "Pushdown Automata", "PDA", "Decidability", "Closure Properties"]
+---
+
+# Chomsky Hierarchy, Pushdown Automata (PDA), Decidability & Closure Properties
+
+## 1. Formal Grammar Systems & The Chomsky Hierarchy
+
+In formal language theory, a grammar $G$ is a mathematical generative mechanism defined as a 4-tuple:
+
+$$G = (V, T, P, S)$$
+
+where:
+- $V$ (or $N$): A finite set of **non-terminal variables**.
+- $T$ (or $\Sigma$): A finite set of **terminal symbols** ($V \cap T = \emptyset$).
+- $P$: A finite set of **production rules** of the general form $\alpha \to \beta$, where $\alpha, \beta \in (V \cup T)^*$, and $\alpha$ contains at least one variable ($\alpha \notin T^*$).
+- $S \in V$: The **start symbol**.
+
+In 1956, linguist and computer scientist **Noam Chomsky** classified all formal grammars into four hierarchical tiers based on structural constraints placed on their production rules $\alpha \to \beta$.
+
+```text
++-------------------------------------------------------------------------+
+| Type 0: Unrestricted / Recursively Enumerable (Turing Machine)          |
+|  +-------------------------------------------------------------------+  |
+|  | Type 1: Context-Sensitive / CSL (Linear Bounded Automaton - LBA)  |  |
+|  |  +-------------------------------------------------------------+  |  |
+|  |  | Type 2: Context-Free / CFL (Pushdown Automaton - PDA)       |  |  |
+|  |  |  +-------------------------------------------------------+  |  |  |
+|  |  |  | Type 3: Regular Languages (Finite Automaton - DFA)   |  |  |  |
+|  |  |  +-------------------------------------------------------+  |  |  |
+|  |  +-------------------------------------------------------------+  |  |
+|  +-------------------------------------------------------------------+  |
++-------------------------------------------------------------------------+
+```
+
+---
+
+### 1.1 Structural Taxonomy of the Four Chomsky Grammars
+
+| Level | Grammar Class | Production Rule Constraints ($\alpha \to \beta$) | Recognizing Automaton | Language Family |
+|:---:|:---|:---|:---|:---|
+| **Type 3** | **Regular Grammar** | **Right-Linear**: $A \to wB$ or $A \to w$<br />*(or Left-Linear: $A \to Bw$ or $A \to w$)*<br />where $A, B \in V, w \in T^*$ | **Deterministic / Non-deterministic Finite Automaton (DFA / NFA)** | Regular Languages ($a^n, (ab)^*$) |
+| **Type 2** | **Context-Free Grammar (CFG)** | $A \to \gamma$<br />where $A \in V$ (single variable on LHS) and $\gamma \in (V \cup T)^*$ | **Non-deterministic Pushdown Automaton (NPDA)** | Context-Free Languages ($a^n b^n$) |
+| **Type 1** | **Context-Sensitive Grammar (CSG)** | $\alpha A \beta \to \alpha \gamma \beta$<br />where $|\alpha A \beta| \le |\alpha \gamma \beta|$ (Non-contracting rules: $|\alpha| \le |\beta|$) | **Linear Bounded Automaton (LBA)** (Turing machine with tape bounded by $k \cdot n$) | Context-Sensitive Languages ($a^n b^n c^n$) |
+| **Type 0** | **Unrestricted (Phase Structure)** | $\alpha \to \beta$<br />No restrictions, except $\alpha$ must contain at least one non-terminal ($\alpha \in (V \cup T)^+ \setminus T^*$) | **Turing Machine (TM)** | Recursively Enumerable Languages (RE) |
+
+> **Crucial Rule on Linear Grammars**:
+> A grammar is Type 3 if it is **purely right-linear** OR **purely left-linear**. If a grammar mixes right-linear rules ($A \to aB$) and left-linear rules ($B \to Ca$) in the same grammar, it is **Type 2 (Context-Free)**, NOT Type 3!
+
+---
+
+## 2. Pushdown Automata (PDA)
+
+A Pushdown Automaton is fundamentally an $\epsilon$-NFA augmented with an **unbounded Last-In, First-Out (LIFO) stack memory**.
+
+### 2.1 Formal 7-Tuple Definition
+A PDA $M$ is formally defined as:
+
+$$M = (Q, \Sigma, \Gamma, \delta, q_0, Z_0, F)$$
+
+where:
+1. $Q$: Finite set of internal states.
+2. $\Sigma$: Finite input alphabet.
+3. $\Gamma$: Finite **stack alphabet** (symbols allowed to be pushed onto the stack).
+4. $\delta$: The transition function:
+$$\delta: Q \times (\Sigma \cup \{\epsilon\}) \times \Gamma \to 2^{Q \times \Gamma^*}$$
+   *(Given a current state, an optional input symbol, and the top-of-stack symbol, the PDA transitions to a new state and replaces the top stack symbol with a string of stack symbols).*
+5. $q_0 \in Q$: Start state.
+6. $Z_0 \in \Gamma$: Initial bottom-of-stack marker symbol.
+7. $F \subseteq Q$: Set of accepting (final) states.
+
+---
+
+### 2.2 Acceptance Modes: Final State vs. Empty Stack
+
+A PDA can accept an input string $w$ via two distinct mechanisms:
+1. **Acceptance by Final State ($L(M)$)**:
+   The machine consumes all of $w$ and halts in a designated final state $q \in F$ (the contents of the stack do not matter):
+$$L(M) = \{ w \in \Sigma^* \mid (q_0, w, Z_0) \vdash^* (p, \epsilon, \gamma) \quad \text{where } p \in F, \gamma \in \Gamma^* \}$$
+2. **Acceptance by Empty Stack (Null Stack, $N(M)$)**:
+   The machine consumes all of $w$ and empties its entire stack completely (the final state does not matter):
+$$N(M) = \{ w \in \Sigma^* \mid (q_0, w, Z_0) \vdash^* (p, \epsilon, \epsilon) \quad \text{where } p \in Q \}$$
+
+> **Equivalence Theorem**:
+> For **Non-deterministic PDAs (NPDA)**, acceptance by final state and acceptance by empty stack are **strictly equivalent**:
+> $$L(\text{NPDA}_{\text{final}}) = N(\text{NPDA}_{\text{empty}}) = \text{Context-Free Languages}$$
+> Any NPDA accepting by final state can be algorithmically transformed into an equivalent NPDA accepting by empty stack, and vice versa.
+
+---
+
+## 3. Deterministic PDA (DPDA) vs. Non-Deterministic PDA (NPDA)
+
+In finite automata, DFAs and NFAs are equivalent in power ($\mathcal{L}(\text{DFA}) = \mathcal{L}(\text{NFA})$). **In Pushdown Automata, this equivalence completely breaks down.**
+
+### 3.1 Formal Definition of a Deterministic PDA (DPDA)
+A PDA is deterministic if and only if **both** of the following conditions hold for every state $q \in Q$ and stack symbol $X \in \Gamma$:
+1. For any $a \in \Sigma \cup \{\epsilon\}$, $|\delta(q, a, X)| \le 1$ (at most one transition exists).
+2. If $\delta(q, \epsilon, X) \neq \emptyset$, then $\delta(q, a, X) = \emptyset$ for all $a \in \Sigma$ (if an $\epsilon$-transition is possible on top symbol $X$, no input-consuming transition is allowed on $X$).
+
+---
+
+### 3.2 The Strict Power Gap: $\text{DCFL} \subset \text{CFL}$
+
+> **Fundamental Theorem**:
+> Non-deterministic Pushdown Automata are **strictly more expressive and powerful** than Deterministic Pushdown Automata:
+> $$\mathcal{L}(\text{DPDA}) = \text{DCFL} \quad \subsetneq \quad \mathcal{L}(\text{NPDA}) = \text{CFL}$$
+
+```text
+       All Context-Free Languages (CFL) — Accepted by NPDA
+       +-------------------------------------------------------+
+       | Example: L = { w wᴿ | w ∈ {a, b}* }                   |
+       | (Even Palindromes — Requires Non-Deterministic Guess) |
+       |  +-------------------------------------------------+  |
+       |  | Deterministic Context-Free (DCFL) — DPDA        |  |
+       |  | Example: L = { aⁿ bⁿ | n ≥ 1 }                  |  |
+       |  | Example: L = { w c wᴿ | w ∈ {a, b}* }           |  |
+       |  |  +-------------------------------------------+  |  |
+       |  |  | Regular Languages (DFA)                   |  |  |
+       |  |  +-------------------------------------------+  |  |
+       |  +-------------------------------------------------+  |
+       +-------------------------------------------------------+
+```
+
+#### Why $L = \{w w^R\}$ Cannot Be Accepted by Any DPDA:
+To recognize a palindrome like `abba`, the automaton must push characters until the midpoint, and then pop and compare. But for an arbitrary string $w w^R$, **there is no syntactic marker indicating where the first half ends and the second half begins**. An NPDA non-deterministically guesses the midpoint. A DPDA cannot guess, cannot backtrack, and must fail on some inputs. Hence, $L = \{w w^R\}$ is **Context-Free but NOT Deterministic Context-Free**.
+
+---
+
+## 4. Master Closure Properties Matrix
+
+This table is one of the highest-yield subjects in both **UGC NET** and **Bihar STET Computer Science**:
+
+| Operation | Regular | DCFL | CFL | CSL | Recursive (REC) | Recursively Enumerable (RE) |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Union** ($L_1 \cup L_2$) | **Yes** | **No** | **Yes** | **Yes** | **Yes** | **Yes** |
+| **Intersection** ($L_1 \cap L_2$) | **Yes** | **No** | **No** | **Yes** | **Yes** | **Yes** |
+| **Complement** ($\bar{L}$) | **Yes** | **Yes** | **No** | **Yes** | **Yes** | **No** |
+| **Concatenation** ($L_1 L_2$) | **Yes** | **No** | **Yes** | **Yes** | **Yes** | **Yes** |
+| **Kleene Star** ($L^*$) | **Yes** | **No** | **Yes** | **Yes** | **Yes** | **Yes** |
+| **Reversal** ($L^R$) | **Yes** | **No** | **Yes** | **Yes** | **Yes** | **Yes** |
+| **Homomorphism** ($h(L)$) | **Yes** | **No** | **Yes** | **No** (if $\epsilon$-free: Yes) | **No** | **Yes** |
+| **Intersection with Regular** ($L \cap R$) | **Yes** | **Yes** | **Yes** | **Yes** | **Yes** | **Yes** |
+
+### 4.1 Crucial Exam Insights on Closure
+1. **CFL is NOT closed under Intersection**:
+$$L_1 = \{a^n b^n c^m \mid n, m \ge 1\} \in \text{CFL}, \quad L_2 = \{a^m b^n c^n \mid n, m \ge 1\} \in \text{CFL}$$
+$$L_1 \cap L_2 = \{a^n b^n c^n \mid n \ge 1\} \notin \text{CFL} \quad (\text{Requires 2 independent stacks } \implies \text{CSL})$$
+2. **CFL is NOT closed under Complement**:
+   By De Morgan's Law: $L_1 \cap L_2 = \overline{\overline{L_1} \cup \overline{L_2}}$. If CFL were closed under complement, it would be closed under intersection (which it is not!).
+3. **Intersection with Regular Language**:
+   If $L$ is a CFL and $R$ is a Regular language, then $L \cap R$ is **always a CFL** (Cross-product construction of PDA with DFA).
+
+---
+
+## 5. Master Decidability Matrix
+
+A problem is **Decidable** if there exists an algorithm (a Turing machine that halts on all inputs) that answers "Yes" or "No" correctly in finite time.
+
+| Decision Problem | Regular | DCFL | CFL | CSL | Recursive (REC) | Recursively Enumerable (RE) |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Membership** ($w \in L$?) | **Decidable** | **Decidable** | **Decidable** (CYK $O(n^3)$) | **Decidable** | **Decidable** | **Undecidable** |
+| **Emptiness** ($L = \emptyset$?) | **Decidable** | **Decidable** | **Decidable** | **Undecidable** | **Undecidable** | **Undecidable** |
+| **Finiteness** ($|L| < \infty$?) | **Decidable** | **Decidable** | **Decidable** | **Undecidable** | **Undecidable** | **Undecidable** |
+| **Equivalence** ($L_1 = L_2$?) | **Decidable** | **Decidable** | **Undecidable** | **Undecidable** | **Undecidable** | **Undecidable** |
+| **Subset** ($L_1 \subseteq L_2$?) | **Decidable** | **Undecidable** | **Undecidable** | **Undecidable** | **Undecidable** | **Undecidable** |
+| **Disjointness** ($L_1 \cap L_2 = \emptyset$?) | **Decidable** | **Undecidable** | **Undecidable** | **Undecidable** | **Undecidable** | **Undecidable** |
+| **Totality** ($L = \Sigma^*$?) | **Decidable** | **Decidable** | **Undecidable** | **Undecidable** | **Undecidable** | **Undecidable** |
+| **Ambiguity** (Is $G$ ambiguous?) | N/A | N/A | **Undecidable** | N/A | N/A | N/A |
+
+> **Key Rule of Thumb for Competitive Exams**:
+> - For **Regular Languages**: **EVERYTHING IS DECIDABLE**.
+> - For **Context-Free Languages (CFL)**: Only **Membership, Emptiness, and Finiteness** are decidable. All relational questions ($L_1 = L_2$, $L_1 \subseteq L_2$, $L = \Sigma^*$, Ambiguity) are **UNDECIDABLE**.
+> - For **DCFL**: Equivalence ($L_1 = L_2$) is **DECIDABLE** (Sénizergues' Theorem, 1997 / Gödel Prize), but Subset and Disjointness remain undecidable.
+
+---
+
+## 6. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET June 2020 — Chomsky Grammar Classification)
+Given the production rules:
+$$
+\begin{aligned}
+S &\to aB \\
+B &\to bC \\
+C &\to aS \mid \epsilon
+\end{aligned}
+$$
+What is the highest Chomsky hierarchy type of this grammar?
+
+**Solution**:
+1. Check LHS: Every production has a single non-terminal ($S, B, C$) on the LHS $\implies$ At least Type 2 (CFG).
+2. Check RHS:
+   - $S \to aB$: Terminal followed by single non-terminal (Right-linear).
+   - $B \to bC$: Terminal followed by single non-terminal (Right-linear).
+   - $C \to aS$: Terminal followed by single non-terminal (Right-linear).
+   - $C \to \epsilon$: Empty string production.
+3. Every rule is strictly **Right-Linear** (Type 3).
+**Answer**: **Type 3 (Regular Grammar)**.
+
+### Question 2 (UGC NET 2021 — Decidability of CFLs)
+Which of the following problems is **UNDECIDABLE** for Context-Free Languages?
+- (A) Is $L = \emptyset$?
+- (B) Is $w \in L$?
+- (C) Is $L_1 = L_2$?
+- (D) Is $|L| < \infty$?
+
+**Solution**:
+- Emptiness ($L = \emptyset$), Membership ($w \in L$), and Finiteness ($|L| < \infty$) are all **decidable** for CFLs using standard algorithms (CYK algorithm or graph reachability on CFG generating symbols).
+- Equivalence ($L_1 = L_2$) is provably **undecidable** for CFLs via reduction from Post Correspondence Problem (PCP).
+**Answer**: **(C)**.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="Which of the following formal languages can be recognized by a Deterministic Pushdown Automaton (DPDA)?"
+  optionA="L = { w w^R | w ∈ {0, 1}* }"
+  optionB="L = { w c w^R | w ∈ {0, 1}*, c is a marker }"
+  optionC="L = { a^n b^n c^n | n ≥ 1 }"
+  optionD="L = { w w | w ∈ {0, 1}* }"
+  correctOption="B"
+  explanation="L = { w w^R } requires a Non-deterministic PDA (NPDA) because the automaton cannot know where the first half ends and the reversal begins without guessing. With an explicit middle marker 'c' ({ w c w^R }), a DPDA can deterministically switch from pushing to popping upon seeing 'c'."
+  examBadge="UGC NET Dec 2021 / Official PYQ"
+/>
+
+<Quiz
+  question="Under which of the following operations are Context-Free Languages (CFL) strictly CLOSED?"
+  optionA="Intersection"
+  optionB="Set Complement"
+  optionC="Union, Concatenation, and Kleene Star (*)"
+  optionD="Set Difference"
+  correctOption="C"
+  explanation="CFLs are closed under Union, Concatenation, and Kleene Star. CFLs are NOT closed under Intersection (e.g., L1 ∩ L2 = {a^n b^n c^n} which is CSG, not CFL) and therefore NOT closed under Complement (by De Morgan's Laws)."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="If a Context-Free Grammar G is in Chomsky Normal Form (CNF), how many derivation steps are required to derive a terminal string of length n (n ≥ 1)?"
+  optionA="n steps"
+  optionB="2n - 1 steps"
+  optionC="2n steps"
+  optionD="n^2 steps"
+  correctOption="B"
+  explanation="In CNF, all productions are of the form A  BC or A  a. To generate a string of length n: exactly n - 1 rule applications of A  BC are needed to create n non-terminals, followed by n rule applications of A  a to convert them into terminals. Total derivation steps = (n - 1) + n = 2n - 1 steps."
+  examBadge="UGC NET June 2020"
+/>
+
+<Quiz
+  question="Which of the following decision problems is DECIDABLE for Context-Free Languages (CFL)?"
+  optionA="Is L1 ∩ L2 = ∅ ? (Emptiness of intersection)"
+  optionB="Is L = Σ* ? (Universality)"
+  optionC="Is L = ∅ ? (Emptiness of language)"
+  optionD="Is L1 = L2 ? (Equivalence)"
+  correctOption="C"
+  explanation="Emptiness, Finiteness, and Membership are DECIDABLE for Context-Free Languages. Universality (L = Σ*), Equivalence (L1 = L2), Intersection Emptiness (L1 ∩ L2 = ∅), and Ambiguity are UNDECIDABLE for CFLs."
+  examBadge="UGC NET Dec 2022"
+/>
+
+<Quiz
+  question="According to the Chomsky Hierarchy, what type of grammar generates Context-Sensitive Languages (Type 1), and what automaton recognizes them?"
+  optionA="Type 1: α  β where |α| ≤ |β|; recognized by Linear Bounded Automata (LBA)"
+  optionB="Type 1: A  aB; recognized by Finite Automata"
+  optionC="Type 1: A  α; recognized by Pushdown Automata"
+  optionD="Type 1: Unrestricted; recognized by Turing Machine"
+  correctOption="A"
+  explanation="Type 1 grammars are Context-Sensitive Grammars (CSG), characterized by non-contracting production rules α  β where |α| ≤ |β| (except S  ε if S does not appear on RHS). The accepting machine is a Linear Bounded Automaton (LBA), which is a non-deterministic TM with tape bounded by input length."
+  examBadge="Bihar STET Standard"
+/>
+

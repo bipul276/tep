@@ -1,0 +1,249 @@
+---
+title: "Combinatorics, Discrete Probability, and Bayes' Theorem"
+unit: "Unit 1: Digital Logic & Discrete Structures"
+examType: "UGC-NET"
+priority: "Low"
+readTime: "32 min"
+slug: "combinatorics-probability-discrete-math"
+description: "Master the Pigeonhole Principle, Inclusion-Exclusion, Derangements, Stars and Bars, Conditional Probability, and Bayes' Theorem with worked numericals for UGC NET and Bihar STET."
+tags: ["Discrete Mathematics", "Combinatorics", "Pigeonhole Principle", "Inclusion Exclusion", "Probability", "Bayes Theorem", "UGC-NET", "STET"]
+---
+
+# Combinatorics, Discrete Probability, and Bayes' Theorem
+
+Counting arguments, combinatorial distributions, and probabilistic inference form a cornerstone of the **UGC NET** (Unit 1: Discrete Mathematics) and **Bihar STET Computer Science** exams. Questions in this domain are heavily numerical, testing precise application of the **Generalized Pigeonhole Principle**, **Inclusion-Exclusion and Derangements**, **Stars-and-Bars equation counting**, and **Bayesian posterior probability inversion**.
+
+---
+
+## 1. The Pigeonhole Principle (Dirichlet's Box Principle)
+
+```
++-----------------------------------------------------------------------------------------+
+|                              THE PIGEONHOLE PRINCIPLE (PHP)                             |
++--------------------------+--------------------------------------------------------------+
+| Principle Variant        | Mathematical Formulation                                     |
++--------------------------+--------------------------------------------------------------+
+| 1. Basic PHP             | If $n + 1$ or more pigeons are placed into $n$ pigeonholes,  |
+|                          | then at least one pigeonhole must contain $\ge 2$ pigeons.   |
++--------------------------+--------------------------------------------------------------+
+| 2. Generalized PHP       | If $N$ items are distributed among $k$ distinct boxes, then  |
+|                          | at least one box contains at least:                          |
+|                          | $$\mathbf{\left\lceil \frac{N}{k} \right\rceil} \text{ items}|
++--------------------------+--------------------------------------------------------------+
+| 3. Minimum Items Needed  | To guarantee that at least $m$ items occupy the same box     |
+|    for Target $m$        | when distributed over $k$ boxes:                             |
+|                          | $$\mathbf{N_{\text{min}} = k(m - 1) + 1}$$                   |
++--------------------------+--------------------------------------------------------------+
+```
+
+### Classic Exam Archetypes of PHP
+- **Birthday Coincidences**: How many people must be gathered in a room to guarantee that at least 4 share the same birth month?
+$$k = 12 \text{ months}, \quad m = 4 \implies N = 12(4 - 1) + 1 = 12(3) + 1 = \mathbf{37 \text{ people}}$$
+- **Remainder Invariant**: Among any $n + 1$ integers, there must exist at least two whose difference is divisible by $n$ (because there are only $n$ distinct remainders modulo $n$: $\{0, 1, \dots, n-1\}$).
+
+---
+
+## 2. The Principle of Inclusion-Exclusion (PIE)
+
+The Principle of Inclusion-Exclusion calculates the cardinality of the union of multiple non-disjoint sets by alternately adding and subtracting intersecting subsets:
+
+```
+          TWO SETS: |A ∪ B|                       THREE SETS: |A ∪ B ∪ C|
+           +-------+-------+                       +-------+-------+
+          /    A    \   B   \                     /    A    \   B   \
+         |     (•)   |-(A∩B) |                   |    (•)    |  (•)   |
+          \         /       /                     \     \-(A∩B)/     /
+           +-------+-------+                       +-------X-------+
+                                                          / \
+                                                         / C \
+```
+
+$$\textbf{For 2 Sets:} \quad |A \cup B| = |A| + |B| - |A \cap B|$$
+$$\textbf{For 3 Sets:} \quad |A \cup B \cup C| = \sum |A| - \sum |A \cap B| + |A \cap B \cap C|$$
+
+### 2.1 De-arrangements ($D_n$)
+A **derangement** is a permutation of $n$ elements in which **no element appears in its original position** ($\forall i, \pi(i) \neq i$).
+
+Using the Principle of Inclusion-Exclusion:
+$$D_n = n! \left( 1 - \frac{1}{1!} + \frac{1}{2!} - \frac{1}{3!} + \dots + \frac{(-1)^n}{n!} \right) = n! \sum_{k=0}^n \frac{(-1)^k}{k!}$$
+
+As $n \to \infty$, the probability that a random permutation is a derangement approaches:
+$$\lim_{n \to \infty} \frac{D_n}{n!} = \frac{1}{e} \approx 0.367879 \quad (36.8\%)$$
+
+#### Memorization Table for Exam Numericals
+$$
+\begin{aligned}
+D_1 &= 0 \\
+D_2 &= 1 \\
+D_3 &= 2 \\
+D_4 &= 9 \\
+D_5 &= 44 \\
+D_6 &= 265
+\end{aligned}
+$$
+- **Recurrence Relations**:
+$$D_n = (n - 1)(D_{n-1} + D_{n-2}) \quad \text{and} \quad D_n = n \cdot D_{n-1} + (-1)^n$$
+
+---
+
+## 3. Combinatorics with Repetition: Stars and Bars
+
+Distributing $r$ identical (indistinguishable) items into $n$ distinct (distinguishable) bins is equivalent to finding integer solutions to:
+
+$$x_1 + x_2 + x_3 + \dots + x_n = r$$
+
+```
++-----------------------------------------------------------------------------------------+
+|                                  STARS AND BARS FORMULAS                                |
++-----------------------------------+-----------------------------------------------------+
+| Problem Type                      | Formula                                             |
++-----------------------------------+-----------------------------------------------------+
+| 1. Non-negative Integer Solutions | $$\mathbf{\binom{n + r - 1}{r} = \binom{n + r - 1}{n - 1}}$$ |
+|    ($x_i \ge 0$)                  |                                                     |
++-----------------------------------+-----------------------------------------------------+
+| 2. Strictly Positive Solutions    | $$\mathbf{\binom{r - 1}{n - 1}}$$                   |
+|    ($x_i \ge 1$)                  |                                                     |
++-----------------------------------+-----------------------------------------------------+
+| 3. Variable Lower Bounds          | Substitute $y_i = x_i - c_i \ge 0$, and evaluate    |
+|    ($x_i \ge c_i$)                | for remaining sum $r' = r - \sum c_i$.              |
++-----------------------------------+-----------------------------------------------------+
+```
+
+*Example*: How many non-negative integer solutions exist for $x_1 + x_2 + x_3 = 11$?
+$$n = 3 \text{ variables}, \quad r = 11 \implies \binom{3 + 11 - 1}{11} = \binom{13}{11} = \binom{13}{2} = \frac{13 \times 12}{2} = \mathbf{78 \text{ solutions}}$$
+
+---
+
+## 4. Discrete Probability & Bayes' Theorem
+
+### 4.1 Conditional Probability & Independence
+The conditional probability of event $A$ occurring given that event $B$ has occurred ($P(B) > 0$):
+
+$$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
+
+- Two events $A$ and $B$ are **statistically independent** if and only if:
+$$P(A \cap B) = P(A) \cdot P(B) \iff P(A \mid B) = P(A)$$
+- Two mutually exclusive (disjoint) events with non-zero probability are **never independent** because if one occurs, the probability of the other drops to zero!
+
+---
+
+### 4.2 The Law of Total Probability
+Let $B_1, B_2, \dots, B_k$ form a partition of the sample space $S$ ($\bigcup B_i = S$ and $B_i \cap B_j = \emptyset$ for $i \ne j$). For any event $A$:
+
+$$P(A) = \sum_{i=1}^k P(A \mid B_i) \cdot P(B_i)$$
+
+---
+
+### 4.3 Bayes' Theorem (Posterior Probability Inversion)
+Calculates the probability of cause $B_j$ given observed effect $A$:
+
+$$\mathbf{P(B_j \mid A) = \frac{P(A \mid B_j) \cdot P(B_j)}{\sum_{i=1}^k P(A \mid B_i) \cdot P(B_i)}}$$
+
+```
+                [ Prior Probabilities P(B_i) ]
+                             │
+                             ▼
+     [ Observed Evidence A with Likelihoods P(A | B_i) ]
+                             │
+                             ▼
+              [ Posterior Probability P(B_j | A) ]
+```
+
+---
+
+## 5. Comprehensive Worked Numerical: Medical Testing
+
+A rare disease affects $0.1\%$ of a population ($P(D) = 0.001$). A diagnostic test has:
+- **Sensitivity (True Positive Rate)**: $99\%$ ($P(T^+ \mid D) = 0.99$).
+- **False Positive Rate**: $2\%$ ($P(T^+ \mid \overline{D}) = 0.02$).
+
+*Question: If a randomly chosen patient tests positive ($T^+$), what is the posterior probability that they actually have the disease ($P(D \mid T^+$))?*
+
+### Step-by-Step Solution:
+1. **Identify the Given Probabilities**:
+   - $P(D) = 0.001 \implies P(\overline{D}) = 1 - 0.001 = 0.999$.
+   - $P(T^+ \mid D) = 0.99$.
+   - $P(T^+ \mid \overline{D}) = 0.02$.
+
+2. **Compute Total Probability of Testing Positive ($P(T^+)$)**:
+$$P(T^+) = P(T^+ \mid D)P(D) + P(T^+ \mid \overline{D})P(\overline{D})$$
+$$P(T^+) = (0.99 \times 0.001) + (0.02 \times 0.999)$$
+$$P(T^+) = 0.00099 + 0.01998 = \mathbf{0.02097}$$
+
+3. **Apply Bayes' Theorem**:
+$$P(D \mid T^+) = \frac{P(T^+ \mid D)P(D)}{P(T^+)} = \frac{0.00099}{0.02097} \approx \mathbf{0.0472 \quad (4.72\%)}$$
+
+**Analytical Conclusion**: Despite a $99\%$ accurate test, a positive patient has only a $\approx 4.7\%$ chance of truly having the disease, because the rare baseline prior ($0.1\%$) is overwhelmed by false positives from the large healthy population ($99.9\%$).
+
+---
+
+## 6. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="A bag contains 10 red marbles, 10 blue marbles, and 10 green marbles. What is the minimum number of marbles that must be drawn blindly to guarantee obtaining at least 4 marbles of the same color?"
+  optionA="4"
+  optionB="10"
+  optionC="12"
+  optionD="15"
+  correctOption="B"
+  explanation="Using the Pigeonhole Principle formula N_min = k(m - 1) + 1, where k = 3 colors and target m = 4: N_min = 3(4 - 1) + 1 = 3(3) + 1 = 10 marbles."
+  examBadge="UGC NET Dec 2023"
+/>
+
+<Quiz
+  question="How many derangements are possible for a set of 4 distinct elements?"
+  optionA="2"
+  optionB="9"
+  optionC="14"
+  optionD="24"
+  correctOption="B"
+  explanation="D_4 = 4! * (1 - 1/1! + 1/2! - 1/3! + 1/4!) = 24 * (1/2 - 1/6 + 1/24) = 12 - 4 + 1 = 9."
+  examBadge="Bihar STET 2023"
+/>
+
+<Quiz
+  question="What is the number of non-negative integer solutions to the equation x1 + x2 + x3 + x4 = 10?"
+  optionA="C(13, 3) = 286"
+  optionB="C(10, 4) = 210"
+  optionC="C(14, 4) = 1001"
+  optionD="C(9, 3) = 84"
+  correctOption="A"
+  explanation="Using the Stars and Bars formula C(n + r - 1, r) with n = 4 and r = 10: C(4 + 10 - 1, 10) = C(13, 10) = C(13, 3) = (13 * 12 * 11) / (3 * 2 * 1) = 286."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="A clinic reports that 1% of a population has a rare medical disorder. A diagnostic test has 95% sensitivity (true positive rate) and 90% specificity (true negative rate). If a randomly selected patient tests positive, what is the posterior probability that the patient actually has the disorder?"
+  optionA="0.50"
+  optionB="0.0875 (approx 8.75%)"
+  optionC="0.95"
+  optionD="0.01"
+  correctOption="B"
+  explanation="Using Bayes' Theorem: P(D|+) = [P(+|D)·P(D)] / [P(+|D)·P(D) + P(+|¬D)·P(¬D)] = (0.95 × 0.01) / [(0.95 × 0.01) + (0.10 × 0.99)] = 0.0095 / (0.0095 + 0.099) = 0.0095 / 0.1085 ≈ 0.08755 (approx 8.75%)."
+  examBadge="UGC NET Dec 2021"
+/>
+
+<Quiz
+  question="In how many ways can 5 distinct letters be placed into 5 addressed envelopes such that NO letter is placed into its correct envelope (number of derangements D_5)?"
+  optionA="44"
+  optionB="120"
+  optionC="24"
+  optionD="9"
+  correctOption="A"
+  explanation="Using the derangement formula D_n = n! · ∑_{k=0}^n (-1)^k / k!: D_1 = 0, D_2 = 1, D_3 = 2, D_4 = 9, D_5 = 44. D_5 = 5!(1/2! - 1/3! + 1/4! - 1/5!) = 120(1/2 - 1/6 + 1/24 - 1/120) = 60 - 20 + 5 - 1 = 44."
+  examBadge="UGC NET Official PYQ"
+/>
+
+
+---
+
+## 7. High-Yield Revision Matrix
+
+| Concept | Key Equation / Invariant | Common Exam Trap |
+|---|---|---|
+| **Generalized PHP** | At least $\lceil N / k \rceil$ items in 1 box | Using floor $\lfloor N / k \rfloor$ instead of ceiling |
+| **PHP Target $m$** | $N_{\text{min}} = k(m - 1) + 1$ | Forgetting the $+1$, resulting in a tie case |
+| **Derangements $D_n$** | $D_4 = 9, D_5 = 44, D_n \approx n!/e$ | Confusing derangements with standard permutations $n!$ |
+| **Stars & Bars ($x_i \ge 0$)** | $\binom{n + r - 1}{r}$ | Inverting $n$ and $r$ roles |
+| **Positive Solutions ($x_i \ge 1$)** | $\binom{r - 1}{n - 1}$ | Applying non-negative formula when variables must be $\ge 1$ |
+| **Bayes' Denominator** | $\sum P(A \mid B_i) P(B_i)$ | Omitting false positive contributions in total probability |

@@ -1,0 +1,133 @@
+---
+title: "IoT Communication Protocols: MQTT, CoAP, Zigbee, and Sensors"
+unit: "Unit 12: Internet of Things (IoT)"
+examType: "STET"
+priority: "High"
+readTime: "26 min"
+description: "Master IoT communication protocols (MQTT publish-subscribe, QoS levels, CoAP REST over UDP, 6LoWPAN, Zigbee 802.15.4, RFID), and sensor-actuator interfacing for Bihar STET Paper II."
+tags: ["IoT", "MQTT", "CoAP", "Zigbee", "Sensors", "STET"]
+---
+
+# IoT Communication Protocols: MQTT, CoAP, Zigbee, and Sensors
+
+Internet of Things (IoT) is a high-priority specialized unit in the **Bihar STET Computer Science Paper II** (Unit 12). Competitive exam questions target lightweight messaging protocols (MQTT vs CoAP), wireless sensor networks (Zigbee, 6LoWPAN), RFID systems, and sensor-actuator interfacing.
+
+---
+
+## 1. MQTT (Message Queuing Telemetry Transport)
+
+MQTT is an extremely lightweight, publish-subscribe network protocol designed for constrained devices with low bandwidth and high latency. Operates over **TCP port 1883** (or 8883 with TLS).
+
+### 1.1 Architecture Components
+- **Publishers**: Sensor nodes that produce data under specific **Topics** (e.g., `home/livingroom/temperature`).
+- **Broker (Server)**: Central hub that receives messages, filters them by topic, and distributes them to subscribers.
+- **Subscribers**: Client applications that register interest in topics to receive updates.
+
+### 1.2 MQTT Quality of Service (QoS) Levels
+
+| QoS Level | Guarantee | Overhead | Mechanism |
+| :---: | :--- | :---: | :--- |
+| **QoS 0** | **At most once** (Fire and Forget) | Lowest (1 packet) | No ACK, no retransmission; message loss possible |
+| **QoS 1** | **At least once** | Medium (2 packets) | Sender retransmits until `PUBACK` is received; duplicates possible |
+| **QoS 2** | **Exactly once** | Highest (4 packets) | 4-step handshake (`PUBLISH  PUBREC  PUBREL  PUBCOMP`); zero loss, zero duplicates |
+
+<Callout type="note">
+**MQTT Last Will and Testament (LWT)**: Allows a client to specify a message that the broker will automatically publish on its behalf if the client unexpectedly disconnects (e.g., battery failure).
+</Callout>
+
+---
+
+## 2. CoAP (Constrained Application Protocol)
+
+CoAP is a specialized web transfer protocol designed by IETF (RFC 7252) for machine-to-machine (M2M) applications.
+- Operates over **UDP port 5683** (or 5684 with DTLS).
+- Implements a subset of **REST** (`GET, POST, PUT, DELETE`).
+- Message Types:
+  1. **Confirmable (CON)**: Requires an acknowledgment (`ACK`) from the receiver.
+  2. **Non-Confirmable (NON)**: Fire-and-forget datagram without ACK.
+  3. **Acknowledgment (ACK)**: Confirms receipt of a CON message.
+  4. **Reset (RST)**: Rejects an unprocessable message.
+
+### 2.3 MQTT vs. CoAP Comparison
+
+| Feature | MQTT | CoAP |
+| :--- | :--- | :--- |
+| **Transport** | TCP (Connection-oriented) | **UDP** (Connectionless) |
+| **Architecture** | Centralized Broker (Pub/Sub) | Decentralized / Peer-to-Peer (Client/Server) |
+| **Header Overhead** | **2 Bytes** minimum fixed header | 4 Bytes fixed header |
+| **Communication** | Asynchronous many-to-many | Synchronous request/response (supports Observe) |
+| **Security** | TLS/SSL | **DTLS** (Datagram TLS) |
+
+---
+
+## 3. Wireless Sensor Network Protocols
+
+1. **Zigbee (IEEE 802.15.4)**:
+   - Low-power, low data rate (250 kbps), operating at 2.4 GHz, 868 MHz, and 915 MHz.
+   - Topologies: Star, Tree, and **Mesh**.
+   - Transmission range: 10 to 100 meters.
+2. **6LoWPAN (IPv6 over Low-Power Wireless Personal Area Networks)**:
+   - Enables native IPv6 packets to be transmitted over constrained IEEE 802.15.4 links.
+   - Employs **header compression** (reducing 40-byte IPv6 headers to 2-4 bytes) and packet fragmentation (accommodating 1280-byte IPv6 MTU within 127-byte 802.15.4 frame).
+3. **RFID (Radio Frequency Identification)**:
+   - **Passive Tags**: Contain no internal battery; powered by the electromagnetic field induced by the reader's interrogating antenna.
+   - **Active Tags**: Powered by internal batteries; transmit over greater distances (up to 100m).
+
+---
+
+## 4. Interactive Examination PYQ Practice
+
+<Quiz
+  question="Which MQTT Quality of Service (QoS) level guarantees that a message is delivered exactly once without duplicates or loss using a four-step handshake?"
+  optionA="QoS 2"
+  optionB="QoS 1"
+  optionC="QoS 0"
+  optionD="QoS 3"
+  correctOption="A"
+  explanation="MQTT QoS 2 guarantees 'Exactly Once' delivery. It employs a 4-packet handshake: PUBLISH from sender -> PUBREC (received) from broker -> PUBREL (release) from sender -> PUBCOMP (complete) from broker. QoS 0 is 'At Most Once', and QoS 1 is 'At Least Once'."
+  examBadge="Bihar STET 2024 / IoT Core"
+/>
+
+<Quiz
+  question="On which transport layer protocol does the Constrained Application Protocol (CoAP) operate by default?"
+  optionA="UDP (User Datagram Protocol)"
+  optionB="TCP (Transmission Control Protocol)"
+  optionC="SCTP"
+  optionD="ICMP"
+  correctOption="A"
+  explanation="CoAP is designed for constrained low-power sensor nodes and operates over UDP (port 5683) to avoid the three-way handshake and keep-alive overhead of TCP. Reliability is optionally handled at the application layer via Confirmable (CON) messages."
+  examBadge="Bihar STET Official PYQ"
+/>
+
+<Quiz
+  question="What is the minimum fixed header size of an MQTT control packet?"
+  optionA="2 Bytes"
+  optionB="4 Bytes"
+  optionC="8 Bytes"
+  optionD="20 Bytes"
+  correctOption="A"
+  explanation="MQTT features an ultra-low minimum fixed header of only 2 Bytes: Byte 1 contains the Packet Type (4 bits) and Flags (4 bits: DUP, QoS, RETAIN); Byte 2 contains the Remaining Length encoded as a variable-length integer."
+  examBadge="Bihar STET Paper II"
+/>
+
+<Quiz
+  question="Which IEEE standard forms the physical and MAC layer foundation for Zigbee wireless sensor networks?"
+  optionA="IEEE 802.15.4"
+  optionB="IEEE 802.11"
+  optionC="IEEE 802.15.1"
+  optionD="IEEE 802.3"
+  correctOption="A"
+  explanation="Zigbee is built on top of the IEEE 802.15.4 standard for Low-Rate Wireless Personal Area Networks (LR-WPANs). IEEE 802.11 is Wi-Fi, 802.15.1 is Bluetooth, and 802.3 is standard Ethernet."
+  examBadge="Bihar STET 2024"
+/>
+
+<Quiz
+  question="How do passive RFID tags obtain electrical power to transmit their stored identification data back to the RFID reader?"
+  optionA="By harvesting electromagnetic energy from the radio frequency interrogation wave emitted by the reader"
+  optionB="From an internal coin cell battery"
+  optionC="Through ambient solar cells"
+  optionD="Via thermal gradient sensors"
+  correctOption="A"
+  explanation="Passive RFID tags contain no internal battery. When the tag enters the electromagnetic field generated by the RFID reader's antenna, the antenna coil inside the tag induces an electric current through magnetic induction, powering up the tag's microchip to modulate and reflect the signal (backscatter)."
+  examBadge="Bihar STET / UGC NET"
+/>

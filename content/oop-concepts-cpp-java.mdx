@@ -1,0 +1,371 @@
+---
+title: "Object-Oriented Programming: C++ & Java Classes, Inheritance, and Polymorphism"
+unit: "Unit 9: Object-Oriented Programming"
+examType: "Common"
+priority: "High"
+readTime: "34 min"
+slug: "oop-concepts-cpp-java"
+description: "Master OOP principles, inheritance hierarchies, virtual functions, VTABLE/VPTR mechanics, constructors/destructors, operator overloading, and exception handling for UGC NET and Bihar STET."
+tags: ["OOP", "C++", "Java", "Inheritance", "Polymorphism", "Virtual Functions", "VTABLE", "UGC-NET", "STET"]
+---
+
+# Object-Oriented Programming: C++ & Java Classes, Inheritance, and Polymorphism
+
+Object-Oriented Programming (OOP) is a foundational pillar of modern software engineering and represents a guaranteed scoring segment in **UGC NET** (Unit 3/Unit 9) and **Bihar STET Paper 2 Computer Science** (dedicated OOPs unit). 
+
+Examiners routinely test candidates on **the Diamond Problem and virtual base classes**, **VTABLE and VPTR runtime dispatch mechanics**, **order of constructor and destructor invocations**, **operator overloading restrictions**, and **the necessity of virtual destructors**.
+
+---
+
+## 1. Procedural vs. Object-Oriented Programming
+
+```
++-----------------------------------------------------------------------------------------+
+|                              PROCEDURAL VS. OBJECT-ORIENTED                             |
++---------------------+-----------------------------------+-------------------------------+
+| Dimension           | Procedural (e.g., C, Pascal)      | Object-Oriented (C++, Java)   |
++---------------------+-----------------------------------+-------------------------------+
+| Core Focus          | Functions, algorithms, procedures | Data, entities, objects       |
+| Organization        | Top-down program decomposition    | Bottom-up domain modeling     |
+| Data Security       | Global data exposed to functions  | Encapsulation & access control|
+| Polymorphism        | Not natively supported            | Overloading & dynamic dispatch|
+| Code Reuse          | Function libraries                | Inheritance and composition   |
+| Memory Management   | Manual (`malloc`/`free`)          | Constructors/Destructors, GC  |
++---------------------+-----------------------------------+-------------------------------+
+```
+
+### The Four Pillars of OOP
+1. **Encapsulation**: Bundling data attributes and manipulating methods within a single unit (`class`), shielding internal representations from arbitrary external mutation (**Data Hiding** via `private`/`protected` specifiers).
+2. **Abstraction**: Exposing only essential interface features while concealing background implementation complexity (implemented via Abstract Classes and Interfaces).
+3. **Inheritance**: The mechanism by which a derived class inherits properties and behaviors from a base class, promoting code reusability and establishing "is-a" relationships.
+4. **Polymorphism**: The ability of an entity (function, operator, or object reference) to take on multiple forms depending on runtime or compile-time context.
+
+---
+
+## 2. Class Architecture & Access Specifiers
+
+In C++ and Java, access control governs member visibility across inheritance boundaries:
+
+```
++-----------------------------------------------------------------------------------------+
+|                                  ACCESS SPECIFIER MATRIX                                |
++---------------------+-----------------------+---------------------+---------------------+
+| Access Specifier    | Inside Same Class     | In Derived Classes  | Outside World       |
++---------------------+-----------------------+---------------------+---------------------+
+| `private`           | Yes                   | **No**              | **No**              |
+| `protected`         | Yes                   | **Yes**             | **No**              |
+| `public`            | Yes                   | **Yes**             | **Yes**             |
++---------------------+-----------------------+---------------------+---------------------+
+```
+
+### C++ Inheritance Access Modes
+When deriving class `Derived : <access_mode> Base`, base members inherit visibility as:
+- **`public` Inheritance**: Base `public` stays `public`; base `protected` stays `protected`.
+- **`protected` Inheritance**: Base `public` and `protected` both become `protected`.
+- **`private` Inheritance** (Default for `class`): Base `public` and `protected` both become `private`.
+
+> [!NOTE]
+> In C++, `struct` defaults to `public` inheritance and members, whereas `class` defaults to `private`. In Java, classes have package-private (default) access when no specifier is supplied.
+
+---
+
+## 3. Inheritance Taxonomies & The Diamond Problem
+
+```
+       Single               Multilevel              Hierarchical
+        [A]                    [A]                      [A]
+         │                      │                      /   \
+         ▼                      ▼                     ▼     ▼
+        [B]                    [B]                   [B]   [C]
+                                │
+                                ▼
+                               [C]
+
+       Multiple                                  Hybrid (Diamond)
+     [A]     [B]                                       [A]
+       \     /                                       /     \
+        ▼   ▼                                       ▼       ▼
+         [C]                                      [B]       [C]
+                                                   \       /
+                                                    ▼     ▼
+                                                      [D]
+```
+
+### The Diamond Problem in C++
+In hybrid inheritance where class `D` inherits from both `B` and `C`, which both inherit from `A`:
+- `D` inherits **two distinct copies** of class `A`'s member variables (one through `B`, one through `C`).
+- Accessing `d.x` results in a **compile-time ambiguity error**: `error: request for member 'x' is ambiguous`.
+
+#### The Solution: Virtual Base Classes
+Declaring the base class `virtual` in intermediate classes ensures that only a **single shared instance** of `A` is created within `D`:
+
+```cpp
+class A { public: int val; };
+class B : virtual public A { };  // Virtual base class
+class C : virtual public A { };  // Virtual base class
+class D : public B, public C { };
+
+int main() {
+    D obj;
+    obj.val = 100; // Unambiguous! Exactly one copy of A exists.
+}
+```
+
+> [!IMPORTANT]
+> **Java's Approach**: Java intentionally prohibits **multiple inheritance of classes** to eliminate the Diamond Problem. Instead, Java allows a class to implement multiple **Interfaces**.
+
+---
+
+## 4. Polymorphism: Static vs. Dynamic Binding
+
+```
+                              POLYMORPHISM TAXONOMY
+                                        │
+                 ┌──────────────────────┴──────────────────────┐
+                 ▼                                             ▼
+       Compile-Time (Static)                         Run-Time (Dynamic)
+     - Early Binding / Fast                        - Late Binding via VTABLE
+     - Resolved at compilation                     - Resolved at runtime
+     - Function Overloading                        - Virtual Functions
+     - Operator Overloading                        - Method Overriding
+     - Templates (Generics)                        - Abstract Classes / Interfaces
+```
+
+### 4.1 Method Overloading vs. Method Overriding
+
+```
++---------------------+-----------------------------------+-------------------------------+
+| Feature             | Method Overloading (Static)       | Method Overriding (Dynamic)   |
++---------------------+-----------------------------------+-------------------------------+
+| Scope               | Occurs within the **same class**  | Occurs across **Base & Derived|
+| Method Signature    | **Must differ** in parameter      | **Must be identical** in      |
+|                     | types, count, or order            | name, parameters & return type|
+| Return Type         | Can vary freely                   | Must be compatible/covariant  |
+| Binding Time        | Compile-time (Static binding)     | Runtime (Late binding via VPTR|
+| Virtual Keyword     | Not required                      | Required on base method       |
++---------------------+-----------------------------------+-------------------------------+
+```
+
+---
+
+### 4.2 Runtime Dispatch: VTABLE and VPTR Mechanics
+
+How does the compiler resolve `basePtr->draw()` when `basePtr` points to a derived `Circle` object?
+
+```
+      Object Memory Layout                          Virtual Method Table (VTABLE)
+      +------------------+                          +-------------------------------+
+      |  VPTR (8 bytes)  | ───────────────────────► | &Circle::draw()               |
+      +------------------+                          +-------------------------------+
+      |  data members    |                          | &Circle::area()               |
+      +------------------+                          +-------------------------------+
+```
+
+1. **VTABLE (Virtual Table)**: A static table of function pointers created by the compiler for every class containing at least one `virtual` function.
+2. **VPTR (Virtual Table Pointer)**: A hidden pointer injected by the compiler as the first member of every instance of a class that has virtual functions.
+3. **Execution Sequence**:
+   - `ptr->virtualFunc()` is translated at assembly level into:
+$$\text{call } *(ptr \to \text{VPTR}[i])$$
+   - The CPU dereferences `ptr` to fetch `VPTR`, accesses index $i$ in the class's `VTABLE`, and executes the derived function pointer. This adds a single indirect pointer dereference overhead ($O(1)$).
+
+---
+
+### 4.3 Pure Virtual Functions and Abstract Classes
+- A **Pure Virtual Function** is declared by appending `= 0` to its prototype:
+  ```cpp
+  virtual void render() = 0; // Pure virtual function
+  ```
+- Any class containing at least one pure virtual function is an **Abstract Class**.
+- **Rule**: Abstract classes **cannot be instantiated** directly (`Shape s;` is illegal). They exist solely to define an interface for derived subclasses.
+- If a derived class fails to override all inherited pure virtual functions, it also becomes an abstract class.
+
+---
+
+## 5. Constructors, Destructors, and Object Lifecycle
+
+### 5.1 Invocation Order Invariants
+- **Constructor Invocation Order**: Base class constructors execute **first**, followed by derived class constructors:
+$$\text{Base constructor} \longrightarrow \text{Derived constructor}$$
+- **Destructor Invocation Order**: Derived class destructors execute **first**, followed by base class destructors (strict LIFO order):
+$$\text{Derived destructor} \longrightarrow \text{Base destructor}$$
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Base {
+public:
+    Base()  { cout << "Base Ctor\n"; }
+    ~Base() { cout << "Base Dtor\n"; }
+};
+
+class Derived : public Base {
+public:
+    Derived()  { cout << "Derived Ctor\n"; }
+    ~Derived() { cout << "Derived Dtor\n"; }
+};
+
+int main() {
+    Derived d;
+    return 0;
+}
+/* Output:
+   Base Ctor
+   Derived Ctor
+   Derived Dtor
+   Base Dtor
+*/
+```
+
+---
+
+### 5.2 The Necessity of Virtual Destructors
+When manipulating derived objects through base class pointers:
+
+```cpp
+Base* ptr = new Derived();
+delete ptr; // CRITICAL RESOURCE LEAK if ~Base() is not virtual!
+```
+
+- If `Base` has a **non-virtual destructor**: The compiler binds the deletion statically to `~Base()`. Only `Base`'s destructor executes. The `Derived` destructor is **never called**, causing severe memory and resource leaks.
+- If `Base` has a **virtual destructor** (`virtual ~Base();`): Runtime dynamic dispatch ensures `~Derived()` runs first, followed by `~Base()`.
+
+> [!WARNING]
+> **Gold Standard C++ Invariant**: Any class designed to be a polymorphic base class (possessing at least one virtual function) **MUST declare its destructor `virtual`**.
+
+---
+
+### 5.3 Copy Constructors: Shallow vs. Deep Copy
+A **Copy Constructor** initializes an object using an existing object of the same class:
+```cpp
+MyClass(const MyClass& source);
+```
+- **Shallow Copy (Default)**: Bitwise copy of member variables. If the class manages heap pointers (`int* data`), both objects point to the same memory address. When both destructors execute, a catastrophic **Double Free / Memory Corruption** error occurs!
+- **Deep Copy**: Allocates fresh heap memory for the destination object and duplicates the underlying data contents.
+
+---
+
+## 6. Operator Overloading Invariants in C++
+
+Operator overloading allows user-defined types to behave like built-in primitives.
+
+```cpp
+class Complex {
+    double real, imag;
+public:
+    Complex(double r, double i) : real(r), imag(i) {}
+    Complex operator + (const Complex& obj) const {
+        return Complex(real + obj.real, imag + obj.imag);
+    }
+};
+```
+
+### Operators That CANNOT Be Overloaded in C++ (High-Yield Exam Trap)
+
+```
++-----------------------------------+-----------------------------------------------------+
+| Operator Symbol                   | Formal Name                                         |
++-----------------------------------+-----------------------------------------------------+
+| `::`                              | Scope Resolution Operator                           |
+| `.`                               | Member Access / Dot Operator                        |
+| `.*`                              | Pointer-to-Member Dereference Operator              |
+| `?:`                              | Ternary / Conditional Operator                      |
+| `sizeof`                          | Size-of compile-time operator                       |
+| `typeid`                          | RTTI type identification                            |
++-----------------------------------+-----------------------------------------------------+
+```
+
+---
+
+## 7. Exception Handling in C++ and Java
+
+Exceptions provide structured runtime error handling, separating error detection from recovery.
+
+```
+       [ throw Exception; ]
+                 │
+                 ▼
+       [ Stack Unwinding: Destructors of local stack objects invoked ]
+                 │
+                 ▼
+       [ Matching catch(Type e) block executes ]
+```
+
+### Key Principles
+1. **Stack Unwinding**: As the runtime searches up the call stack for an appropriate `catch` block, all automatic (local stack) objects instantiated in exiting scopes have their **destructors called immediately**.
+2. **Order of Catch Blocks**: Subclass exception handlers must precede base class handlers; placing `catch(Exception e)` before `catch(IOException e)` generates an unreachable code error.
+3. **Catch-All Handler**: `catch(...)` in C++ catches any unhandled exception type.
+
+---
+
+## 8. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="Why must a polymorphic base class in C++ always declare a virtual destructor?"
+  optionA="To allow the base class to become an abstract class"
+  optionB="To ensure that the derived class destructor is called when deleting an object through a base class pointer"
+  optionC="To prevent derived classes from overriding the destructor"
+  optionD="To accelerate object allocation in heap memory"
+  correctOption="B"
+  explanation="When an object of a derived class is deleted through a pointer to the base class, a non-virtual destructor results in undefined behavior where only the base class destructor runs, leaking derived resources. A virtual destructor ensures dynamic dispatch down to ~Derived() first."
+  examBadge="UGC NET Dec 2023"
+/>
+
+<Quiz
+  question="Which of the following operators CANNOT be overloaded in C++?"
+  optionA="[]"
+  optionB="=="
+  optionC="."
+  optionD="->"
+  correctOption="C"
+  explanation="In C++, the member selection dot operator (.), scope resolution operator (::), pointer-to-member (.*), conditional operator (?:), and sizeof cannot be overloaded."
+  examBadge="Bihar STET 2024"
+/>
+
+<Quiz
+  question="In C++, when class D inherits from classes B and C, which both inherit from class A, how is the Diamond Problem resolved?"
+  optionA="By declaring class A private in both B and C"
+  optionB="By declaring classes B and C as virtual base classes using 'virtual public A'"
+  optionC="By using multiple namespaces"
+  optionD="By making all member variables static"
+  correctOption="B"
+  explanation="Virtual base classes (class B : virtual public A) ensure that only a single common instance of the ancestor class A is embedded within the most derived object D, eliminating ambiguity."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="Why should a base class containing at least one virtual function always declare a virtual destructor in C++?"
+  optionA="To accelerate dynamic memory allocation"
+  optionB="To guarantee that deleting a derived class object through a base class pointer invokes the derived destructor first, preventing memory leaks"
+  optionC="Virtual destructors are required for abstract classes"
+  optionD="To allow constructors to be virtual"
+  correctOption="B"
+  explanation="If a base class destructor is non-virtual, deleting a derived object via a base pointer executes undefined behavior: only the base destructor runs, leaking any resources allocated by the derived class. A virtual destructor ensures the derived destructor executes first through VTABLE dispatch."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="How does Java solve the 'Diamond Problem' of multiple inheritance that occurs in C++?"
+  optionA="By allowing multiple inheritance of classes with virtual keywords"
+  optionB="By disallowing multiple inheritance of classes while allowing a class to implement multiple Interfaces"
+  optionC="By using preprocessor macros"
+  optionD="By making all methods static"
+  correctOption="B"
+  explanation="Java eliminates the diamond problem of state conflict by prohibiting multiple inheritance of state (classes cannot extend more than one class). However, a class can implement multiple Interfaces, which historically defined only abstract method signatures without state variables."
+  examBadge="Bihar STET Standard"
+/>
+
+
+---
+
+## 9. High-Yield Revision Matrix
+
+| Topic | Critical Invariant | Common Exam Trap |
+|---|---|---|
+| **Constructor Order** | Base $\to$ Derived | Assuming derived runs before base |
+| **Destructor Order** | Derived $\to$ Base | Assuming base runs before derived |
+| **Virtual Destructor** | Mandatory for polymorphic bases | Forgetting `virtual`, causing partial destruction |
+| **Abstract Class** | Has $\ge 1$ pure virtual function (`= 0`) | Attempting to instantiate an abstract class |
+| **VTABLE / VPTR** | 1 VPTR per object instance, 1 VTABLE per class | Assuming each object has its own VTABLE copy |
+| **Non-overloadable Ops** | `::`, `.`, `.*`, `?:`, `sizeof` | Believing `->` or `[]` cannot be overloaded (they CAN) |
+| **Deep vs Shallow Copy** | Deep copy duplicates heap memory buffers | Default copy constructor shares pointer addresses |

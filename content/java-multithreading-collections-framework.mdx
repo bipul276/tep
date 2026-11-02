@@ -1,0 +1,148 @@
+---
+title: "Java Multithreading, Concurrency, and Collections Framework"
+unit: "Unit 9: Object-Oriented Programming"
+examType: "Common"
+priority: "High"
+readTime: "30 min"
+description: "Master Java Thread lifecycle, synchronization monitors, wait/notify mechanisms, deadlocks, Collections Framework hierarchy (List, Set, Map, HashMap hashing), and Exception Handling for UGC NET and Bihar STET."
+tags: ["Java", "Multithreading", "Collections", "OOP", "Concurrency", "HashMap"]
+---
+
+# Java Multithreading, Concurrency, and Collections Framework
+
+Object-Oriented Programming examinations in **UGC NET** and **Bihar STET** consistently emphasize core Java multi-threaded execution, memory visibility, lock monitors, and the internal data structures of the Java Collections Framework (JCF).
+
+---
+
+## 1. Java Thread Lifecycle and Execution
+
+In Java, threads are managed by the JVM and map directly to native operating system threads.
+
+### 1.1 Thread States (`Thread.State` Enum)
+1. **NEW**: A thread that has been instantiated (`new MyThread()`) but not yet started via `.start()`.
+2. **RUNNABLE**: A thread executing in the JVM or waiting for CPU allocation from the operating system scheduler.
+3. **BLOCKED**: A thread waiting to acquire an intrinsic monitor lock to enter or re-enter a `synchronized` block/method.
+4. **WAITING**: A thread waiting indefinitely for another thread to perform a particular action (called `Object.wait()`, `Thread.join()`, or `LockSupport.park()`).
+5. **TIMED_WAITING**: A thread waiting for a specified timeout period (called `Thread.sleep(millis)`, `Object.wait(timeout)`, or `Thread.join(timeout)`).
+6. **TERMINATED**: A thread that has completed execution of its `run()` method.
+
+<Callout type="warning">
+**Crucial Exam Distinctions**:
+- Calling `thread.run()` executes the code synchronously on the **current calling thread** like a regular method!
+- Calling `thread.start()` allocates a **new call stack** and triggers asynchronous execution in a new thread.
+</Callout>
+
+### 1.2 Thread Synchronization & Inter-Thread Communication
+Every Java object has an intrinsic lock (monitor).
+- **`synchronized` Method / Block**: Ensures mutual exclusion. Only one thread can hold the object monitor lock at a time.
+- **`wait()`, `notify()`, `notifyAll()`**: Defined in the **`java.lang.Object`** class (NOT `Thread`!), because locks belong to objects, not threads. Must be invoked strictly from inside a `synchronized` context; otherwise, `IllegalMonitorStateException` is thrown at runtime!
+- **`Thread.sleep()` vs `Object.wait()`**:
+  - `sleep()` keeps the monitor lock held while pausing.
+  - `wait()` **releases the monitor lock** so other threads can proceed!
+
+---
+
+## 2. Java Collections Framework (JCF)
+
+The JCF provides a unified architecture for storing and manipulating groups of objects.
+
+### 2.1 Collection Hierarchy
+```
+             Iterable<E>
+                 │
+            Collection<E>
+        ┌────────┼────────┐
+      List<E>  Set<E>   Queue<E>
+        │        │
+  ArrayList   HashSet
+  LinkedList  TreeSet (SortedSet)
+```
+*(Note: `Map<K, V>` does NOT inherit from `Collection<E>` or `Iterable`!)*
+
+### 2.2 List vs. Set vs. Map Comparisons
+
+| Data Structure | Underlying Storage | Duplicates Allowed? | Order Maintained? | Lookup Time | Thread Safe? |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **`ArrayList`** | Resizable Dynamic Array | Yes | Insertion Order | $O(1)$ random access by index | No |
+| **`LinkedList`** | Doubly-Linked List | Yes | Insertion Order | $O(n)$ search, $O(1)$ add at ends | No |
+| **`HashSet`** | Backed by `HashMap` | **No** | Unordered | $O(1)$ average | No |
+| **`TreeSet`** | Red-Black Tree | **No** | Natural / Sorted Order | $O(\log n)$ | No |
+| **`HashMap`** | Hash Table (Buckets) | Keys: No, Values: Yes | Unordered | $O(1)$ average | No |
+| **`TreeMap`** | Red-Black Tree | Keys: No, Values: Yes | Sorted by Key | $O(\log n)$ | No |
+| **`Hashtable`** | Hash Table | No null keys/values | Unordered | $O(1)$ | **Yes (Synchronized)** |
+
+### 2.3 Internal Working of `HashMap`
+In Java 8+, `HashMap` resolves collisions using separate chaining:
+1. Computes `hash(key) = (h = key.hashCode()) ^ (h >>> 16)`.
+2. Bucket index = `(n - 1) & hash`.
+3. If collision occurs, nodes form a linked list.
+4. **Treeification**: If a single bucket list exceeds **8 nodes** (`TREEIFY_THRESHOLD = 8`) and total table capacity is at least 64, the linked list is converted into a balanced **Red-Black Tree**, reducing worst-case lookup from $O(n)$ down to **$O(\log n)$**!
+
+---
+
+## 3. Exception Handling Architecture
+
+- **`Throwable`**: Root of the Java exception hierarchy.
+  - **`Error`**: Serious hardware or JVM problems that applications should not catch (`OutOfMemoryError`, `StackOverflowError`).
+  - **`Exception`**:
+    - **Checked Exceptions**: Subclasses of `Exception` excluding `RuntimeException`. Verified at compile-time; MUST be declared via `throws` or caught via `try-catch` (`IOException`, `SQLException`).
+    - **Unchecked Exceptions**: Subclasses of `RuntimeException`. Not enforced by compiler (`NullPointerException`, `ArrayIndexOutOfBoundsException`, `ArithmeticException`).
+
+---
+
+## 4. Interactive Examination PYQ Practice
+
+<Quiz
+  question="In Java 8, when does a HashMap bucket linked list convert into a balanced Red-Black Tree (Treeify)?"
+  optionA="When the number of elements in that bucket exceeds 8 and total capacity is at least 64"
+  optionB="When total elements in the HashMap exceed the load factor 0.75"
+  optionC="When any two keys generate identical hash codes"
+  optionD="When table resizing fails"
+  correctOption="A"
+  explanation="In Java 8, when a bucket's linked list length reaches TREEIFY_THRESHOLD (8 items) and the table capacity is at least 64 (MIN_TREEIFY_CAPACITY), Java converts the bucket from a singly-linked list O(n) into a Red-Black Tree O(log n) to guard against HashDoS collision attacks."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="Why are wait(), notify(), and notifyAll() methods declared in java.lang.Object instead of java.lang.Thread?"
+  optionA="Because monitor locks are associated with individual objects, not threads"
+  optionB="Because Thread class is final and cannot be extended"
+  optionC="To prevent multiple threads from accessing the garbage collector"
+  optionD="Because only Object instances have call stacks"
+  correctOption="A"
+  explanation="In Java synchronization, intrinsic locks (monitors) belong to individual objects on the heap. Since wait() causes the current thread to release the lock on that specific target object, the method must belong to the Object class itself."
+  examBadge="UGC NET June 2020"
+/>
+
+<Quiz
+  question="Which of the following exceptions in Java is a Checked Exception that must be explicitly caught or declared in the method signature?"
+  optionA="IOException"
+  optionB="NullPointerException"
+  optionC="ArithmeticException"
+  optionD="ArrayIndexOutOfBoundsException"
+  correctOption="A"
+  explanation="NullPointerException, ArithmeticException, and ArrayIndexOutOfBoundsException are subclasses of RuntimeException (unchecked exceptions). IOException inherits directly from Exception without passing through RuntimeException, making it a Checked Exception enforced at compile-time."
+  examBadge="Bihar STET 2024"
+/>
+
+<Quiz
+  question="What happens when a thread invokes Thread.sleep(1000) while inside a synchronized method?"
+  optionA="The thread pauses for 1000 ms while continuing to hold the monitor lock"
+  optionB="The thread releases the lock and allows waiting threads to enter"
+  optionC="The thread terminates and transitions to BLOCKED state"
+  optionD="An IllegalMonitorStateException is thrown"
+  correctOption="A"
+  explanation="Thread.sleep() puts the current thread to sleep for the specified duration but does NOT release any held monitor locks. Other threads attempting to enter synchronized blocks on that object remain blocked until the sleeping thread awakens and completes the synchronized block."
+  examBadge="UGC NET Dec 2019"
+/>
+
+<Quiz
+  question="What is the average and worst-case time complexity for search, insertion, and deletion operations in a Java TreeSet?"
+  optionA="O(log n) for both average and worst case"
+  optionB="O(1) average, O(n) worst case"
+  optionC="O(n) for both average and worst case"
+  optionD="O(1) for both average and worst case"
+  correctOption="A"
+  explanation="TreeSet is implemented on top of a self-balancing Red-Black Tree (NavigableMap / TreeMap). Self-balancing guarantees that tree height is strictly bounded by 2 · log2(n + 1), ensuring guaranteed O(log n) time complexity for search, insert, and delete in all cases."
+  examBadge="Bihar STET Paper II"
+/>

@@ -1,0 +1,389 @@
+---
+title: "Software Testing, Metrics, and Maintenance: Black-Box, White-Box, and Mutation Testing"
+unit: "Unit 8: Software Engineering"
+examType: "Common"
+priority: "Med"
+readTime: "30 min"
+slug: "software-testing-maintenance-se"
+description: "Master Equivalence Partitioning, Boundary Value Analysis, White-Box coverage criteria, Basis Path Testing, Mutation score, and maintenance categories for UGC NET and Bihar STET."
+tags: ["Software Engineering", "Testing", "BVA", "Cyclomatic Complexity", "Mutation Testing", "Maintenance", "UGC-NET", "STET"]
+---
+
+# Software Testing, Metrics, and Maintenance: Black-Box, White-Box, and Mutation Testing
+
+Software Verification and Validation (V&V) and Post-Delivery Maintenance constitute a heavy segment of **UGC NET** and **Bihar STET Computer Science** exams. Questions regularly test exact mathematical formulas for **Boundary Value Analysis test case counts**, **McCabe's Cyclomatic Complexity**, **White-Box coverage subsumption hierarchies**, **Mutation Score calculation**, and the **four ISO maintenance classifications**.
+
+---
+
+## 1. Testing Foundations: Verification vs. Validation & Fault Hierarchy
+
+```
++-----------------------------------------------------------------------------------------+
+|                               VERIFICATION VS. VALIDATION                               |
++------------------------------------+----------------------------------------------------+
+| Verification ("Are we building the | Validation ("Are we building the                   |
+| product right?")                   | right product?")                                   |
++------------------------------------+----------------------------------------------------+
+| - Static process (Reviews,         | - Dynamic process (Executing code against          |
+|   Inspections, Walkthroughs)       |   runtime inputs)                                  |
+| - Conformance to design specs      | - Conformance to customer/user requirements        |
+| - Carried out by developers / QA   | - Carried out by testers and end users (UAT)       |
++------------------------------------+----------------------------------------------------+
+```
+
+### The Error $\to$ Fault $\to$ Failure Hierarchy
+1. **Error (Mistake)**: A human action (by programmer or analyst) that produces an incorrect software artifact.
+2. **Fault (Bug / Defect)**: The manifestation of an error within the code or design document. (A static flaw).
+3. **Failure**: The dynamic event where the software deviates from its expected runtime behavior when executing code containing a fault.
+
+> [!NOTE]
+> A fault can remain dormant in the source code indefinitely without causing a failure if the specific inputs triggering that execution path are never supplied.
+
+---
+
+## 2. Black-Box (Functional) Testing Techniques
+
+Black-box testing analyzes the software solely against functional specifications without visibility into internal control flow or data structures.
+
+```
+                         BLACK-BOX TESTING TECHNIQUES
+         ┌─────────────────────────────┬─────────────────────────────┐
+         ▼                             ▼                             ▼
+   Equivalence Class         Boundary Value Analysis         Decision Table /
+   Partitioning (ECP)                (BVA)                Cause-Effect Graphing
+```
+
+### 2.1 Equivalence Class Partitioning (ECP)
+Divides the input domain of a program into disjoint sub-domains called **Equivalence Classes** such that all members of a class are assumed to be processed identically by the system:
+- **Valid Equivalence Classes**: Represent legal, expected inputs.
+- **Invalid Equivalence Classes**: Represent erroneous, out-of-range inputs that should trigger error handling.
+- **Heuristic**: Select at least one representative test case from every identified class.
+
+---
+
+### 2.2 Boundary Value Analysis (BVA) & Test Case Counting Formulas
+Empirical studies demonstrate that errors cluster densely at the boundaries of input ranges $[a, b]$. BVA tests boundary values and their immediate neighbors.
+
+```
+    Invalid          Minimum                         Nominal                         Maximum          Invalid
+   [ ... a-1 ]  ───►  [ a ]   ───►  [ a+1 ]   ───►   [ nom ]   ───►  [ b-1 ]   ───►  [ b ]   ───►  [ b+1 ... ]
+```
+
+#### Test Case Formulas for $n$ Input Variables
+For a function taking $n$ independent variables with ranges $[a_i, b_i]$:
+
+```
++-----------------------------------+-----------------------------------+--------------------+
+| BVA Technique                     | Tested Values per Variable        | Test Case Count    |
++-----------------------------------+-----------------------------------+--------------------+
+| 1. Standard (Normal) BVA          | $\{\min, \min+1, \text{nom},      | $4n + 1$           |
+|                                   |  \max-1, \max\}$                  |                    |
++-----------------------------------+-----------------------------------+--------------------+
+| 2. Robustness Testing             | Adds invalid neighbors:           | $6n + 1$           |
+|                                   | $\{\min-1, \max+1\}$              |                    |
++-----------------------------------+-----------------------------------+--------------------+
+| 3. Worst-Case BVA                 | Cartesian product of standard     | $5^n$              |
+|                                   | 5-point boundary set              |                    |
++-----------------------------------+-----------------------------------+--------------------+
+| 4. Robust Worst-Case BVA          | Cartesian product of robust       | $7^n$              |
+|                                   | 7-point boundary set              |                    |
++-----------------------------------+-----------------------------------+--------------------+
+```
+
+*Example*: For a system with $n = 3$ variables:
+- Normal BVA tests: $4(3) + 1 = \mathbf{13 \text{ tests}}$
+- Robust BVA tests: $6(3) + 1 = \mathbf{19 \text{ tests}}$
+- Worst-Case tests: $5^3 = \mathbf{125 \text{ tests}}$
+- Robust Worst-Case tests: $7^3 = \mathbf{343 \text{ tests}}$
+
+---
+
+## 3. White-Box (Structural) Testing
+
+White-box testing designs test cases using direct knowledge of source code logic, control flow graphs, and data structures.
+
+### 3.1 Logic Coverage Criteria
+Measures the extent to which structural source constructs are exercised:
+
+1. **Statement Coverage ($C_0$)**:
+$$\text{Statement Coverage} = \frac{\text{Number of executed statements}}{\text{Total statements}} \times 100\%$$
+   *Weakest metric*; can achieve $100\%$ coverage while leaving branches completely untested (e.g., an `if` condition without an `else` branch).
+2. **Branch / Decision Coverage ($C_1$)**:
+$$\text{Branch Coverage} = \frac{\text{Number of executed decision branch outcomes (True/False)}}{\text{Total possible branch outcomes}} \times 100\%$$
+   Guarantees $100\%$ statement coverage.
+3. **Condition Coverage ($C_2$)**:
+   Requires each individual boolean sub-condition in a compound predicate (e.g., `(A > 0 AND B < 10)`) to evaluate to both `TRUE` and `FALSE` at least once.
+4. **Multiple Condition Coverage (MCC)**:
+   Tests all $2^k$ truth-table combinations of $k$ atomic conditions in compound decisions.
+5. **Modified Condition / Decision Coverage (MC/DC)**:
+   Mandated for safety-critical systems (DO-178C avionics). Requires $N + 1$ test cases for $N$ conditions, demonstrating that each condition can independently affect the decision outcome.
+
+#### Subsumption Hierarchy
+$$C_{\text{Multiple Condition}} \implies C_{\text{MC/DC}} \implies C_{\text{Branch}} \implies C_{\text{Statement}}$$
+
+---
+
+### 3.2 McCabe's Cyclomatic Complexity & Basis Path Testing
+A **Basis Set** is a set of linearly independent paths through the Control Flow Graph (CFG) such that any possible execution path can be expressed as a linear combination of basis paths.
+
+#### Formulas for Cyclomatic Complexity $V(G)$
+For a Control Flow Graph $G = (V, E)$ with $E$ edges, $N$ nodes, and $P$ connected components (usually $P = 1$ for a single module):
+
+$$
+\begin{aligned}
+1. \quad V(G) &= E - N + 2P \\
+2. \quad V(G) &= P_{\text{predicate}} + 1 \quad (\text{where } P_{\text{predicate}} \text{ is the number of 2-way decision nodes}) \\
+3. \quad V(G) &= R \quad (\text{number of enclosed regions } + \text{ the unbounded exterior region})
+\end{aligned}
+$$
+
+```
+                [Node 1: Entry]
+                       │
+                       ▼
+             [Node 2: Predicate P] ───(False)───► [Node 4]
+                       │                              │
+                    (True)                            │
+                       ▼                              ▼
+                   [Node 3] ────────────────────► [Node 5: Exit]
+
+   Nodes (N) = 5, Edges (E) = 5
+   V(G) = E - N + 2 = 5 - 5 + 2 = 2
+   Equivalently: Predicate nodes (Node 2) + 1 = 1 + 1 = 2
+   Basis Paths:
+     Path 1: 1 -> 2 -> 3 -> 5
+     Path 2: 1 -> 2 -> 4 -> 5
+```
+
+---
+
+## 4. Integration Testing Strategies
+
+Once individual units pass unit testing, they are assembled into larger subsystems during Integration Testing.
+
+```
++-----------------------------------------------------------------------------------------+
+|                               INTEGRATION TESTING STRATEGIES                            |
++--------------------+------------------------------------+-------------------------------+
+| Strategy           | Description                        | Scaffolding Required          |
++--------------------+------------------------------------+-------------------------------+
+| Big-Bang           | All modules integrated all at once | Neither (Extremely difficult  |
+|                    | and tested simultaneously.         | to isolate fault origins).    |
++--------------------+------------------------------------+-------------------------------+
+| Top-Down           | Starts from top-level control      | Requires **Stubs**            |
+|                    | modules down to leaf routines.     | (dummy worker modules).       |
++--------------------+------------------------------------+-------------------------------+
+| Bottom-Up          | Starts from leaf worker modules    | Requires **Drivers**          |
+|                    | upwards to main controllers.       | (dummy calling routines).     |
++--------------------+------------------------------------+-------------------------------+
+| Sandwich (Hybrid)  | Combines Top-Down for upper levels | Uses both Stubs and Drivers   |
+|                    | and Bottom-Up for lower levels.    | simultaneously.               |
++--------------------+------------------------------------+-------------------------------+
+```
+
+---
+
+## 5. Mutation Testing: Assessing Test Suite Adequacy
+
+Mutation testing is a fault-based testing technique designed to evaluate the adequacy of a test suite. Small artificial faults (**mutations**) are seeded into the program to create **mutants**.
+
+### Types of Mutants
+1. **Killed Mutant**: A test case produces different output on the mutant compared to the original program.
+2. **Live Mutant**: The test suite fails to detect the seeded fault (test suite inadequacy).
+3. **Equivalent Mutant**: Semantically identical to the original program despite syntactic changes (e.g., changing `i < 10` to `i <= 9` for integers). An equivalent mutant can never be killed.
+
+### Mutation Score ($MS$) Formula
+Let:
+- $M$: Total number of mutants generated.
+- $D$: Number of mutants killed (detected).
+- $E$: Number of equivalent mutants.
+
+$$\mathbf{MS = \frac{D}{M - E} \times 100\%}$$
+
+*Example*: If a testing tool generates $120$ mutants, tests kill $85$ mutants, and manual analysis proves $15$ mutants are equivalent:
+$$MS = \frac{85}{120 - 15} \times 100\% = \frac{85}{105} \times 100\% = \mathbf{80.95\%}$$
+
+---
+
+## 6. Software Maintenance Classifications (ISO/IEC 14764)
+
+Software maintenance accounts for **$60\text{--}80\%$** of the total life-cycle cost of a software product. Maintenance activities are formally categorized into four types:
+
+```
+                          SOFTWARE MAINTENANCE EFFORT SPLIT
+                           (Lientz and Swanson Empirical Data)
+  
+       Corrective (21%)        Adaptive (25%)              Perfective (50%)          Preventive (4%)
+    [Fixing discovered bugs] [Platform/OS changes]    [User feature enhancements]   [Refactoring]
+```
+
+### The Four Maintenance Types Defined
+1. **Corrective Maintenance ($\approx 20\%$)**: Reactive modification performed after delivery to correct discovered defects/bugs (restoring system to specified behavior).
+2. **Adaptive Maintenance ($\approx 25\%$)**: Modification performed to keep software usable in a changed or changing environment (e.g., porting to Windows 11, adapting to updated DBMS driver, migration to cloud).
+3. **Perfective Maintenance ($\approx 50\%$)**: Proactive enhancement of performance, maintainability, or implementation of new functional requirements requested by end-users. **Represents the largest share of maintenance effort!**
+4. **Preventive Maintenance ($\approx 5\%$)**: Modifying software before failures occur to detect and correct latent faults, improve structure (code refactoring, documentation updates), and increase maintainability (Software Re-engineering).
+
+---
+
+## 7. Step-by-Step Worked Problems
+
+### Problem 1: Control Flow Graph & Cyclomatic Complexity
+Consider the following pseudo-code function:
+```c
+int compute(int x, int y) {
+    int result = 0;
+    if (x > 0 && y > 0) {       // Compound decision
+        result = x + y;
+    } else {
+        result = x - y;
+    }
+    while (result > 100) {      // Loop predicate
+        result -= 50;
+    }
+    return result;
+}
+```
+*Task: Calculate the Cyclomatic Complexity $V(G)$.*
+
+#### Step-by-step Solution:
+Decompose compound conditions into separate binary predicate nodes:
+1. The condition `if (x > 0 && y > 0)` contains two distinct predicates:
+   - Predicate 1: `(x > 0)`
+   - Predicate 2: `(y > 0)`
+2. The `while (result > 100)` condition adds:
+   - Predicate 3: `(result > 100)`
+3. Total 2-way predicate nodes $P = 3$.
+4. Using McCabe's formula $V(G) = P + 1$:
+$$V(G) = 3 + 1 = \mathbf{4}$$
+*(A test suite must supply at least 4 independent execution paths to guarantee full basis path coverage).*
+
+---
+
+### Problem 2: Boundary Value Test Case Calculation
+A banking software module accepts an applicant's age between $18$ and $65$, and an annual credit score between $300$ and $900$.
+*Task: Calculate the exact number of test cases required under Standard Normal BVA and Robustness BVA.*
+
+#### Step-by-step Solution:
+Here, the number of input variables $n = 2$:
+1. **Standard Normal BVA**:
+$$\text{Test Cases} = 4n + 1 = 4(2) + 1 = \mathbf{9 \text{ test cases}}$$
+   - Age values: $\{18, 19, 41.5, 64, 65\}$ with Credit Score held at nominal ($600$).
+   - Credit values: $\{300, 301, 600, 899, 900\}$ with Age held at nominal ($41.5$).
+   - Total distinct combinations: $4 + 4 + 1 = 9$.
+2. **Robustness BVA**:
+$$\text{Test Cases} = 6n + 1 = 6(2) + 1 = \mathbf{13 \text{ test cases}}$$
+   - Adds invalid boundary points: Age $\{17, 66\}$ and Credit Score $\{299, 901\}$.
+
+---
+
+## 8. UGC NET & Bihar STET PYQ Analysis & Practice
+
+### Question 1 (UGC NET Official PYQ)
+Which category of software maintenance accounts for the largest proportion of total maintenance effort throughout a software product's life cycle?
+- **A)** Corrective Maintenance
+- **B)** Adaptive Maintenance
+- **C)** Perfective Maintenance
+- **D)** Preventive Maintenance
+
+**Answer**: **C**
+**Explanation**: Empirical software engineering studies (such as Lientz & Swanson) demonstrate that **Perfective Maintenance** (adding user-requested enhancements and tuning performance) consumes approximately **$50\%$** of all maintenance resources.
+
+---
+
+### Question 2 (Bihar STET Higher Secondary Exam)
+In integration testing, dummy modules constructed to simulate the behavior of lower-level subroutines invoked by the module under test are known as:
+- **A)** Drivers
+- **B)** Stubs
+- **C)** Mutants
+- **D)** Proxies
+
+**Answer**: **B**
+**Explanation**: **Stubs** simulate called worker modules in **Top-Down** integration testing. **Drivers** simulate calling controller modules in **Bottom-Up** integration testing.
+
+---
+
+### Question 3 (UGC NET White-Box Coverage Subsumption)
+Which of the following test coverage metrics is the strongest (i.e., achieving 100% in this metric automatically guarantees 100% in all others listed)?
+- **A)** Statement Coverage
+- **B)** Branch / Decision Coverage
+- **C)** Multiple Condition Coverage
+- **D)** Condition Coverage
+
+**Answer**: **C**
+**Explanation**: Multiple Condition Coverage tests all $2^n$ combinations of atomic condition truth values, thereby strictly subsuming Branch coverage and Statement coverage.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="A program control flow graph G has 14 edges, 10 nodes, and 1 connected component. What is the McCabe Cyclomatic Complexity V(G)?"
+  optionA="4"
+  optionB="5"
+  optionC="6"
+  optionD="7"
+  correctOption="C"
+  explanation="McCabe Cyclomatic Complexity formula: V(G) = E - N + 2P. Here E = 14 edges, N = 10 nodes, P = 1 component. V(G) = 14 - 10 + 2(1) = 4 + 2 = 6."
+  examBadge="UGC NET June 2020 / Official PYQ"
+/>
+
+<Quiz
+  question="In software testing, if a function takes an integer input x within the valid range [10, 100], what are the standard Boundary Value Analysis (BVA) test values for x?"
+  optionA="{10, 55, 100}"
+  optionB="{9, 10, 11, 55, 99, 100, 101}"
+  optionC="{10, 11, 99, 100}"
+  optionD="{0, 10, 100, 1000}"
+  correctOption="B"
+  explanation="Boundary Value Analysis tests: Minimum (10), Just above min (11), Nominal value (55), Just below max (99), Maximum (100). For robust BVA, it also includes invalid boundaries just below min (9) and just above max (101)."
+  examBadge="UGC NET Dec 2021"
+/>
+
+<Quiz
+  question="In Mutation Testing, a test suite kills 45 mutant programs out of 60 total generated mutants. If 10 mutants are mathematically proven to be Equivalent Mutants, what is the Mutation Score?"
+  optionA="75%"
+  optionB="90%"
+  optionC="80%"
+  optionD="85%"
+  correctOption="B"
+  explanation="Mutation Score = [Killed Mutants / (Total Mutants - Equivalent Mutants)] × 100% = [45 / (60 - 10)] × 100% = [45 / 50] × 100% = 90%."
+  examBadge="UGC NET Dec 2020"
+/>
+
+<Quiz
+  question="According to empirical software maintenance studies (Lientz and Swanson), which category of software maintenance accounts for the largest fraction (approximately 50%) of all maintenance effort?"
+  optionA="Corrective Maintenance (bug fixing)"
+  optionB="Adaptive Maintenance (porting to new OS)"
+  optionC="Perfective Maintenance (adding new features and enhancements)"
+  optionD="Preventive Maintenance (refactoring)"
+  correctOption="C"
+  explanation="Lientz and Swanson distribution: Perfective Maintenance accounts for ~50% (enhancing functionality based on user requests), Adaptive accounts for ~25%, Corrective accounts for ~21%, and Preventive accounts for ~4%."
+  examBadge="UGC NET Dec 2022"
+/>
+
+<Quiz
+  question="What is the primary difference between Black-Box Testing and White-Box Testing?"
+  optionA="Black-box is manual, white-box is automated"
+  optionB="Black-box tests functional behavior without internal code knowledge; White-box tests internal control structures, branches, and code logic"
+  optionC="White-box testing is performed only by clients"
+  optionD="Black-box tests only security vulnerabilities"
+  correctOption="B"
+  explanation="Black-Box (Functional) testing derives test cases strictly from specifications without inspecting internal logic. White-Box (Structural) testing examines code statements, branches, decision paths, and conditions."
+  examBadge="Bihar STET Standard"
+/>
+
+
+---
+
+## 9. High-Yield Revision Matrix
+
+| Topic | Metric / Invariant | Formula / Rule |
+|---|---|---|
+| **Normal BVA** | 5 points per variable | $4n + 1$ test cases |
+| **Robust BVA** | 7 points per variable | $6n + 1$ test cases |
+| **Worst-Case BVA** | Combinatorial boundary product | $5^n$ test cases |
+| **Cyclomatic Complexity** | Linearly independent paths | $V(G) = E - N + 2P = P_{\text{pred}} + 1$ |
+| **Top-Down Integration** | Tests control down to workers | Requires **Stubs** |
+| **Bottom-Up Integration** | Tests workers up to control | Requires **Drivers** |
+| **Mutation Score** | Test adequacy percentage | $MS = \frac{D}{M - E} \times 100\%$ |
+| **Maintenance Workload** | Ranked by effort share | Perfective ($50\%$) > Adaptive ($25\%$) > Corrective ($21\%$) > Preventive ($4\%$) |

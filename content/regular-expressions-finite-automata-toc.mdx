@@ -1,0 +1,418 @@
+---
+title: "Regular Expressions, Finite Automata, Arden's Theorem & Pumping Lemma"
+unit: "Unit 11: Theory of Computation & Compilers"
+examType: "Common"
+priority: "High"
+readTime: "45 min"
+slug: "regular-expressions-finite-automata-toc"
+description: "Exhaustive coverage of DFA, NFA, and epsilon-NFA, subset construction algorithm, DFA minimization via table-filling, Arden's theorem derivations, Pumping Lemma non-regularity proofs, and closure properties."
+tags: ["Theory of Computation", "TOC", "Automata", "DFA", "NFA", "Arden's Theorem", "Pumping Lemma", "Minimization"]
+---
+
+# Regular Expressions, Finite Automata, Arden's Theorem & Pumping Lemma
+
+## 1. Mathematical Foundations: Alphabets, Strings, and Languages
+
+The Theory of Computation begins with formal mathematical definitions of symbols, alphabets, and sequences:
+
+1. **Alphabet ($\Sigma$)**: A finite, non-empty set of symbols.
+   - Binary alphabet: $\Sigma = \{0, 1\}$
+   - English alphabet: $\Sigma = \{a, b, \dots, z\}$
+2. **String (or Word, $w$)**: A finite sequence of symbols chosen from an alphabet $\Sigma$.
+   - **Length of a string ($|w|$)**: The number of symbol positions in $w$.
+   - **Empty String ($\epsilon$ or $\lambda$)**: The unique string with length $|\epsilon| = 0$.
+3. **Powers of an Alphabet ($\Sigma^k$)**: The set of all strings of length $k$ over $\Sigma$.
+   - $\Sigma^0 = \{\epsilon\}$
+   - $\Sigma^1 = \{0, 1\}$ (for $\Sigma = \{0, 1\}$)
+   - $\Sigma^2 = \{00, 01, 10, 11\}$
+4. **Kleene Star ($\Sigma^*$)**: The set of all strings of all possible lengths over $\Sigma$, including the empty string:
+$$\Sigma^* = \bigcup_{k=0}^{\infty} \Sigma^k = \Sigma^0 \cup \Sigma^1 \cup \Sigma^2 \cup \dots$$
+5. **Positive Closure ($\Sigma^+$)**: The set of all non-empty strings over $\Sigma$:
+$$\Sigma^+ = \bigcup_{k=1}^{\infty} \Sigma^k \implies \Sigma^* = \Sigma^+ \cup \{\epsilon\}$$
+6. **Formal Language ($L$)**: Any subset of $\Sigma^*$, i.e., $L \subseteq \Sigma^*$.
+
+---
+
+## 2. Deterministic Finite Automata (DFA)
+
+A Deterministic Finite Automaton is an abstract computational machine with a finite number of internal states that transitions deterministically on each input symbol.
+
+### 2.1 Formal 5-Tuple Definition
+A DFA $M$ is formally defined as a 5-tuple:
+
+$$M = (Q, \Sigma, \delta, q_0, F)$$
+
+where:
+1. $Q$: A finite, non-empty set of **states**.
+2. $\Sigma$: A finite set of **input symbols (alphabet)**.
+3. $\delta$: The **transition function**, a total mapping:
+$$\delta: Q \times \Sigma \to Q$$
+   *(From every state, on every input symbol, there is **exactly one** deterministic next state).*
+4. $q_0 \in Q$: The **initial (start) state**.
+5. $F \subseteq Q$: The set of **accepting (final) states**.
+
+### 2.2 Extended Transition Function ($\hat{\delta}$)
+To trace a sequence of symbols (a string $w \in \Sigma^*$), we define the extended transition function $\hat{\delta}: Q \times \Sigma^* \to Q$ inductively:
+- **Basis**: $\hat{\delta}(q, \epsilon) = q$
+- **Induction**: For any string $w = x a$ (where $x \in \Sigma^*$ and $a \in \Sigma$):
+$$\hat{\delta}(q, x a) = \delta(\hat{\delta}(q, x), a)$$
+
+### 2.3 Language Accepted by a DFA
+The language recognized or accepted by a DFA $M$ is:
+
+$$L(M) = \{w \in \Sigma^* \mid \hat{\delta}(q_0, w) \in F\}$$
+
+A language $L$ is called **regular** if and only if there exists some DFA $M$ such that $L = L(M)$.
+
+---
+
+## 3. Non-Deterministic Finite Automata (NFA)
+
+In an NFA, for a given state and input symbol, the machine may transition to **zero, one, or multiple** possible next states.
+
+### 3.1 Formal Definition
+An NFA is a 5-tuple $M = (Q, \Sigma, \delta, q_0, F)$ where the transition function is defined as:
+
+$$\delta: Q \times \Sigma \to 2^Q \quad (\mathcal{P}(Q))$$
+
+where $2^Q$ denotes the power set (set of all subsets) of $Q$.
+
+### 3.2 $\epsilon$-NFA (NFA with Epsilon Transitions)
+An $\epsilon$-NFA allows transitions on the empty string $\epsilon$, meaning the machine can change state **spontaneously** without reading any input symbol:
+
+$$\delta: Q \times (\Sigma \cup \{\epsilon\}) \to 2^Q$$
+
+#### $\epsilon$-Closure ($\epsilon\text{-CLOSURE}$)
+For any state $q \in Q$, $\epsilon\text{-CLOSURE}(q)$ is the set of all states reachable from $q$ by traversing zero or more $\epsilon$-transitions:
+- **Basis**: $q \in \epsilon\text{-CLOSURE}(q)$.
+- **Inductive Step**: If $p \in \epsilon\text{-CLOSURE}(q)$ and $r \in \delta(p, \epsilon)$, then $r \in \epsilon\text{-CLOSURE}(q)$.
+
+For a subset of states $S \subseteq Q$:
+$$\epsilon\text{-CLOSURE}(S) = \bigcup_{q \in S} \epsilon\text{-CLOSURE}(q)$$
+
+---
+
+## 4. Equivalence of DFA, NFA, and $\epsilon$-NFA
+
+> **Fundamental Theorem of Finite Automata**:
+> The class of languages accepted by DFAs, NFAs, and $\epsilon$-NFAs is identical:
+> $$\mathcal{L}(\text{DFA}) = \mathcal{L}(\text{NFA}) = \mathcal{L}(\epsilon\text{-NFA}) = \text{Regular Languages}$$
+
+### 4.1 Subset Construction Algorithm (Powerset Construction)
+Given an NFA $N = (Q_N, \Sigma, \delta_N, q_0, F_N)$, construct an equivalent DFA $D = (Q_D, \Sigma, \delta_D, q_D, F_D)$:
+
+1. **Start state**: $q_D = \{q_0\}$ (or $\epsilon\text{-CLOSURE}(q_0)$ for $\epsilon$-NFA).
+2. **State space**: Each state in $Q_D$ is a subset of $Q_N$: $Q_D \subseteq 2^{Q_N}$.
+3. **Transition Function**: For each composite state $S \subseteq Q_N$ and symbol $a \in \Sigma$:
+$$\delta_D(S, a) = \bigcup_{q \in S} \delta_N(q, a)$$
+   *(For $\epsilon$-NFA: $\delta_D(S, a) = \epsilon\text{-CLOSURE}\left(\bigcup_{q \in S} \delta_N(q, a)\right)$).*
+4. **Final states**: Any composite state containing at least one final state of $N$:
+$$F_D = \{S \in Q_D \mid S \cap F_N \neq \emptyset\}$$
+
+### 4.2 State Complexity Bound
+If an NFA has $n$ states, the equivalent minimal DFA has:
+- **Upper Bound**: At most $2^n$ states.
+- **Tightness**: For the language $L_k = \{w \in \{0, 1\}^* \mid \text{the } k\text{-th symbol from the end is } 1\}$, the NFA requires $k+1$ states, while any equivalent DFA strictly requires **$2^k$ states**.
+
+---
+
+### 4.3 Worked Example: NFA to DFA Conversion
+
+Consider the NFA $N$ over $\Sigma = \{0, 1\}$ that accepts all strings ending with `01`:
+- $Q = \{A, B, C\}$, $q_0 = A$, $F = \{C\}$
+- $\delta(A, 0) = \{A, B\}$, $\delta(A, 1) = \{A\}$
+- $\delta(B, 1) = \{C\}$, $\delta(B, 0) = \emptyset$
+- $\delta(C, 0) = \emptyset$, $\delta(C, 1) = \emptyset$
+
+**Execution of Subset Construction**:
+
+| DFA State (Subset) | Input Symbol $0$ | Input Symbol $1$ | Is Final? ($C \in \text{State}$) |
+|:---:|:---:|:---:|:---:|
+| $[A]$ (Initial) | $[A, B]$ | $[A]$ | No |
+| $[A, B]$ | $\delta(A, 0) \cup \delta(B, 0) = [A, B]$ | $\delta(A, 1) \cup \delta(B, 1) = [A, C]$ | No |
+| $[A, C]$ | $\delta(A, 0) \cup \delta(C, 0) = [A, B]$ | $\delta(A, 1) \cup \delta(C, 1) = [A]$ | **Yes** (Contains $C$) |
+
+The resulting DFA has exactly **3 states**: $[A]$, $[A, B]$, and $[A, C]$ with start state $[A]$ and accepting state $[A, C]$.
+
+---
+
+## 5. DFA Minimization: The Table-Filling Algorithm
+
+A DFA is minimal if it has no unreachable states and no pairwise equivalent (indistinguishable) states.
+
+### 5.1 Myhill-Nerode Distinguishability
+Two states $p, q \in Q$ are **equivalent** ($p \sim q$) if for all strings $w \in \Sigma^*$:
+$$\hat{\delta}(p, w) \in F \iff \hat{\delta}(q, w) \in F$$
+If there exists even a single string $w$ such that one state lands in $F$ and the other lands in $Q \setminus F$, then $p$ and $q$ are **distinguishable by $w$**.
+
+### 5.2 Table-Filling Algorithm (Moore / Hopcroft Principle)
+
+```
+Algorithm Minimize_DFA:
+  1. Remove all states unreachable from start state q₀.
+  2. Draw a lower-triangular table for all unordered pairs (p, q) with p ≠ q.
+  3. Base Step (0-equivalence):
+     For each pair (p, q), if p ∈ F and q ∉ F (or vice versa), mark (p, q) with X.
+  4. Inductive Step (k-equivalence):
+     Repeat until no new pairs are marked:
+       For each unmarked pair (p, q):
+         For each symbol a ∈ Σ:
+           Let r = δ(p, a) and s = δ(q, a).
+           If (r, s) is already marked X:
+             Mark (p, q) with X.
+  5. Combine all remaining UNMARKED pairs into merged equivalence classes.
+```
+
+---
+
+## 6. Regular Expressions & Arden's Theorem
+
+A **Regular Expression (RE)** is an algebraic specification describing a regular language.
+
+### 6.1 Recursive Definition of Regular Expressions
+1. $\emptyset$ is an RE denoting the empty language $\emptyset$.
+2. $\epsilon$ is an RE denoting the language $\{\epsilon\}$.
+3. For each $a \in \Sigma$, $\mathbf{a}$ is an RE denoting $\{a\}$.
+4. If $r_1, r_2$ are REs denoting $L_1, L_2$:
+   - $(r_1 + r_2)$ denotes $L_1 \cup L_2$ (Union / Alternation).
+   - $(r_1 r_2)$ denotes $L_1 L_2$ (Concatenation).
+   - $(r_1^*)$ denotes $L_1^*$ (Kleene Star).
+
+### 6.2 Essential Algebraic Identities
+- $R + \emptyset = R$
+- $R \emptyset = \emptyset R = \emptyset$
+- $R \epsilon = \epsilon R = R$
+- $\epsilon^* = \epsilon, \quad \emptyset^* = \epsilon$
+- $R + R = R$ (Idempotence)
+- $R^* R^* = R^*$
+- $(R^*)^* = R^*$
+- $(P + Q)^* = (P^* Q^*)^* = (P^* + Q^*)^*$
+- $R(P + Q) = RP + RQ$ and $(P + Q)R = PR + QR$ (Distributivity)
+
+---
+
+### 6.3 Arden's Theorem
+
+> **Statement**: Let $P$ and $Q$ be two regular expressions over $\Sigma$. If $P$ does not contain the null string $\epsilon$, then the equation:
+> $$R = Q + RP$$
+> has a **unique solution** given by:
+> $$R = QP^*$$
+
+#### Proof:
+Substitute $R = QP^*$ into the right-hand side of $R = Q + RP$:
+$$
+\begin{aligned}
+\text{RHS} &= Q + (QP^*)P \\
+&= Q(\epsilon + P^* P) \\
+&= Q(P^*) = QP^* = \text{LHS}
+\end{aligned}
+$$
+Thus, $R = QP^*$ is a solution.
+
+To prove uniqueness:
+$$
+\begin{aligned}
+R &= Q + RP \\
+&= Q + (Q + RP)P = Q + QP + RP^2 \\
+&= Q + QP + QP^2 + \dots + QP^k + RP^{k+1} \\
+&= Q(\epsilon + P + P^2 + \dots + P^k) + RP^{k+1}
+\end{aligned}
+$$
+As $k \to \infty$, since $\epsilon \notin P$, $RP^{k+1}$ contributes only strings of length $\ge k+1$. For any finite-length string $w \in R$, its membership is completely determined by $Q P^*$. Hence the solution is unique.
+
+---
+
+### 6.4 Worked Example: Converting a DFA to an RE via Arden's Theorem
+
+Consider the following automaton:
+- State $q_1$ (Start state): $q_1 = \epsilon + q_1 0$
+- State $q_2$ (Final state): $q_2 = q_1 1 + q_2 1$
+
+**Step 1: Solve for $q_1$**:
+$$q_1 = \epsilon + q_1 0$$
+Using Arden's Theorem ($R = q_1, Q = \epsilon, P = 0$):
+$$q_1 = \epsilon \cdot 0^* = 0^*$$
+
+**Step 2: Substitute $q_1$ into $q_2$ equation**:
+$$q_2 = (0^*)1 + q_2 1$$
+Using Arden's Theorem ($R = q_2, Q = 0^*1, P = 1$):
+$$q_2 = (0^* 1) 1^* = 0^* 1^+$$
+
+Since $q_2$ is the only final state, the regular expression for the language is:
+$$L = 0^* 1^+$$
+
+---
+
+## 7. The Pumping Lemma for Regular Languages
+
+The Pumping Lemma is a necessary (but not sufficient) property of all regular languages, used primarily as a proof technique by contradiction to prove that a language is **NOT regular**.
+
+### 7.1 Formal Mathematical Statement
+If a language $L$ is regular, there exists an integer $p \ge 1$ (called the **pumping length**) such that every string $w \in L$ with $|w| \ge p$ can be divided into three parts, $w = xyz$, satisfying:
+
+1. $|y| > 0$ (the pumped substring $y$ is non-empty, i.e., $y \neq \epsilon$).
+2. $|xy| \le p$ (the prefix $xy$ occurs within the first $p$ characters).
+3. $\forall i \ge 0, \quad x y^i z \in L$ (the substring $y$ can be "pumped" any number of times, including zero times, and remain in $L$).
+
+```text
+String w:  [--- x ---][--- y ---][----------------- z -----------------]
+           |<-------- <= p ----->|
+                      |y| >= 1
+```
+
+---
+
+### 7.2 The Adversarial Game Strategy for Non-Regularity Proofs
+To prove that language $L$ is non-regular using the Pumping Lemma:
+1. **Assume** $L$ is regular (for contradiction).
+2. The adversary picks some pumping length $p \ge 1$.
+3. **You choose** a specific string $w \in L$ such that $|w| \ge p$ (expressed in terms of $p$).
+4. The adversary partitions $w = xyz$ subject to $|xy| \le p$ and $|y| \ge 1$.
+5. **You pick** an integer $i \ge 0$ such that the pumped string $w' = x y^i z \notin L$, establishing a contradiction!
+
+---
+
+### 7.3 Rigorous Worked Proof: $L = \{a^n b^n \mid n \ge 0\}$ is NOT Regular
+
+1. Assume $L$ is regular. Let $p$ be its pumping length.
+2. Select $w = a^p b^p$. Clearly $w \in L$ and $|w| = 2p \ge p$.
+3. Since $|xy| \le p$, the prefix $xy$ must consist **entirely of the symbol $a$**.
+   Therefore:
+$$x = a^j, \quad y = a^k, \quad z = a^{p - j - k} b^p \quad \text{where } k \ge 1 \text{ and } j + k \le p$$
+4. Pump with $i = 2$:
+$$w' = x y^2 z = a^j a^{2k} a^{p - j - k} b^p = a^{p+k} b^p$$
+5. Since $k \ge 1$, $p + k > p$. The number of $a$'s ($p+k$) does not equal the number of $b$'s ($p$).
+$$w' \notin L$$
+6. Contradiction! Hence, $L = \{a^n b^n \mid n \ge 0\}$ is **NOT regular**.
+
+---
+
+### 7.4 Rigorous Worked Proof: $L = \{a^{n^2} \mid n \ge 1\}$ is NOT Regular
+
+1. Assume $L$ is regular with pumping length $p$.
+2. Choose $w = a^{p^2} \in L$. Length $|w| = p^2 \ge p$.
+3. Divide $w = xyz$ where $|xy| \le p$ and $|y| = k \ge 1$.
+   Here $1 \le k \le p$.
+4. Pump with $i = 2$:
+$$|x y^2 z| = |xyz| + |y| = p^2 + k$$
+5. Check bounds on $p^2 + k$:
+$$p^2 < p^2 + 1 \le p^2 + k \le p^2 + p < p^2 + 2p + 1 = (p+1)^2$$
+$$\implies p^2 < |x y^2 z| < (p+1)^2$$
+6. The length of the pumped string lies strictly between two consecutive perfect squares ($p^2$ and $(p+1)^2$). Therefore, its length cannot be a perfect square!
+$$x y^2 z \notin L$$
+7. Contradiction! Hence $L$ is **NOT regular**.
+
+---
+
+## 8. Closure and Decision Properties of Regular Languages
+
+### 8.1 Closure Properties
+
+| Operation | Is Regular Class Closed? | Proof Mechanism |
+|---|:---:|---|
+| **Union** ($L_1 \cup L_2$) | **Yes** | Product construction / $R_1 + R_2$ |
+| **Intersection** ($L_1 \cap L_2$) | **Yes** | Product DFA construction ($Q_1 \times Q_2$) |
+| **Complement** ($\bar{L}$) | **Yes** | Invert final states of DFA ($F' = Q \setminus F$) |
+| **Concatenation** ($L_1 L_2$) | **Yes** | Connect final states of $M_1$ to start state of $M_2$ via $\epsilon$ |
+| **Kleene Star** ($L^*$) | **Yes** | Add new start state and $\epsilon$-loops |
+| **Reversal** ($L^R$) | **Yes** | Reverse all transitions, swap start and final states |
+| **Homomorphism** ($h(L)$) | **Yes** | Substitute symbols in regular expression |
+| **Inverse Homomorphism** ($h^{-1}(L)$) | **Yes** | Modify transition function: $\delta'(q, a) = \hat{\delta}(q, h(a))$ |
+| **Difference** ($L_1 \setminus L_2$) | **Yes** | $L_1 \cap \bar{L_2}$ |
+| **Subset / Superset** | **NO** | Subsets of regular languages need not be regular |
+
+### 8.2 Decision Properties (All Decidable for Regular Languages!)
+- **Emptiness Problem** ($L = \emptyset$?): **Decidable** (Check if any final state is reachable from $q_0$ using BFS/DFS).
+- **Finiteness Problem** ($|L| < \infty$?): **Decidable** (Check if there exists a cycle on any path from $q_0$ to some accepting state).
+- **Membership Problem** ($w \in L$?): **Decidable** in $O(|w|)$ time by running $w$ on DFA.
+- **Equivalence Problem** ($L_1 = L_2$?): **Decidable** (Check if $(L_1 \cap \bar{L_2}) \cup (\bar{L_1} \cap L_2) = \emptyset$).
+
+---
+
+## 9. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET Dec 2018)
+What is the minimum number of states in a DFA that recognizes all strings over $\Sigma = \{a, b\}$ containing `ab` as a substring?
+
+**Solution**:
+1. State $q_0$: Initial state (seen nothing or seen sequence of $b$'s).
+   - $\delta(q_0, a) = q_1$, $\delta(q_0, b) = q_0$.
+2. State $q_1$: Seen symbol `a`.
+   - $\delta(q_1, a) = q_1$, $\delta(q_1, b) = q_2$ (Seen `ab`!).
+3. State $q_2$: Accepting state. Once `ab` is found, stay in $q_2$ forever (Dead / Trap accepting state).
+   - $\delta(q_2, a) = q_2$, $\delta(q_2, b) = q_2$.
+**Answer**: Exactly **3 states** (Start state, intermediate state after `a`, and trap accepting state).
+
+### Question 2 (UGC NET June 2020)
+Which of the following languages is regular?
+- (A) $L_1 = \{a^n b^m \mid n \ge m \ge 0\}$
+- (B) $L_2 = \{a^n b^n c^n \mid n \ge 1\}$
+- (C) $L_3 = \{w \in \{a, b\}^* \mid \text{Number of } a\text{'s is divisible by 3}\}$
+- (D) $L_4 = \{a^p \mid p \text{ is prime}\}$
+
+**Solution**:
+- $L_1, L_2$ require unbounded memory to compare counts $\implies$ Non-regular (Context-Free and Context-Sensitive respectively).
+- $L_4$ fails Pumping Lemma $\implies$ Non-regular.
+- $L_3$: Modulo counting requires only a finite cycle of remainder states ($r = 0, 1, 2$). A 3-state DFA accepts $L_3$.
+**Answer**: **(C)**.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="What is the minimum number of states in a Minimal Deterministic Finite Automaton (DFA) that accepts all strings over alphabet {a, b} containing the substring 'ab'?"
+  optionA="2"
+  optionB="3"
+  optionC="4"
+  optionD="5"
+  correctOption="B"
+  explanation="States required: State q0 (start, no 'a' seen yet), State q1 (have seen 'a', waiting for 'b'), State q2 (accepting state, have seen 'ab', trap loop). Minimal DFA requires exactly 3 states."
+  examBadge="UGC NET Dec 2021 / Official PYQ"
+/>
+
+<Quiz
+  question="Given a Non-deterministic Finite Automaton (NFA) with n states, what is the maximum number of states possible in the equivalent Deterministic Finite Automaton (DFA) constructed via the subset (powerset) construction method?"
+  optionA="n"
+  optionB="n^2"
+  optionC="2^n"
+  optionD="2^(n - 1)"
+  correctOption="C"
+  explanation="In the powerset construction, every state of the DFA corresponds to a subset of states of the NFA. Since a set of n elements has 2^n subsets, the maximum number of states in the converted DFA is 2^n."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="According to the Myhill-Nerode Theorem, a formal language L is Regular if and only if the number of equivalence classes of its right invariant equivalence relation R_L is:"
+  optionA="Countably Infinite"
+  optionB="Finite"
+  optionC="Zero"
+  optionD="Equal to the alphabet size"
+  correctOption="B"
+  explanation="The Myhill-Nerode theorem states that a language L is regular if and only if the number of equivalence classes of R_L is finite. Furthermore, the number of equivalence classes equals the exact number of states in the unique minimal DFA for L."
+  examBadge="UGC NET June 2020"
+/>
+
+<Quiz
+  question="If a DFA M accepts language L, how is the DFA M' accepting the complement language L' = Σ* - L constructed?"
+  optionA="By reversing all transition arrows"
+  optionB="By swapping final (accepting) states and non-final states in M while keeping all transitions identical"
+  optionC="By adding ε-transitions to all states"
+  optionD="By doubling the number of states"
+  correctOption="B"
+  explanation="Because a DFA is deterministic and completely defined (has a transition for every symbol from every state), swapping the set of accepting states F with non-accepting states (Q \ F) accepts all strings that M rejects, producing the complement language L'."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="Which of the following regular expressions represents the set of all binary strings over {0, 1} that start and end with the same symbol?"
+  optionA="0(0+1)*0 + 1(0+1)*1 + 0 + 1"
+  optionB="(0+1)*"
+  optionC="0(0+1)*1 + 1(0+1)*0"
+  optionD="0*1*0*"
+  correctOption="A"
+  explanation="Strings of length ≥ 2 start and end with 0: 0(0+1)*0; or start and end with 1: 1(0+1)*1. Strings of length 1 (single '0' or '1') also start and end with the same symbol. Combining all cases: 0(0+1)*0 + 1(0+1)*1 + 0 + 1."
+  examBadge="UGC NET Dec 2022"
+/>
+

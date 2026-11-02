@@ -1,0 +1,133 @@
+---
+title: "E-Commerce Security, Digital Payment Gateways, and SET Protocol"
+unit: "Unit 14: Fundamentals of E-Commerce"
+examType: "STET"
+priority: "High"
+readTime: "26 min"
+description: "Exhaustive coverage of e-commerce security architectures, electronic payment gateways (EFT, UPI, Wallets), SET protocol dual signatures, smart cards, and IT Act compliance for Bihar STET."
+tags: ["E-Commerce", "Payment Gateways", "SET Protocol", "Dual Signature", "Cyber Security", "STET"]
+---
+
+# E-Commerce Security, Digital Payment Gateways, and SET Protocol
+
+Electronic Commerce is an explicitly defined syllabus domain in the **Bihar STET Computer Science Paper II** (Unit 14). Exam questions test security pillars (Confidentiality, Integrity, Authentication, Non-repudiation), digital payment processing lifecycles, and the cryptographic mechanics of the Secure Electronic Transaction (SET) protocol.
+
+---
+
+## 1. Pillars of E-Commerce Security
+
+| Security Pillar | Meaning in E-Commerce | Cryptographic Solution |
+| :--- | :--- | :--- |
+| **Confidentiality** | Prevents unauthorized parties from reading transaction details | Symmetric encryption (AES, 3DES) |
+| **Integrity** | Ensures transaction data (amount, items) is not tampered with in transit | One-way Hash Functions (SHA-256, HMAC) |
+| **Authentication** | Verifies true identities of customer, merchant, and bank | Digital Certificates (X.509, CA), PKI |
+| **Non-Repudiation** | Prevents a party from falsely denying they made a purchase or payment | **Digital Signatures** (Asymmetric RSA/ECC) |
+
+---
+
+## 2. Digital Payment Frameworks & Processing
+
+An online payment transaction involves 4 primary parties:
+1. **Cardholder (Customer)**: Purchaser initiating payment.
+2. **Merchant**: Online seller accepting payment.
+3. **Acquiring Bank (Merchant's Bank)**: Processes transactions on behalf of merchant.
+4. **Issuing Bank (Customer's Bank)**: Issues credit card or debit account to customer.
+
+```
+[Customer Browser] ──HTTPS──► [Merchant Server] ──API──► [Payment Gateway]
+                                                               │
+                                                       [Acquiring Bank]
+                                                               │
+                                                        [Payment Switch]
+                                                               │
+                                                        [Issuing Bank]
+```
+
+### 2.1 Smart Cards vs. Magnetic Stripe Cards
+- **Magnetic Stripe**: Static data stored on magnetic stripe; vulnerable to cloning/skimming attacks.
+- **Smart Card (EMV Chip)**: Contains an embedded **cryptographic microcontroller chip** that generates a dynamic, unique transaction authentication cryptogram for every single transaction, rendering cloned card data useless.
+
+---
+
+## 3. Secure Electronic Transaction (SET) Protocol
+
+Developed by Visa and MasterCard, SET is an asymmetric cryptographic protocol designed specifically to secure credit card payments over open networks.
+
+### 3.1 The Privacy Dilemma
+- The **Merchant** needs to know *what* was ordered (Order Information, OI) and where to ship it, but should NOT see the customer's private credit card number.
+- The **Bank** needs to know the payment card number and total amount (Payment Instructions, PI), but should NOT know what specific personal items the customer purchased.
+
+### 3.2 Dual Signature Formulation
+To solve this, SET introduces the **Dual Signature ($DS$)**, mathematically binding the order information (OI) and payment instructions (PI) without disclosing both to either party:
+
+$$H_{\text{OI}} = H(\text{OI}), \quad H_{\text{PI}} = H(\text{PI})$$
+$$\text{Dual Signature } (DS) = E_{K_{\text{priv\_cardholder}}}\left[ H( H_{\text{OI}} \mathbin{\Vert} H_{\text{PI}} ) \right]$$
+
+*(where $H$ is SHA-1/SHA-256 and $\Vert$ denotes string concatenation)*
+
+### 3.3 Verification Process
+1. **Merchant Verification**: Customer sends $[OI, H_{PI}, DS]$.
+   - Merchant computes $H(OI)$, concatenates with received $H_{PI}$, and verifies $DS$ using the customer's public key.
+   - Merchant verifies authenticity without ever seeing PI!
+2. **Bank Verification**: Customer sends $[PI, H_{OI}, DS]$.
+   - Bank computes $H(PI)$, concatenates with received $H_{OI}$, and verifies $DS$ using customer's public key.
+   - Bank verifies authorization without ever seeing OI!
+
+---
+
+## 4. Interactive Examination PYQ Practice
+
+<Quiz
+  question="In the SET (Secure Electronic Transaction) protocol, why is a Dual Signature used by the customer?"
+  optionA="To link Order Information and Payment Instructions while hiding payment details from the merchant and order details from the bank"
+  optionB="To provide two-factor authentication using SMS OTP"
+  optionC="To speed up symmetric encryption"
+  optionD="To store backup signatures on the cardholder's smart card"
+  correctOption="A"
+  explanation="Dual signature links the Order Information (OI) intended for the merchant with the Payment Instructions (PI) intended for the bank. By computing the hash of both and signing the concatenated hash, either party can verify the integrity and link between order and payment without gaining access to the other party's private data."
+  examBadge="Bihar STET 2024 / UGC NET PYQ"
+/>
+
+<Quiz
+  question="Which security service ensures that a customer cannot falsely deny having authorized an online purchase or financial transaction?"
+  optionA="Non-repudiation"
+  optionB="Confidentiality"
+  optionC="Integrity"
+  optionD="Availability"
+  correctOption="A"
+  explanation="Non-repudiation prevents a transacting entity from denying the authenticity of their signature on a document or the sending of a message. It is cryptographically guaranteed using asymmetric private key Digital Signatures."
+  examBadge="Bihar STET Official PYQ"
+/>
+
+<Quiz
+  question="In an electronic payment processing system, what is the role of the Acquiring Bank?"
+  optionA="It is the bank that holds the merchant's financial account and processes credit/debit card transactions"
+  optionB="It is the bank that issued the credit card to the customer"
+  optionC="It is the certification authority that issues SSL certificates"
+  optionD="It is the payment gateway software company"
+  correctOption="A"
+  explanation="In card payment processing: The Issuing Bank is the cardholder's (buyer's) bank. The Acquiring Bank is the merchant's (seller's) bank that acquires the credit/debit card transaction details from the payment gateway and credits the merchant's account."
+  examBadge="Bihar STET Paper II"
+/>
+
+<Quiz
+  question="What is the cryptographic formula used by a customer to compute the Dual Signature (DS) in SET protocol?"
+  optionA="DS = E_Kpriv [ H( H(PI) || H(OI) ) ]"
+  optionB="DS = E_Kpub [ H(PI) + H(OI) ]"
+  optionC="DS = H [ E_Kpriv(PI) || E_Kpriv(OI) ]"
+  optionD="DS = H(PI) ⊕ H(OI)"
+  correctOption="A"
+  explanation="The dual signature is formed by taking the message digest of Payment Instructions H(PI) and the digest of Order Information H(OI), concatenating them (||), taking the hash of the combination, and encrypting the result using the cardholder's private key: DS = E_Kpriv[H(H(PI) || H(OI))]."
+  examBadge="UGC NET / STET PYQ"
+/>
+
+<Quiz
+  question="Why are EMV chip smart cards significantly more secure against skimming and cloning than traditional magnetic stripe cards?"
+  optionA="The embedded chip generates a unique, dynamic cryptogram for every individual transaction"
+  optionB="The chip encrypts data using a fixed 4-digit PIN"
+  optionC="The card uses biometric fingerprint recognition exclusively"
+  optionD="Smart cards cannot be read by contactless readers"
+  correctOption="A"
+  explanation="Magnetic stripe cards store static card numbers that can be cloned simply by reading the track data. EMV chip smart cards contain a cryptographic microprocessor that computes a unique, one-time dynamic cryptogram for each transaction. Even if the data from one transaction is intercepted, it cannot be reused for another purchase."
+  examBadge="Bihar STET 2024"
+/>

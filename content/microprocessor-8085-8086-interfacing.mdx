@@ -1,0 +1,164 @@
+---
+title: "Microprocessor Architecture: 8085, 8086, Instruction Sets, and Interrupts"
+unit: "Unit 2: Computer Organization & Architecture"
+examType: "STET"
+priority: "High"
+readTime: "30 min"
+description: "Exhaustive guide to 8085 and 8086 microprocessors, register organization, addressing modes, instruction cycles, interrupt priority structures, and 8255 interfacing for Bihar STET Paper II."
+tags: ["Microprocessors", "8085", "8086", "Interrupts", "Addressing Modes", "STET"]
+---
+
+# Microprocessor Architecture: 8085, 8086, Instruction Sets, and Interrupts
+
+Microprocessor architecture is an essential core module of the **Bihar STET Computer Science Paper II** (Unit 2). This topic examines the internal hardware organization, register sets, bus structures, instruction sets, addressing modes, and hardware/software interrupt structures of the Intel 8085 (8-bit) and 8086 (16-bit) microprocessors.
+
+---
+
+## 1. Intel 8085 Microprocessor Architecture
+
+The Intel 8085 is an **8-bit general-purpose microprocessor** housed in a 40-pin DIP (Dual In-line Package), operating on a single +5V DC power supply with a 3.072 MHz clock frequency (using a 6.144 MHz crystal connected between pins $X_1$ and $X_2$).
+
+### 1.1 Bus Architecture
+- **Data Bus ($D_7 - D_0$)**: 8-bit bidirectional bus used to transfer data between CPU, memory, and I/O devices.
+- **Address Bus ($A_{15} - A_8$)**: High-order 8 bits of the 16-bit address bus; unidirectional.
+- **Multiplexed Address/Data Bus ($AD_7 - AD_0$)**: Time-multiplexed low-order 8 bits of address and data bus to save pin count.
+  - Demultiplexed using the **ALE (Address Latch Enable)** signal and an external transparent latch (e.g., 74LS373).
+  - When $\text{ALE} = 1$: Bus carries lower 8 address bits ($A_7 - A_0$).
+  - When $\text{ALE} = 0$: Bus carries 8-bit bidirectional data ($D_7 - D_0$).
+
+### 1.2 Internal Registers
+1. **Accumulator (Register A)**: 8-bit register that serves as one of the operands for ALU operations and stores arithmetic/logical results.
+2. **General Purpose Registers**: Six 8-bit registers ($B, C, D, E, H, L$). Can be used individually or combined into 16-bit register pairs:
+   - $B-C$ Pair
+   - $D-E$ Pair
+   - $H-L$ Pair (functions as the primary **Memory Pointer $M$**)
+3. **Program Counter (PC)**: 16-bit register that holds the memory address of the next instruction byte to be fetched.
+4. **Stack Pointer (SP)**: 16-bit register pointing to the current top of the LIFO stack in RAM (decrements before push, increments after pop).
+5. **Flag Register (F)**: 8-bit register containing 5 status flip-flops:
+$$[S \mid Z \mid X \mid AC \mid X \mid P \mid X \mid CY]$$
+   - **Sign ($S$)**: Set to 1 if MSB ($D_7$) of result is 1 (negative).
+   - **Zero ($Z$)**: Set to 1 if result is exactly zero.
+   - **Auxiliary Carry ($AC$)**: Set to 1 if carry generated from bit $D_3$ to $D_4$ (used for BCD arithmetic).
+   - **Parity ($P$)**: Set to 1 if result contains an **even number of 1s** (Even Parity).
+   - **Carry ($CY$)**: Set to 1 if carry generated from bit $D_7$ during addition or borrow during subtraction.
+
+---
+
+## 2. 8085 Interrupt System
+
+The 8085 possesses 5 hardware interrupts and 8 software interrupts ($\text{RST } 0 \text{ through RST } 7$).
+
+### 2.1 Hardware Interrupt Priority & Vector Addresses
+
+| Interrupt | Priority | Triggering Type | Vector Address | Maskable / Non-Maskable |
+| :--- | :---: | :--- | :--- | :--- |
+| **TRAP (RST 4.5)** | **1 (Highest)** | Level and Edge | $0024\text{H}$ ($4.5 \times 8 = 36 = 24\text{H}$) | **Non-Maskable** |
+| **RST 7.5** | 2 | Rising Edge Sensitive | $003C\text{H}$ ($7.5 \times 8 = 60 = 3C\text{H}$) | Maskable |
+| **RST 6.5** | 3 | Level Sensitive | $0034\text{H}$ ($6.5 \times 8 = 52 = 34\text{H}$) | Maskable |
+| **RST 5.5** | 4 | Level Sensitive | $002C\text{H}$ ($5.5 \times 8 = 44 = 2C\text{H}$) | Maskable |
+| **INTR** | 5 (Lowest) | Level Sensitive | Non-vectored (supplied via $\overline{\text{INTA}}$) | Maskable |
+
+<Callout type="warning">
+**Vector Address Computation Formula**:
+$$\text{Vector Address} = \text{Interrupt Number} \times 8 \quad (\text{converted to Hexadecimal})$$
+Example for RST 6.5: $6.5 \times 8 = 52_{10}$. Convert 52 to hex: $52 / 16 = 3$ remainder 4 $\implies 0034\text{H}$.
+</Callout>
+
+### 2.2 SIM and RIM Instructions
+- **SIM (Set Interrupt Mask)**: Masks/unmasks RST 7.5, 6.5, 5.5 and transmits serial output data via SOD pin.
+- **RIM (Read Interrupt Mask)**: Reads current interrupt mask status, pending interrupts, and receives serial input data via SID pin.
+
+---
+
+## 3. Intel 8086 Microprocessor (16-Bit)
+
+The 8086 is a **16-bit microprocessor** with a 16-bit data bus and a **20-bit address bus**, capable of addressing $2^{20} = 1\text{ MB}$ of physical memory.
+
+### 3.1 Bus Interface Unit (BIU) and Execution Unit (EU)
+The 8086 architecture is split into two independent functional units executing concurrently (instruction pipelining):
+1. **BIU (Bus Interface Unit)**:
+   - Fetches instructions from memory and places them in a **6-byte Instruction Queue** (FIFO).
+   - Generates 20-bit physical addresses.
+   - Contains Segment Registers ($CS, DS, SS, ES$) and Instruction Pointer ($IP$).
+2. **EU (Execution Unit)**:
+   - Decodes and executes instructions from the queue.
+   - Contains ALU, Flag Register, General Purpose Registers ($AX, BX, CX, DX$), and Pointer/Index Registers ($SP, BP, SI, DI$).
+
+### 3.2 Segmented Memory & Physical Address Calculation
+Physical memory (1 MB) is organized into logical segments of up to 64 KB each.
+$$\text{Physical Address} = (\text{Segment Base Address} \times 16_{10}) + \text{Offset Address}$$
+$$\text{Physical Address} = (\text{Segment Register} \times 10\text{H}) + \text{Offset}$$
+
+*Example*: If $CS = 2000\text{H}$ and $IP = 0500\text{H}$:
+$$\text{Physical Address} = 20000\text{H} + 0500\text{H} = 20500\text{H}$$
+
+---
+
+## 4. 8085 Addressing Modes
+
+| Addressing Mode | Definition | Assembly Example |
+| :--- | :--- | :--- |
+| **Immediate** | Data is specified directly within the instruction | `MVI A, 32H` or `LXI H, 2050H` |
+| **Register** | Data is moved between internal CPU registers | `MOV A, B` or `ADD C` |
+| **Direct** | 16-bit memory address is specified in instruction | `LDA 2500H` or `STA 3000H` |
+| **Register Indirect**| Address of operand is stored inside a register pair | `MOV A, M` (reads RAM at address in HL) |
+| **Implicit / Implied**| Operand is implied by the opcode itself | `CMA` (complement A) or `STC` (set carry) |
+
+---
+
+## 5. Interactive Examination PYQ Practice
+
+<Quiz
+  question="What is the physical memory address generated in an 8086 microprocessor if the Data Segment (DS) register contains 3000H and the Source Index (SI) register contains 1234H?"
+  optionA="31234H"
+  optionB="42340H"
+  optionC="30123H"
+  optionD="31230H"
+  correctOption="A"
+  explanation="In 8086 segmented memory: Physical Address = (Segment Register × 10H) + Offset. Here, Segment = DS = 3000H, Offset = SI = 1234H. Shift segment left by 4 bits (multiply by 10H): 3000H × 10H = 30000H. Add offset: 30000H + 1234H = 31234H."
+  examBadge="Bihar STET 2024 / UGC NET PYQ"
+/>
+
+<Quiz
+  question="Which of the following interrupts in the Intel 8085 microprocessor is non-maskable and triggered by both level and edge?"
+  optionA="TRAP"
+  optionB="RST 7.5"
+  optionC="RST 6.5"
+  optionD="INTR"
+  correctOption="A"
+  explanation="TRAP (RST 4.5) is the highest priority interrupt in the 8085. It is non-maskable (cannot be disabled by DI instruction) and is unique in being both edge-sensitive and level-sensitive to avoid false triggering by electrical noise."
+  examBadge="Bihar STET Official PYQ"
+/>
+
+<Quiz
+  question="What is the restart vector memory address for the 8085 hardware interrupt RST 5.5?"
+  optionA="002CH"
+  optionB="0034H"
+  optionC="003CH"
+  optionD="0024H"
+  correctOption="A"
+  explanation="Vector address = Interrupt Number × 8. For RST 5.5: 5.5 × 8 = 44 in decimal. Converting decimal 44 to hexadecimal: 44 = (2 × 16) + 12 = 2CH. Padding to 16 bits gives 002CH."
+  examBadge="UGC NET / STET PYQ"
+/>
+
+<Quiz
+  question="In the 8085 microprocessor, how many clock cycles (T-states) does the basic Opcode Fetch machine cycle take?"
+  optionA="4 to 6 T-states"
+  optionB="2 T-states"
+  optionC="3 T-states"
+  optionD="1 T-state"
+  correctOption="A"
+  explanation="In the 8085, memory read and memory write machine cycles require 3 T-states, but the Opcode Fetch machine cycle requires a minimum of 4 T-states (T1-T4) for fetching and internal instruction decoding, and can extend to 6 T-states for instructions requiring multi-byte operations."
+  examBadge="Bihar STET Paper II"
+/>
+
+<Quiz
+  question="The instruction 'MOV M, A' in 8085 assembly language belongs to which addressing mode?"
+  optionA="Register Indirect Addressing"
+  optionB="Direct Addressing"
+  optionC="Immediate Addressing"
+  optionD="Implicit Addressing"
+  correctOption="A"
+  explanation="In 'MOV M, A', M represents the memory location whose address is held by the HL register pair. Because the operand address is stored inside a register pair rather than specified directly in the instruction byte, it is Register Indirect Addressing."
+  examBadge="UGC NET June 2020"
+/>

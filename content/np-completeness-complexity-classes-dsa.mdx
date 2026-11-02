@@ -1,0 +1,403 @@
+---
+title: "Computational Complexity: P, NP, NP-Complete, and Polynomial Reductions"
+unit: "Unit 4: Algorithms"
+examType: "Common"
+priority: "High"
+readTime: "32 min"
+slug: "np-completeness-complexity-classes-dsa"
+description: "Master computational complexity classes P, NP, NP-Hard, NP-Complete, Co-NP, Cook-Levin Theorem, polynomial-time reductions, and Gallai's graph duality for UGC NET and Bihar STET."
+tags: ["Algorithms", "Complexity Classes", "P vs NP", "NP-Complete", "Reductions", "Cook Theorem", "UGC-NET", "STET"]
+---
+
+# Computational Complexity: P, NP, NP-Complete, and Polynomial Reductions
+
+Computational complexity classifies computational problems according to their intrinsic difficulty and resource consumption (time and space). In **UGC NET** and **Bihar STET Computer Science**, questions frequently target **formal definitions of P and NP**, **the directionality of polynomial-time reductions ($L_1 \le_P L_2$)**, **classic NP-Complete problem sets**, and **graph duality relationships (Vertex Cover vs. Independent Set)**.
+
+---
+
+## 1. Decision Problems vs. Optimization Problems
+
+In computational complexity theory, problems are analyzed primarily as **Decision Problems** (formal languages) rather than optimization tasks:
+
+```
++-----------------------------------------------------------------------------------------+
+|                        OPTIMIZATION VS. DECISION PROBLEMS                               |
++---------------------+-----------------------------------+-------------------------------+
+| Problem Dimension   | Optimization Problem              | Decision Problem Equivalent   |
++---------------------+-----------------------------------+-------------------------------+
+| Target Goal         | Find a configuration that         | Answer a strict YES / NO      |
+|                     | minimizes or maximizes a cost     | question regarding a budget   |
+|                     | function $f(x)$.                  | or threshold $k$.             |
++---------------------+-----------------------------------+-------------------------------+
+| Traveling           | Find a simple Hamiltonian tour of | Does there exist a tour of    |
+| Salesperson (TSP)   | minimum total distance.           | length $\le k$?               |
++---------------------+-----------------------------------+-------------------------------+
+| Clique Problem      | Find the maximum-sized complete   | Does graph $G$ contain a      |
+|                     | subgraph in $G$.                  | clique of size $\ge k$?       |
++---------------------+-----------------------------------+-------------------------------+
+| 0/1 Knapsack        | Maximize total value within       | Can we achieve value $\ge V$  |
+|                     | capacity constraint $W$.          | with total weight $\le W$?    |
++---------------------+-----------------------------------+-------------------------------+
+```
+
+> [!NOTE]
+> An optimization problem is at least as hard as its decision version. If the decision version is intractable (e.g., NP-Complete), the optimization version is intractable (**NP-Hard**).
+
+---
+
+## 2. Complexity Classes: P, NP, Co-NP, and NP-Hard
+
+```
+                    CLASS TAXONOMY (Assuming P != NP)
+                     +-----------------------------+
+                     |           NP-HARD           |
+                     |   (e.g., Halting Problem,   |
+                     |    TSP Optimization)        |
+                     |    +-------------------+    |
+                     |    |    NP-COMPLETE    |    |
+                     |    |  (SAT, 3-SAT,     |    |
+                     |    |   Vertex Cover)   |    |
+                     +----+-------------------+----+
+                          |        NP         |
+                          |  +-------------+  |
+                          |  |      P      |  |
+                          |  | (Sorting,   |  |
+                          |  |  Shortest P)|  |
+                          |  +-------------+  |
+                          +-------------------+
+```
+
+### 2.1 Class P (Polynomial Time)
+$$\text{P} = \{ L \subseteq \Sigma^* \mid L \text{ is decidable by a Deterministic Turing Machine (DTM) in time } O(n^k) \text{ for some constant } k \}$$
+- Problems solvable efficiently in worst-case polynomial time.
+- Examples: Minimum Spanning Tree (Kruskal/Prim), Shortest Path (Dijkstra, BFS), Matrix Multiplication, Relational Joins, Linear Programming (Interior Point Method).
+
+---
+
+### 2.2 Class NP (Non-Deterministic Polynomial Time)
+A decision problem $L \in \text{NP}$ if and only if it satisfies either of two equivalent definitions:
+1. **Verification Definition**: There exists a two-input polynomial-time algorithm $V(x, c)$ and a polynomial $p(n)$ such that:
+$$x \in L \iff \exists c \text{ with } |c| \le p(|x|) \text{ such that } V(x, c) = \text{ACCEPT}$$
+   Here, $c$ is a polynomial-sized **certificate (witness)**.
+   *(Checking a proposed solution takes deterministic polynomial time).*
+2. **Machine Definition**: $L$ is decided by a **Non-Deterministic Turing Machine (NDTM)** in polynomial time $O(n^k)$.
+
+> [!IMPORTANT]
+> **Fundamental Relationship**: $\text{P} \subseteq \text{NP}$. Any problem solvable deterministically in polynomial time can be verified deterministically in polynomial time (by ignoring the certificate and just computing the answer).
+
+---
+
+### 2.3 Class Co-NP
+The class of languages whose complements are in NP:
+$$\text{Co-NP} = \{ L \mid \overline{L} \in \text{NP} \}$$
+- If a problem in NP asks *"Does there exist a YES certificate?"*, the corresponding Co-NP problem asks *"Can we efficiently verify that every candidate fails (a NO instance)?"*
+- Example: **TAUTOLOGY** (Is a boolean formula true under *all* variable assignments?) is in Co-NP.
+
+---
+
+### 2.4 Class NP-Hard
+A language $X$ is **NP-Hard** if every problem $Y \in \text{NP}$ is polynomial-time reducible to $X$:
+$$\forall Y \in \text{NP}, \quad Y \le_P X$$
+- An NP-Hard problem is **at least as hard as the hardest problems in NP**.
+- **Crucial Distinction**: An NP-Hard problem **need not belong to NP**, and **need not even be decidable**!
+  - *Example*: The **Halting Problem** for Turing machines is undecidable, yet it is NP-Hard because any NP problem can be reduced to it.
+
+---
+
+### 2.5 Class NP-Complete (NPC)
+A language $X$ is **NP-Complete** if and only if it satisfies two rigorous conditions:
+
+$$
+\begin{aligned}
+1. \quad &X \in \text{NP} \quad &&\text{(A candidate certificate can be verified in polynomial time)} \\
+2. \quad &X \in \text{NP-Hard} \quad &&\text{(Every problem in NP reduces to } X \text{ in polynomial time)}
+\end{aligned}
+$$
+
+NP-Complete problems represent the most computationally difficult problems in NP.
+
+---
+
+## 3. Polynomial-Time Reductions ($L_1 \le_P L_2$)
+
+A language $L_1$ is **polynomial-time reducible** (Karp reducible) to language $L_2$ (denoted $L_1 \le_P L_2$) if there exists a function $f: \Sigma^* \to \Sigma^*$ computable in polynomial time by a DTM such that for all inputs $w$:
+
+$$w \in L_1 \iff f(w) \in L_2$$
+
+```
+     Input w ──► [Reduction Engine f(w): Poly Time] ──► Transformed Instance f(w)
+     w in L1?                                          f(w) in L2?
+        ▲                                                   ▲
+        │                                                   │
+     [ YES ] ◄─────────────────────────────────────────── [ YES ]
+     [ NO  ] ◄─────────────────────────────────────────── [ NO  ]
+```
+
+### Reduction Directionality Rules (High-Frequency Exam Traps)
+
+```
++-----------------------------------------------------------------------------------------+
+|                          POLYNOMIAL REDUCTION INFERENCE RULES                           |
++-------------------------------------------------------+---------------------------------+
+| Given: $L_1 \le_P L_2$                                | Correct Logical Deduction       |
++-------------------------------------------------------+---------------------------------+
+| If $L_2 \in \text{P}$                                 | $\implies L_1 \in \text{P}$     |
+| (If the target is easy, source is easy)               |                                 |
++-------------------------------------------------------+---------------------------------+
+| If $L_1 \notin \text{P}$                              | $\implies L_2 \notin \text{P}$  |
+| (If source is hard, target is hard)                   |                                 |
++-------------------------------------------------------+---------------------------------+
+| If $L_1$ is NP-Hard and $L_2 \in \text{NP}$           | $\implies L_2$ is NP-Complete   |
++-------------------------------------------------------+---------------------------------+
+| If $L_2$ is NP-Complete                               | **NO INFERENCE** about $L_1$!   |
+|                                                       | ($L_1$ could be trivial/in P)   |
++-------------------------------------------------------+---------------------------------+
+| If $L_1$ is NP-Complete and $L_2 \le_P L_1$           | **NO INFERENCE** about $L_2$!   |
+| (Wrong reduction direction)                           |                                 |
++-------------------------------------------------------+---------------------------------+
+```
+
+> [!WARNING]
+> **The Classic Flaw**: To prove that a new problem $B$ is NP-Complete:
+> 1. Prove $B \in \text{NP}$.
+> 2. Select a **known NP-Complete** problem $A$.
+> 3. Prove that **$A \le_P B$** (reduce Known to New).
+> Reducing $B \le_P A$ is completely useless—it only proves $B$ is no harder than $A$, not that $B$ is NP-Hard!
+
+---
+
+## 4. The Cook-Levin Theorem & Classic NPC Families
+
+### The Cook-Levin Theorem (1971)
+Stephen Cook and Leonid Levin independently established the existence of the first NP-Complete problem without using reductions:
+
+$$\textbf{Theorem:} \quad \text{The Boolean Satisfiability Problem (SAT) is NP-Complete.}$$
+
+**Proof Mechanism**: Cook showed that the computation of any arbitrary Non-Deterministic Turing Machine on any input string $w$ running in polynomial time $p(n)$ can be encoded as a single giant Boolean formula in Conjunctive Normal Form (CNF) of size $O(p(n)^2)$. The formula is satisfiable if and only if the NDTM accepts $w$.
+
+---
+
+### The Tree of Core NP-Complete Reductions
+
+```
+                       Circuit-SAT
+                            │
+                            ▼
+                     Formula-SAT (SAT)
+                            │
+                            ▼
+                          3-SAT
+          ┌─────────────────┼─────────────────┐
+          ▼                 ▼                 ▼
+     Vertex Cover         Subset Sum       Directed Hamiltonian Cycle
+     /          \           │                 │
+    ▼            ▼          ▼                 ▼
+Independent   Clique    0/1 Knapsack     Undirected Hamiltonian Cycle
+   Set                  (Decision)            │
+                                              ▼
+                                       Traveling Salesperson
+                                             (TSP-D)
+```
+
+---
+
+## 5. Graph Duality: Clique, Independent Set, and Vertex Cover
+
+Three foundational graph problems share deep structural equivalences that examiners test via numericals:
+
+- **Independent Set**: A subset of vertices $S \subseteq V$ such that no two vertices in $S$ are adjacent (no edge exists between them).
+- **Vertex Cover**: A subset of vertices $C \subseteq V$ such that every edge $e = (u, v) \in E$ has at least one endpoint in $C$ ($u \in C$ or $v \in C$).
+- **Clique**: A subset of vertices $K \subseteq V$ such that every pair of distinct vertices in $K$ is connected by an edge (a complete subgraph).
+
+### Fundamental Dual Theorems
+
+#### Theorem 1 (Vertex Cover and Independent Set Complementarity)
+Let $G = (V, E)$ be an undirected graph, and let $S \subseteq V$:
+$$S \text{ is an Independent Set of } G \iff V \setminus S \text{ is a Vertex Cover of } G$$
+
+#### Gallai's Identity
+Let $\alpha(G)$ be the Maximum Independent Set size, and $\beta(G)$ be the Minimum Vertex Cover size:
+$$\mathbf{\alpha(G) + \beta(G) = |V|}$$
+
+#### Theorem 2 (Clique and Complement Graph)
+Let $\overline{G} = (V, \overline{E})$ be the edge-complement of graph $G$:
+$$K \text{ is a Clique in } G \iff K \text{ is an Independent Set in } \overline{G}$$
+
+---
+
+## 6. Comprehensive Problem Complexity Classification Matrix
+
+```
++-----------------------------------------------------------------------------------------+
+|                             PROBLEM COMPLEXITY REFERENCE TABLE                          |
++--------------------------+-----------------------+--------------------------------------+
+| Problem Name             | Complexity Class      | Notes & Boundary Transitions         |
++--------------------------+-----------------------+--------------------------------------+
+| 2-SAT                    | **P**                 | Solvable in $O(V + E)$ via SCCs      |
+| 3-SAT                    | **NP-Complete**       | NP-Complete even with 3 literals/cl  |
++--------------------------+-----------------------+--------------------------------------+
+| 2-Colorability           | **P**                 | Bipartite test via BFS in $O(V + E)$ |
+| 3-Colorability           | **NP-Complete**       | NP-Complete on general planar graphs |
++--------------------------+-----------------------+--------------------------------------+
+| Eulerian Circuit         | **P**                 | Degree parity check in $O(V + E)$    |
+| Hamiltonian Cycle        | **NP-Complete**       | Long-standing NPC graph problem      |
++--------------------------+-----------------------+--------------------------------------+
+| Shortest Path            | **P**                 | Dijkstra $O(E + V \log V)$           |
+| Longest Path             | **NP-Complete**       | Finding simple path of length $\ge k$|
++--------------------------+-----------------------+--------------------------------------+
+| Minimum Spanning Tree    | **P**                 | Kruskal $O(E \log V)$                |
+| Traveling Salesperson    | **NP-Complete (D)**   | Decision version is NPC;             |
+|                          | **NP-Hard (Opt)**     | Optimization version is NP-Hard      |
++--------------------------+-----------------------+--------------------------------------+
+| Fractional Knapsack      | **P**                 | Greedy by ratio $O(n \log n)$        |
+| 0/1 Knapsack (Decision)  | **NP-Complete**       | Pseudo-polynomial DP $O(n \cdot W)$  |
++--------------------------+-----------------------+--------------------------------------+
+| Halting Problem          | **Undecidable**       | NP-Hard, but strictly NOT in NP      |
++--------------------------+-----------------------+--------------------------------------+
+```
+
+---
+
+## 7. Step-by-Step Worked Problems
+
+### Problem 1: Minimum Vertex Cover from Graph Order
+An undirected graph $G = (V, E)$ has $|V| = 20$ vertices. If the maximum size of an independent set in $G$ is known to be $7$, what is the size of the minimum vertex cover?
+
+#### Step-by-step Solution:
+1. Identify the given parameters:
+   - Total vertex count $|V| = 20$.
+   - Maximum Independent Set size $\alpha(G) = 7$.
+2. Apply Gallai's Identity:
+$$\alpha(G) + \beta(G) = |V|$$
+3. Substitute the values:
+$$7 + \beta(G) = 20 \implies \beta(G) = 20 - 7 = \mathbf{13}$$
+
+**Conclusion**: The minimum vertex cover has size **13**.
+
+---
+
+### Problem 2: Analyzing Polynomial Reduction Deductions
+Suppose $L_1, L_2,$ and $L_3$ are languages such that $L_1 \le_P L_2$ and $L_2 \le_P L_3$.
+Which of the following inferences are logically valid?
+1. If $L_3 \in \text{P}$, then $L_1 \in \text{P}$.
+2. If $L_1$ is NP-Complete, then $L_3$ is NP-Hard.
+3. If $L_2 \in \text{P}$, then $L_3 \in \text{P}$.
+
+#### Step-by-step Solution:
+- **Statement 1**: Polynomial reductions are transitive ($L_1 \le_P L_3$). If target $L_3$ is solvable in polynomial time, any instance of $L_1$ can be mapped in polynomial time to $L_3$ and solved. **VALID**.
+- **Statement 2**: If $L_1$ is NP-Complete, then every $Y \in \text{NP}$ reduces to $L_1$. By transitivity, every $Y \in \text{NP}$ reduces to $L_3$ ($Y \le_P L_1 \le_P L_3 \implies Y \le_P L_3$). Hence, $L_3$ is NP-Hard. **VALID**.
+- **Statement 3**: $L_2 \le_P L_3$ states that $L_2$ reduces to $L_3$. Knowing that the easier problem $L_2$ is in P tells us nothing about whether $L_3$ is easy or hard ($L_3$ could be undecidable). **INVALID**.
+
+---
+
+## 8. UGC NET & Bihar STET PYQ Analysis & Practice
+
+### Question 1 (UGC NET Official PYQ)
+Which of the following problems is NOT known to be NP-Complete?
+- **A)** 3-SAT
+- **B)** Traveling Salesperson Problem (Decision version)
+- **C)** 2-SAT
+- **D)** Vertex Cover
+
+**Answer**: **C**
+**Explanation**: 2-SAT can be represented as an implication graph and solved in deterministic linear time $O(V + E)$ using Strongly Connected Components (Tarjan's algorithm), so **2-SAT $\in$ P**.
+
+---
+
+### Question 2 (Bihar STET Higher Secondary Exam)
+To prove that a new language $L$ is NP-Complete, one must show that $L \in \text{NP}$ and:
+- **A)** $L$ reduces in polynomial time to a known NP-Complete problem
+- **B)** A known NP-Complete problem reduces in polynomial time to $L$
+- **C)** $L$ can be solved by a Deterministic Turing Machine in polynomial time
+- **D)** $L$ has no polynomial-time verification certificate
+
+**Answer**: **B**
+**Explanation**: To establish that $L$ is NP-Hard, we must show that an existing, known hard problem reduces to $L$ ($L_{\text{known\_NPC}} \le_P L$). Reducing $L$ to a known NPC problem only shows $L$ is no harder than NPC.
+
+---
+
+### Question 3 (UGC NET P vs. NP Implication)
+If a polynomial-time algorithm is discovered for the Traveling Salesperson Decision Problem, which of the following statements must be true?
+- **A)** P = NP
+- **B)** NP = Co-NP = $\emptyset$
+- **C)** All NP-Hard problems become undecidable
+- **D)** The Halting Problem can be solved in polynomial time
+
+**Answer**: **A**
+**Explanation**: Because the TSP Decision problem is NP-Complete, discovering a polynomial-time algorithm for it proves that every problem in NP can be solved in polynomial time, establishing **P = NP**.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="If problem A is polynomial-time reducible to problem B (A ≤_p B), and problem B is known to be in class P, what can be rigorously concluded about problem A?"
+  optionA="A is NP-Complete"
+  optionB="A is in P"
+  optionC="A is NP-Hard"
+  optionD="A is Undecidable"
+  correctOption="B"
+  explanation="The reduction A ≤_p B means A can be transformed into B in polynomial time. If B can be solved in polynomial time (B ∈ P), then A can be solved in polynomial time by first converting it to B and then solving B. Thus, A ∈ P."
+  examBadge="UGC NET Dec 2021"
+/>
+
+<Quiz
+  question="Which theorem formally proved that Circuit-SAT (and subsequently 3-SAT) is NP-Complete, establishing the foundation of computational complexity theory?"
+  optionA="Cook-Levin Theorem (1971)"
+  optionB="Turing's Halting Theorem"
+  optionC="Karp's 21 Reductions Theorem"
+  optionD="Church-Turing Thesis"
+  correctOption="A"
+  explanation="The Cook-Levin Theorem proved that Boolean Satisfiability (SAT) is NP-Complete by demonstrating that any problem in NP (solvable by a non-deterministic Turing machine in polynomial time) can be encoded as a polynomial-size Boolean circuit/formula."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="In graph theory, what is the relationship between the Maximum Independent Set size α(G) and the Minimum Vertex Cover size β(G) for any graph G with V vertices (Gallai's Identity)?"
+  optionA="α(G) · β(G) = |V|"
+  optionB="α(G) + β(G) = |V|"
+  optionC="α(G) - β(G) = 2"
+  optionD="α(G) = 2 · β(G)"
+  correctOption="B"
+  explanation="Gallai's Identity states that S is an independent set in G if and only if V \ S is a vertex cover of G. Therefore, the maximum independent set plus the minimum vertex cover always equals the total number of vertices: α(G) + β(G) = |V|."
+  examBadge="UGC NET June 2020"
+/>
+
+<Quiz
+  question="A decision problem X is defined to be NP-Hard if:"
+  optionA="X is in NP and X is in P"
+  optionB="Every problem Y in NP is polynomial-time reducible to X (Y ≤_p X)"
+  optionC="X can be verified in logarithmic space"
+  optionD="X can be solved in polynomial time on a deterministic Turing machine"
+  correctOption="B"
+  explanation="A problem X is NP-Hard if every problem in NP reduces to X in polynomial time (X is at least as hard as the hardest problem in NP). Notice that X itself does NOT have to be in NP (it can even be undecidable, like the Halting Problem). If X is also in NP, it is NP-Complete."
+  examBadge="UGC NET Dec 2022"
+/>
+
+<Quiz
+  question="Which of the following problems is known to be in class P (solvable in deterministic polynomial time)?"
+  optionA="Traveling Salesperson Problem (Optimization)"
+  optionB="3-SAT (Boolean Satisfiability)"
+  optionC="2-SAT (2-Conjunctive Normal Form Satisfiability)"
+  optionD="0/1 Knapsack Problem"
+  correctOption="C"
+  explanation="While 3-SAT is NP-Complete, 2-SAT can be solved in linear O(V + E) time by constructing an implication graph and checking for strongly connected components containing both a variable x and its negation ¬x."
+  examBadge="UGC NET June 2021"
+/>
+
+
+---
+
+## 9. High-Yield Revision Matrix
+
+| Concept | Formal Definition | Exam Invariant / Shortcut |
+|---|---|---|
+| **Class P** | Solvable by DTM in $O(n^k)$ | Poly-time solvable |
+| **Class NP** | Verifiable by DTM in $O(n^k)$ | Poly-time verifiable with certificate |
+| **Class NP-Hard** | $\forall Y \in \text{NP}, Y \le_P X$ | May be undecidable (e.g. Halting) |
+| **Class NP-Complete** | $X \in \text{NP}$ and $X \in \text{NP-Hard}$ | Hardest problems in NP |
+| **Reduction Direction** | $A \le_P B$: $A$ reduces to $B$ | Target $B$ is at least as hard as $A$ |
+| **Cook's Theorem** | SAT is NP-Complete | First problem proven NPC directly |
+| **Gallai's Identity** | $\alpha(G) + \beta(G) = \|V\|$ | Max Indep Set + Min Vertex Cover = $\|V\|$ |
+| **2-SAT vs 3-SAT** | 2-SAT $\in$ P, 3-SAT $\in$ NPC | Boundary between P and NP-Complete |

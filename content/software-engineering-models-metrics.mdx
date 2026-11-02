@@ -1,0 +1,361 @@
+---
+title: "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity"
+unit: "Unit 8: Software Engineering"
+examType: "Common"
+priority: "Med"
+readTime: "45 min"
+slug: "software-engineering-models-metrics"
+description: "Comprehensive software engineering study guide: SDLC process models (Waterfall, Spiral, V-Model, Agile), Basic and Intermediate COCOMO estimation formulas, Function Point Analysis, and McCabe's Cyclomatic Complexity with Basis Path Testing."
+tags: ["Software Engineering", "SDLC", "COCOMO", "Function Points", "Cyclomatic Complexity", "Agile", "Spiral Model", "Basis Path Testing"]
+---
+
+# Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity
+
+## 1. Software Development Life Cycle (SDLC) Models
+
+The Software Development Life Cycle provides a structured framework of sequential and iterative stages through which a software system evolves from inception to retirement.
+
+```text
+               Comparative Spectrum of SDLC Models
+Linear / Rigid <--------------------------------------> Highly Adaptive
+(Waterfall)       (V-Model)       (Prototyping)       (Spiral)       (Agile / Scrum)
+```
+
+---
+
+### 1.1 The Classical and Iterative Waterfall Models
+
+- **Classical Waterfall**: Strictly linear and sequential. Each phase (Requirements $\to$ Design $\to$ Coding $\to$ Testing $\to$ Deployment $\to$ Maintenance) must finish completely before the next begins. No feedback loops allowed.
+- **Iterative Waterfall**: Introduces **feedback paths** between adjacent phases, allowing defect correction in previous phases.
+- **Phase Containment of Errors**: The primary engineering objective is to detect and correct errors in the exact phase they are introduced.
+$$\text{Cost to fix a defect grows exponentially across subsequent SDLC phases!}$$
+
+---
+
+### 1.2 The Spiral Model (Barry Boehm, 1988)
+
+The Spiral Model is a **risk-driven process model** that combines the systematic stepwise development of the waterfall model with the iterative prototyping paradigm.
+
+```text
+              Determine Objectives, Alternatives, Constraints
+                                  |
+                                  |   Quadrant 1
+                Quadrant 4        |
+          ------------------------+------------------------
+                Quadrant 3        |   Quadrant 2
+                                  |
+             Development & Testing| Evaluate Alternatives,
+               of Next Level      | Identify & Resolve Risks (PROTOTYPING)
+```
+
+#### The Four Quadrants:
+1. **Quadrant 1 (Top-Left)**: Determine objectives, alternatives, and operational constraints for the current cycle.
+2. **Quadrant 2 (Top-Right)**: **Risk Analysis & Prototyping**. Identify technical and management risks; build prototypes to mitigate risks.
+3. **Quadrant 3 (Bottom-Right)**: Engineering & Development. Construct the next-level software increment (design, code, test).
+4. **Quadrant 4 (Bottom-Left)**: Review & Planning. Customer evaluation of current cycle; plan the next spiral iteration.
+
+- **Radial Dimension**: Measures cumulative development cost incurred.
+- **Angular Dimension**: Measures progress completed within the current cycle.
+
+---
+
+### 1.3 The V-Model (Verification and Validation Model)
+
+The V-Model provides a bilateral mapping between development activities (**Verification: "Are we building the product right?"**) and corresponding testing activities (**Validation: "Are we building the right product?"**).
+
+```text
+Requirements Analysis -------------------------> User Acceptance Testing (UAT)
+       \                                                      ^
+   System Design -----------------------------> System Testing |
+          \                                                ^   |
+      Architectural Design --------------> Integration Testing |
+             \                                             ^   |
+         Detailed Design -----------> Unit Testing         |   |
+                \                          ^               |   |
+                 +-----> [ CODING ] -------+---------------+---+
+```
+
+---
+
+### 1.4 Agile Methodology & Scrum Framework
+
+Agile replaces heavy upfront planning with rapid, incremental software releases driven by cross-functional teams.
+
+#### The 4 Core Values of the Agile Manifesto:
+1. **Individuals and interactions** over processes and tools.
+2. **Working software** over comprehensive documentation.
+3. **Customer collaboration** over contract negotiation.
+4. **Responding to change** over following a plan.
+
+#### Core Scrum Artifacts and Ceremonies:
+- **Sprint**: A time-boxed iteration (typically 2 to 4 weeks) producing a shippable increment.
+- **Product Backlog**: Prioritized list of all desired system features (User Stories) managed by the **Product Owner**.
+- **Sprint Backlog**: The subset of backlog items selected for completion in the current sprint.
+- **Burndown Chart**: A graphical metric tracking remaining work hours against sprint time.
+
+---
+
+## 2. Software Cost & Effort Estimation: The COCOMO Model
+
+Proposed by **Barry Boehm** in 1981, the **COnstructive COst MOdel (COCOMO)** is an empirical regression model estimating software effort, schedule duration, and staffing based on delivered source lines of code ($\text{KLOC} = \text{Thousands of Lines of Code}$).
+
+### 2.1 The Three Project Modes
+
+1. **Organic Mode**: Small, experienced teams working in familiar, in-house environments with stable, well-understood requirements (e.g., standard payroll or inventory system).
+2. **Semi-Detached Mode**: Medium-sized teams with mixed experience levels working with intermediate constraints and semi-rigid requirements (e.g., database management system, compiler).
+3. **Embedded Mode**: Complex, tightly constrained projects with stringent hardware, software, and operational interfaces (e.g., flight control system, nuclear plant monitor).
+
+---
+
+### 2.2 Basic COCOMO Mathematical Formulas
+
+1. **Effort ($E$)**: Measured in **Person-Months (PM)**:
+$$E = a \times (\text{KLOC})^b \quad \text{[Person-Months]}$$
+2. **Development Time ($D$ / $T_{\text{dev}}$)**: Measured in **Calendar Months**:
+$$D = c \times (E)^d \quad \text{[Months]}$$
+3. **Average Staff Size ($SS$)**: Number of persons required:
+$$SS = \frac{E}{D} \quad \text{[Persons]}$$
+4. **Productivity ($P$)**: Rate of software generation:
+$$P = \frac{\text{KLOC}}{E} \quad \text{[KLOC / Person-Month]}$$
+
+---
+
+### 2.3 Master COCOMO Coefficients Table (Must-Memorize for NET/STET)
+
+| Project Mode | $a$ | $b$ | $c$ | $d$ |
+|---|:---:|:---:|:---:|:---:|
+| **Organic** | **$2.4$** | **$1.05$** | **$2.5$** | **$0.38$** |
+| **Semi-Detached** | **$3.0$** | **$1.12$** | **$2.5$** | **$0.35$** |
+| **Embedded** | **$3.6$** | **$1.20$** | **$2.5$** | **$0.32$** |
+
+*Notice*: The exponent $b > 1.0$ reflects **diseconomy of scale** — as project size doubles, communication overhead among programmers increases super-linearly!
+
+---
+
+### 2.4 Intermediate and Detailed COCOMO
+
+- **Intermediate COCOMO**: Augments Basic COCOMO by incorporating **15 Cost Drivers** (Effort Multipliers covering Product Attributes, Hardware Attributes, Personnel Attributes, and Project Attributes).
+$$E = a \times (\text{KLOC})^b \times \text{EAF}$$
+  where $\text{EAF} = \prod_{i=1}^{15} \text{Cost Driver}_i$ is the **Effort Adjustment Factor**.
+- **Detailed COCOMO**: Applies individual cost driver adjustments at each subsystem and module phase level (Design, Code, Test).
+
+---
+
+### 2.5 Comprehensive Worked COCOMO Numerical
+
+**Problem**: A software system for a banking management application is estimated to have **32,000 lines of source code (32 KLOC)**. The project falls into the **Organic mode**. Calculate:
+1. Total Effort required in Person-Months.
+2. Nominal Development Time in Calendar Months.
+3. Average Staff Size required.
+
+**Solution**:
+1. **Effort Calculation**:
+$$E = 2.4 \times (32)^{1.05}$$
+   Since $32^{1.05} \approx 38.05$:
+$$E = 2.4 \times 38.05 = \mathbf{91.32 \text{ Person-Months}}$$
+2. **Development Time Calculation**:
+$$D = 2.5 \times (E)^{0.38} = 2.5 \times (91.32)^{0.38}$$
+   Since $(91.32)^{0.38} \approx 5.54$:
+$$D = 2.5 \times 5.54 = \mathbf{13.85 \text{ Months}}$$
+3. **Average Staff Size**:
+$$SS = \frac{E}{D} = \frac{91.32}{13.85} \approx \mathbf{6.59 \implies 7 \text{ Engineers}}$$
+
+---
+
+## 3. Function Point Analysis (FPA - Allan Albrecht)
+
+Function Point Analysis is a **language-independent** metric that measures the functional size of a software system based on user requirements.
+
+### 3.1 The Five Functional Components
+
+```text
+                                  User System
+                                       |
+        +--------------+---------------+---------------+--------------+
+        |              |               |               |              |
+        v              v               v               v              v
+External Inputs  External Outputs External Inquiries Internal Files  External Files
+    (EI)           (EO)            (EQ)           (ILF)          (EIF)
+```
+
+1. **External Inputs (EI)**: User data transactions entering the system that update internal files (e.g., input forms).
+2. **External Outputs (EO)**: Data leaving the system involving derived mathematical calculations (e.g., reports, pay slips).
+3. **External Inquiries (EQ)**: Input-output combinations resulting in immediate data retrieval without updating internal databases (e.g., search queries).
+4. **Internal Logical Files (ILF)**: User-identifiable logical data stored inside the system boundaries (e.g., database tables).
+5. **External Interface Files (EIF)**: Data files maintained by another external software application used by this system.
+
+---
+
+### 3.2 Weighting Matrix for Unadjusted Function Points (UFP)
+
+| Component | Low Complexity | Average Complexity | High Complexity |
+|---|:---:|:---:|:---:|
+| **External Inputs (EI)** | 3 | **4** | 6 |
+| **External Outputs (EO)** | 4 | **5** | 7 |
+| **External Inquiries (EQ)** | 3 | **3** | 6 |
+| **Internal Logical Files (ILF)** | 7 | **10** | 15 |
+| **External Interface Files (EIF)**| 5 | **7** | 10 |
+
+$$\text{UFP} = \sum_{i=1}^{5} \sum_{j=1}^{3} W_{ij} \times C_{ij}$$
+
+---
+
+### 3.3 The Final Function Point Formula
+
+$$\text{FP} = \text{UFP} \times \left[ 0.65 + 0.01 \times \sum_{i=1}^{14} F_i \right]$$
+
+where $F_i \in [0, 5]$ are the ratings for the **14 General System Characteristics (GSCs)** (e.g., data communications, distributed processing, performance, transaction rate, reusability).
+- If all $F_i = 0$ (Minimum complexity): $\text{CAF} = 0.65$.
+- If all $F_i = 5$ (Maximum complexity): $\text{CAF} = 0.65 + 0.01(70) = 1.35$.
+- Range of Complexity Adjustment Factor: **$0.65 \le \text{CAF} \le 1.35$** (Adjusts UFP by $\pm 35\%$).
+
+---
+
+## 4. McCabe's Cyclomatic Complexity & Basis Path Testing
+
+Developed by **Thomas J. McCabe** in 1976, **Cyclomatic Complexity** is a quantitative graph-theoretic metric measuring the logical complexity of a program's Control Flow Graph (CFG).
+
+### 4.1 Three Equivalent Mathematical Formulas
+
+Let $G = (V, E)$ be the Control Flow Graph of a program:
+
+1. **Formula 1 (Graph Nodes and Edges)**:
+$$V(G) = E - N + 2P$$
+   For a single unified program module ($P = 1$ connected component):
+$$V(G) = E - N + 2$$
+   where $E$ is the number of flow graph edges, and $N$ is the number of flow graph nodes.
+
+2. **Formula 2 (Predicate Decision Nodes)**:
+$$V(G) = P + 1$$
+   where $P$ is the number of **predicate nodes** (nodes containing a conditional branch with out-degree $\ge 2$, such as `if`, `while`, `for`).
+
+3. **Formula 3 (Bounded Regions)**:
+$$V(G) = \text{Number of Planar Regions in CFG (including the external unbounded region)}$$
+
+---
+
+### 4.2 Basis Path Testing Principle
+> **McCabe's Basis Path Theorem**:
+> The cyclomatic complexity $V(G)$ defines the **exact upper bound on the number of linearly independent execution paths** through the program.
+> Designing test cases to execute this basis path set guarantees that:
+> 1. **Every program statement is executed at least once** (100% Statement Coverage).
+> 2. **Every conditional decision branch is exercised in both true and false directions** (100% Branch Coverage).
+
+---
+
+### 4.3 Worked Example: Calculating Cyclomatic Complexity
+
+Consider the following program code:
+```c
+int compute(int x, int y) {
+    while (x > 0) {          // Predicate 1
+        if (y > 10)          // Predicate 2
+            x = x - y;
+        else
+            x = x + y;
+    }
+    return x;
+}
+```
+
+**Method 1 (Predicate Count)**:
+- Predicate nodes: `while (x > 0)` and `if (y > 10)` $\implies P = 2$.
+- Cyclomatic Complexity:
+$$V(G) = P + 1 = 2 + 1 = \mathbf{3}$$
+
+**Method 2 (Graph Construction)**:
+- Nodes $N = 5$ (Start, Loop Condition, If Condition, Then/Else Body, End).
+- Edges $E = 6$.
+- Cyclomatic Complexity:
+$$V(G) = E - N + 2 = 6 - 5 + 2 = \mathbf{3}$$
+
+There are exactly **3 linearly independent basis paths** required for complete testing.
+
+---
+
+## 5. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET 2020 — COCOMO Modes)
+Match the following project modes with their correct effort equations:
+- (A) Organic: $E = 2.4 \times (\text{KLOC})^{1.05}$
+- (B) Semi-Detached: $E = 3.0 \times (\text{KLOC})^{1.12}$
+- (C) Embedded: $E = 3.6 \times (\text{KLOC})^{1.20}$
+
+**Answer**: Standard Basic COCOMO coefficients: Organic (2.4, 1.05), Semi-Detached (3.0, 1.12), Embedded (3.6, 1.20).
+
+### Question 2 (UGC NET 2019 — Cyclomatic Complexity of a Graph)
+A control flow graph has 16 edges and 11 nodes. What is its cyclomatic complexity?
+
+**Solution**:
+$$V(G) = E - N + 2 = 16 - 11 + 2 = \mathbf{7}$$
+**Answer**: 7.
+
+### Question 3 (UGC NET 2021 — Function Point CAF Limits)
+What are the minimum and maximum possible values of the Complexity Adjustment Factor (CAF) in Function Point Analysis?
+
+**Solution**:
+$$\text{CAF} = 0.65 + 0.01 \times \sum_{i=1}^{14} F_i$$
+- Minimum: All $F_i = 0 \implies \text{CAF} = \mathbf{0.65}$.
+- Maximum: All $F_i = 5 \implies \sum F_i = 70 \implies \text{CAF} = 0.65 + 0.70 = \mathbf{1.35}$.
+**Answer**: Minimum = 0.65, Maximum = 1.35.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="Using Basic COCOMO for an Organic mode software project with estimated size 32 KLOC and coefficients a = 2.4, b = 1.05: what is the estimated development effort in Person-Months?"
+  optionA="76.8 PM"
+  optionB="91.2 PM"
+  optionC="98.5 PM"
+  optionD="120.4 PM"
+  correctOption="B"
+  explanation="Effort E = a × (KLOC)^b = 2.4 × (32)^1.05. Since 32^1.05 ≈ 38.05. Effort = 2.4 × 38.05 = 91.32 Person-Months."
+  examBadge="UGC NET Dec 2020 / Official PYQ"
+/>
+
+<Quiz
+  question="What is the defining characteristic of Barry Boehm's Spiral Model of software development that distinguishes it from the Waterfall and Prototyping models?"
+  optionA="Elimination of documentation requirements"
+  optionB="Explicit Risk Analysis and risk assessment at each iteration cycle"
+  optionC="Strict sequential phase progression"
+  optionD="Absence of customer evaluation"
+  correctOption="B"
+  explanation="The Spiral Model is a risk-driven process model. Each of its concentric cycles incorporates four distinct quadrants: 1. Determine objectives, 2. Identify and resolve risks, 3. Develop and verify product, and 4. Plan the next phase."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="In Function Point Analysis (FPA), which component is NOT one of the 5 standard Information Domain Characteristics?"
+  optionA="External Inputs (EI)"
+  optionB="External Outputs (EO)"
+  optionC="Internal Logical Files (ILF)"
+  optionD="Source Code Lines of Code (SLOC)"
+  correctOption="D"
+  explanation="Function Points measure functional size independently of programming language syntax. The 5 information domain characteristics are: External Inputs (EI), External Outputs (EO), External Inquiries (EQ), Internal Logical Files (ILF), and External Interface Files (EIF). Lines of Code (SLOC) is not a component."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="In Agile Scrum software development, what graphical artifact displays the remaining work (in story points or hours) versus time across the duration of a Sprint?"
+  optionA="Gantt Chart"
+  optionB="Sprint Burndown Chart"
+  optionC="PERT Network"
+  optionD="Control Chart"
+  correctOption="B"
+  explanation="A Sprint Burndown Chart displays the total amount of outstanding work remaining in the sprint backlog day by day, providing an immediate visual trajectory of whether the sprint goal will be achieved on schedule."
+  examBadge="Bihar STET Paper 2 2023"
+/>
+
+<Quiz
+  question="In the V-Model of software engineering, which verification testing phase corresponds directly to the Requirement Analysis phase?"
+  optionA="Unit Testing"
+  optionB="Integration Testing"
+  optionC="System / Acceptance Testing"
+  optionD="Regression Testing"
+  correctOption="C"
+  explanation="In the V-Model lifecycle: Unit Testing corresponds to Detailed Design; Integration Testing corresponds to Architectural Design; System Testing and User Acceptance Testing correspond directly to Business Requirement Analysis."
+  examBadge="UGC NET Dec 2022"
+/>
+

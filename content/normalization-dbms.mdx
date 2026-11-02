@@ -1,0 +1,988 @@
+---
+title: "Normalization in DBMS: 1NF to BCNF, Armstrong's Axioms & Decomposition"
+unit: "Unit 6: Database Management System"
+examType: "Common"
+priority: "High"
+readTime: "35 min"
+slug: "normalization-dbms"
+description: "Complete guide to database normalization covering Normal Forms (1NF–BCNF), Armstrong's Axioms, closure of functional dependencies, canonical cover, and lossy vs lossless decomposition with worked examples."
+tags: ["DBMS", "Normalization", "Functional Dependencies", "1NF", "2NF", "3NF", "BCNF", "Armstrong's Axioms"]
+---
+
+# Normalization in DBMS: 1NF to BCNF, Armstrong's Axioms & Decomposition
+
+## 1. Introduction to Normalization
+
+Normalization is a systematic process of organizing the attributes and relations of a relational database to minimize **data redundancy** and eliminate undesirable characteristics such as insertion, update, and deletion anomalies. The concept was first introduced by Edgar F. Codd in 1970 as part of his relational model, and subsequently extended by Codd himself and by Raymond Boyce.
+
+The central motivation behind normalization is deceptively simple: **a fact should be stored in exactly one place**. When the same piece of information is scattered across multiple rows or tables, the database becomes vulnerable to inconsistencies every time data is modified. Normalization addresses this by progressively decomposing relations into smaller, well-structured relations that faithfully represent the real-world entities and their relationships.
+
+### 1.1 Why Normalize? The Problem of Redundancy
+
+Consider a university database that stores information about students, courses, and the departments offering those courses. A naïve designer might place everything into a single table:
+
+**STUDENT_COURSE (Unnormalized)**
+
+| StudentID | StudentName | CourseID | CourseName       | Instructor    | DeptName | DeptHead     |
+|-----------|-------------|----------|------------------|---------------|----------|--------------|
+| S101      | Amit        | C01      | Data Structures  | Prof. Sharma  | CS       | Prof. Gupta  |
+| S101      | Amit        | C02      | DBMS             | Prof. Verma   | CS       | Prof. Gupta  |
+| S102      | Priya       | C01      | Data Structures  | Prof. Sharma  | CS       | Prof. Gupta  |
+| S103      | Rahul       | C03      | Linear Algebra   | Prof. Das     | Math     | Prof. Sinha  |
+| S104      | Neha        | C02      | DBMS             | Prof. Verma   | CS       | Prof. Gupta  |
+| S104      | Neha        | C03      | Linear Algebra   | Prof. Das     | Math     | Prof. Sinha  |
+
+This table stores valid data, but it suffers from three critical anomalies.
+
+### 1.2 Update Anomaly
+
+Suppose the CS department changes its head from Prof. Gupta to Prof. Mehta. The fact "DeptHead of CS = Prof. Gupta" is stored in **four** rows (rows 1, 2, 3, and 5). If we update only some of these rows but miss others, the database enters an inconsistent state — some rows claim Prof. Gupta is the head while others claim Prof. Mehta. This is an **update anomaly**: redundant storage forces multiple updates for a single real-world change, and partial updates cause inconsistency.
+
+### 1.3 Insertion Anomaly
+
+Imagine the university creates a new department — "Physics" — headed by Prof. Bose, but no student has yet enrolled in any Physics course. We cannot insert the row `(NULL, NULL, NULL, NULL, NULL, Physics, Prof. Bose)` because `StudentID` and `CourseID` are part of the primary key and cannot be NULL. The design prevents us from recording a perfectly valid fact (the existence of the Physics department) simply because no related student data exists yet. This is an **insertion anomaly**.
+
+### 1.4 Deletion Anomaly
+
+If student S103 (Rahul) drops Linear Algebra (his only course), we must delete the entire row. But this row is the **only** place recording that the Math department exists and that its head is Prof. Sinha. Deleting the student's enrollment inadvertently destroys department information. This is a **deletion anomaly**: removing one fact accidentally removes unrelated facts.
+
+### 1.5 The Goal of Normalization
+
+Normalization resolves these anomalies by decomposing the original relation into multiple smaller relations, each capturing a single theme or entity. The decomposed tables for the example above might be:
+
+- **STUDENT** (StudentID, StudentName)
+- **COURSE** (CourseID, CourseName, Instructor, DeptName)
+- **DEPARTMENT** (DeptName, DeptHead)
+- **ENROLLMENT** (StudentID, CourseID)
+
+Now each fact is stored exactly once, and all three anomalies vanish.
+
+---
+
+## 2. Functional Dependencies
+
+Functional dependencies (FDs) are the formal tool used to analyze and guide the normalization process. They capture the logical relationships between attributes within a relation.
+
+### 2.1 Definition
+
+Let $R$ be a relation schema and let $X$ and $Y$ be subsets of the attributes of $R$. A **functional dependency** $X \to Y$ holds on $R$ if and only if for every legal instance $r$ of $R$, whenever two tuples $t_1$ and $t_2$ in $r$ agree on the values of all attributes in $X$, they must also agree on the values of all attributes in $Y$. Formally:
+
+$$
+X \to Y \iff \forall\, t_1, t_2 \in r: \; t_1[X] = t_2[X] \implies t_1[Y] = t_2[Y]
+$$
+
+In plain language, the values of attributes in $X$ **uniquely determine** the values of attributes in $Y$. We say $X$ is the **determinant** and $Y$ is the **dependent**.
+
+**Example:** In a relation EMPLOYEE(EmpID, Name, DeptID, Salary), the FD $\text{EmpID} \to \text{Name, DeptID, Salary}$ states that knowing an employee's ID is sufficient to determine their name, department, and salary.
+
+### 2.2 Trivial vs Non-Trivial Functional Dependencies
+
+A functional dependency $X \to Y$ is called:
+
+- **Trivial** if $Y \subseteq X$. For example, $\{A, B\} \to \{A\}$ is trivial because the dependent is a subset of the determinant. Trivial FDs are always satisfied by every relation instance — they carry no real-world semantic information.
+
+- **Non-trivial** if $Y \not\subseteq X$, meaning at least one attribute in $Y$ is not in $X$. For example, $\{A, B\} \to \{C\}$ is non-trivial. These are the FDs that convey meaningful constraints.
+
+- **Completely non-trivial** if $X \cap Y = \emptyset$. For example, $\{A\} \to \{B\}$ where A and B are disjoint.
+
+### 2.3 Full vs Partial Functional Dependencies
+
+Given a functional dependency $X \to Y$:
+
+- The FD is a **full functional dependency** if removal of any attribute from $X$ causes the FD to no longer hold. In other words, $Y$ is fully functionally dependent on $X$ and no proper subset of $X$ can determine $Y$.
+
+- The FD is a **partial functional dependency** if some proper subset of $X$ can also determine $Y$. This happens when the determinant contains extraneous attributes.
+
+**Example:** Consider relation R(StudentID, CourseID, StudentName, Grade) with:
+- $\{\text{StudentID, CourseID}\} \to \text{Grade}$ — this is a **full** FD because neither StudentID alone nor CourseID alone determines Grade.
+- $\{\text{StudentID, CourseID}\} \to \text{StudentName}$ — this is a **partial** FD because $\text{StudentID} \to \text{StudentName}$ holds without needing CourseID.
+
+Partial FDs on the primary key are precisely what the Second Normal Form eliminates.
+
+### 2.4 Transitive Functional Dependencies
+
+A functional dependency $X \to Z$ is **transitive** if there exists an attribute set $Y$ (which is neither a candidate key nor a subset of any key) such that $X \to Y$ and $Y \to Z$ both hold, and $Y \not\to X$.
+
+**Example:** In EMPLOYEE(EmpID, DeptID, DeptName):
+- $\text{EmpID} \to \text{DeptID}$ (each employee belongs to one department)
+- $\text{DeptID} \to \text{DeptName}$ (each department has one name)
+- Therefore, $\text{EmpID} \to \text{DeptName}$ is a **transitive** dependency (via DeptID).
+
+Transitive FDs cause the redundancy that the Third Normal Form targets.
+
+---
+
+## 3. Armstrong's Axioms
+
+Armstrong's Axioms, proposed by William W. Armstrong in 1974, form a **sound and complete** set of inference rules for functional dependencies. "Sound" means every FD derivable using these axioms actually holds. "Complete" means every FD that holds can be derived using these axioms. Together, they provide a formal mechanism to compute the complete set of FDs implied by a given set.
+
+### 3.1 The Three Axioms
+
+Let $R$ be a relation schema and $X$, $Y$, $Z$ be subsets of the attributes of $R$.
+
+**Axiom 1: Reflexivity (Rule of Trivial FDs)**
+
+$$
+\text{If } Y \subseteq X, \text{ then } X \to Y
+$$
+
+Any set of attributes functionally determines any of its subsets. This generates all trivial FDs and serves as the base case for deriving other rules.
+
+*Proof of soundness:* For any two tuples $t_1, t_2$, if $t_1[X] = t_2[X]$ and $Y \subseteq X$, then $t_1[Y] = t_2[Y]$ trivially, because agreement on a set implies agreement on every subset.
+
+**Axiom 2: Augmentation**
+
+$$
+\text{If } X \to Y, \text{ then } XZ \to YZ \text{ for any } Z
+$$
+
+If $X$ determines $Y$, then adding the same set of attributes $Z$ to both sides preserves the dependency.
+
+*Proof of soundness:* Assume $X \to Y$ holds. Let $t_1[XZ] = t_2[XZ]$. Then $t_1[X] = t_2[X]$ (since $X \subseteq XZ$) and $t_1[Z] = t_2[Z]$ (since $Z \subseteq XZ$). From $X \to Y$, we get $t_1[Y] = t_2[Y]$. Combining $t_1[Y] = t_2[Y]$ and $t_1[Z] = t_2[Z]$, we get $t_1[YZ] = t_2[YZ]$. Hence $XZ \to YZ$.
+
+**Axiom 3: Transitivity**
+
+$$
+\text{If } X \to Y \text{ and } Y \to Z, \text{ then } X \to Z
+$$
+
+Functional dependencies can be chained.
+
+*Proof of soundness:* Assume $X \to Y$ and $Y \to Z$ both hold. Let $t_1[X] = t_2[X]$. From $X \to Y$, $t_1[Y] = t_2[Y]$. From $Y \to Z$, $t_1[Z] = t_2[Z]$. Hence $X \to Z$.
+
+### 3.2 Derived Rules
+
+From the three axioms, several useful rules can be derived:
+
+**Union Rule:**
+
+$$
+\text{If } X \to Y \text{ and } X \to Z, \text{ then } X \to YZ
+$$
+
+*Derivation:*
+1. $X \to Y$ (given)
+2. $X \to Z$ (given)
+3. $X \to XY$ (augmenting step 1 with $X$, since $XX = X$, we get $X \to XY$... more precisely: augment step 1 with X: $XX \to YX$, i.e., $X \to XY$)
+4. Augment step 2 with $Y$: $XY \to ZY$
+5. By transitivity on steps 3 and 4: $X \to YZ$
+
+**Decomposition Rule:**
+
+$$
+\text{If } X \to YZ, \text{ then } X \to Y \text{ and } X \to Z
+$$
+
+*Derivation:*
+1. $X \to YZ$ (given)
+2. $YZ \to Y$ (reflexivity, since $Y \subseteq YZ$)
+3. $X \to Y$ (transitivity on steps 1 and 2)
+4. Similarly, $YZ \to Z$ (reflexivity) and $X \to Z$ (transitivity)
+
+**Pseudo-transitivity Rule:**
+
+$$
+\text{If } X \to Y \text{ and } WY \to Z, \text{ then } WX \to Z
+$$
+
+*Derivation:*
+1. $X \to Y$ (given)
+2. $WX \to WY$ (augmenting step 1 with $W$)
+3. $WY \to Z$ (given)
+4. $WX \to Z$ (transitivity on steps 2 and 3)
+
+### 3.3 Worked Example
+
+**Given:** $F = \{A \to B, \; B \to C, \; A \to D\}$. Prove that $A \to BCD$.
+
+**Step-by-step derivation:**
+1. $A \to B$ (given)
+2. $B \to C$ (given)
+3. $A \to C$ (transitivity on 1 and 2)
+4. $A \to D$ (given)
+5. $A \to BC$ (union on 1 and 3)
+6. $A \to BCD$ (union on 5 and 4)
+
+Hence proved: $A \to BCD$.
+
+---
+
+## 4. Closure of a Set of Functional Dependencies (F⁺)
+
+### 4.1 Definition
+
+Given a set of functional dependencies $F$ on relation schema $R$, the **closure of F**, denoted $F^+$, is the set of **all** functional dependencies that are logically implied by $F$. Computing $F^+$ directly is impractical for large schemas because it can be exponentially large. Instead, we compute the **attribute closure** of specific attribute sets.
+
+### 4.2 Attribute Closure ($X^+$)
+
+The **attribute closure** of a set of attributes $X$ under $F$, denoted $X^+$, is the set of all attributes that are functionally determined by $X$ under $F$. Formally:
+
+$$
+X^+ = \{ A \mid X \to A \text{ can be derived from } F \text{ using Armstrong's Axioms} \}
+$$
+
+**Key property:** $X \to Y$ is in $F^+$ if and only if $Y \subseteq X^+$.
+
+### 4.3 Algorithm for Computing $X^+$
+
+```
+Algorithm: ATTRIBUTE_CLOSURE(X, F)
+Input:  X = a set of attributes, F = a set of FDs
+Output: X⁺ = closure of X under F
+
+1. result := X           // Initialize with X itself
+2. changed := true
+3. while (changed) do
+4.     changed := false
+5.     for each FD (α → β) in F do
+6.         if α ⊆ result then
+7.             if β ⊄ result then
+8.                 result := result ∪ β
+9.                 changed := true
+10.    end while
+11. return result
+```
+
+The algorithm iterates through all FDs, adding determined attributes to the result whenever the determinant is already in the result set. It terminates when no new attributes can be added. The worst-case time complexity is $O(|F| \times |R|)$ where $|R|$ is the number of attributes.
+
+### 4.4 Worked Example: Computing $\{A, E\}^+$
+
+**Given:** $R(A, B, C, D, E)$ with $F = \{A \to B, \; BC \to D, \; E \to C, \; D \to A\}$
+
+**Compute** $\{A, E\}^+$:
+
+**Iteration 0 (Initialization):**
+$\text{result} = \{A, E\}$
+
+**Iteration 1:**
+- Check $A \to B$: Is $\{A\} \subseteq \{A, E\}$? **Yes**. Add $B$. $\text{result} = \{A, B, E\}$. changed = true.
+- Check $BC \to D$: Is $\{B, C\} \subseteq \{A, B, E\}$? **No** ($C$ missing). Skip.
+- Check $E \to C$: Is $\{E\} \subseteq \{A, B, E\}$? **Yes**. Add $C$. $\text{result} = \{A, B, C, E\}$. changed = true.
+- Check $D \to A$: Is $\{D\} \subseteq \{A, B, C, E\}$? **No**. Skip.
+
+**Iteration 2:**
+- Check $A \to B$: $B$ already in result. Skip.
+- Check $BC \to D$: Is $\{B, C\} \subseteq \{A, B, C, E\}$? **Yes**. Add $D$. $\text{result} = \{A, B, C, D, E\}$. changed = true.
+- Check $E \to C$: $C$ already in result. Skip.
+- Check $D \to A$: $A$ already in result. Skip.
+
+**Iteration 3:**
+- No new attributes added. changed = false. **Terminate.**
+
+$$
+\{A, E\}^+ = \{A, B, C, D, E\} = R
+$$
+
+Since $\{A, E\}^+$ includes all attributes of $R$, the attribute set $\{A, E\}$ is a **superkey** of $R$.
+
+---
+
+## 5. Candidate Keys
+
+### 5.1 Definitions
+
+- **Superkey:** A set of attributes $X$ such that $X^+ = R$ (i.e., $X$ functionally determines all attributes of $R$).
+- **Candidate Key:** A **minimal** superkey — a superkey from which no attribute can be removed without losing the superkey property. No proper subset of a candidate key is a superkey.
+- **Primary Key:** One candidate key chosen by the database designer as the principal identifier.
+
+### 5.2 Algorithm to Find Candidate Keys
+
+A systematic approach to finding candidate keys uses the classification of attributes:
+
+```
+Algorithm: FIND_CANDIDATE_KEYS(R, F)
+
+Step 1: Classify each attribute of R into one of these categories:
+  - L (Left-only):  Appears only on the LEFT side of FDs in F (never on right)
+  - R (Right-only): Appears only on the RIGHT side of FDs in F (never on left)
+  - LR (Both):      Appears on both LEFT and RIGHT sides
+  - N (Neither):    Does not appear in any FD
+
+Step 2: Attributes in L and N MUST be part of every candidate key.
+        Attributes in R are NEVER part of any candidate key.
+
+Step 3: Let CORE = L ∪ N. Compute CORE⁺.
+  - If CORE⁺ = R, then CORE is the only candidate key.
+  - If CORE⁺ ≠ R, try adding one LR attribute at a time to CORE
+    and check if the closure equals R. Proceed systematically
+    with combinations of increasing size.
+```
+
+### 5.3 Worked Example
+
+**Given:** $R(A, B, C, D, E)$ with $F = \{A \to B, \; BC \to D, \; E \to C, \; D \to A\}$
+
+**Step 1: Classify attributes**
+
+| Attribute | Appears on Left | Appears on Right | Category |
+|-----------|-----------------|------------------|----------|
+| A         | Yes ($A \to B$) | Yes ($D \to A$)  | LR       |
+| B         | Yes ($BC \to D$)| Yes ($A \to B$)  | LR       |
+| C         | Yes ($BC \to D$)| Yes ($E \to C$)  | LR       |
+| D         | Yes ($D \to A$) | Yes ($BC \to D$) | LR       |
+| E         | Yes ($E \to C$) | No               | **L**    |
+
+**Step 2:** $\text{CORE} = \{E\}$ (only L-attribute). No N-attributes.
+
+**Step 3:** Compute $\{E\}^+$:
+- $E \to C$: result = $\{E, C\}$
+- No more FDs fire. $\{E\}^+ = \{E, C\} \neq R$. Not a superkey.
+
+Try adding one LR attribute at a time:
+- $\{A, E\}^+ = \{A, B, C, D, E\} = R$ [CORRECT] (computed earlier). **AE is a superkey.**
+  - Is it minimal? $\{A\}^+$: $A \to B$, result = $\{A, B\}$. Not a superkey. $\{E\}^+$: $\{E, C\}$. Not a superkey. So **AE is a candidate key**.
+
+- $\{B, E\}^+$: $E \to C$ → $\{B, C, E\}$; $BC \to D$ → $\{B, C, D, E\}$; $D \to A$ → $\{A, B, C, D, E\} = R$ [CORRECT]. **BE is a superkey.**
+  - $\{B\}^+ = \{B\}$. Not a superkey. $\{E\}^+ = \{E, C\}$. Not a superkey. So **BE is a candidate key**.
+
+- $\{D, E\}^+$: $D \to A$ → $\{A, D, E\}$; $A \to B$ → $\{A, B, D, E\}$; $E \to C$ → $\{A, B, C, D, E\} = R$ [CORRECT]. **DE is a superkey.**
+  - $\{D\}^+ = \{D, A, B\}$. Not a superkey. $\{E\}^+= \{E, C\}$. Not a superkey. So **DE is a candidate key**.
+
+- $\{C, E\}^+$: $E \to C$ → $\{C, E\}$. No more fire. $\{C, E\}^+ = \{C, E\} \neq R$. Not a superkey.
+
+**Candidate keys of R:** $\{A, E\}$, $\{B, E\}$, $\{D, E\}$.
+
+---
+
+## 6. First Normal Form (1NF)
+
+### 6.1 Definition
+
+A relation is in **First Normal Form** if and only if:
+1. Every attribute contains only **atomic** (indivisible) values — no sets, lists, or composite values.
+2. There are no **repeating groups** — each column holds a single value of the same type for every row.
+3. Each row is unique (a primary key exists).
+
+1NF is the minimum requirement for a relation in the relational model. In essence, the table must be a "flat" two-dimensional structure.
+
+### 6.2 Violations and Conversion
+
+**Violating Table (Not in 1NF):**
+
+| StudentID | Name  | PhoneNumbers           |
+|-----------|-------|------------------------|
+| S101      | Amit  | 9876543210, 9123456789 |
+| S102      | Priya | 8765432109             |
+
+The `PhoneNumbers` column contains multiple values — a violation of atomicity.
+
+**Method 1: Separate Rows**
+
+| StudentID | Name  | PhoneNumber  |
+|-----------|-------|--------------|
+| S101      | Amit  | 9876543210   |
+| S101      | Amit  | 9123456789   |
+| S102      | Priya | 8765432109   |
+
+Here, the primary key becomes (StudentID, PhoneNumber). This introduces redundancy in `Name`.
+
+**Method 2: Separate Table (Preferred)**
+
+**STUDENT** table:
+
+| StudentID | Name  |
+|-----------|-------|
+| S101      | Amit  |
+| S102      | Priya |
+
+**STUDENT_PHONE** table:
+
+| StudentID | PhoneNumber  |
+|-----------|--------------|
+| S101      | 9876543210   |
+| S101      | 9123456789   |
+| S102      | 8765432109   |
+
+This approach cleanly separates the multi-valued attribute into its own relation with a foreign key reference.
+
+---
+
+## 7. Second Normal Form (2NF)
+
+### 7.1 Definition
+
+A relation is in **Second Normal Form** if:
+1. It is in 1NF, **AND**
+2. Every **non-prime attribute** (an attribute not part of any candidate key) is **fully functionally dependent** on every candidate key.
+
+Equivalently, there is **no partial dependency** — no non-prime attribute depends on a proper subset of any candidate key.
+
+> **Note:** 2NF violations can only occur when a candidate key is **composite** (has more than one attribute). If all candidate keys are single attributes, the relation is automatically in 2NF (provided it is in 1NF).
+
+### 7.2 Identifying Partial Dependencies
+
+A partial dependency exists when $A' \to B$ where $A'$ is a proper subset of a candidate key and $B$ is a non-prime attribute.
+
+### 7.3 Conversion Example
+
+**Given:** STUDENT_COURSE(StudentID, CourseID, StudentName, Instructor)
+
+FDs:
+- $\{\text{StudentID, CourseID}\} \to \text{StudentName, Instructor}$ (full FD, candidate key)
+- $\text{StudentID} \to \text{StudentName}$ (partial FD)
+- $\text{CourseID} \to \text{Instructor}$ (partial FD)
+
+**Prime attributes:** StudentID, CourseID
+**Non-prime attributes:** StudentName, Instructor
+
+**Partial dependencies identified:**
+1. $\text{StudentID} \to \text{StudentName}$ — StudentName depends on only part of the key.
+2. $\text{CourseID} \to \text{Instructor}$ — Instructor depends on only part of the key.
+
+**Decomposition into 2NF:**
+
+Remove each partial dependency into a separate relation:
+
+1. **STUDENT**(StudentID, StudentName) — with FD: StudentID → StudentName
+2. **COURSE**(CourseID, Instructor) — with FD: CourseID → Instructor
+3. **ENROLLMENT**(StudentID, CourseID) — the remaining association, key: (StudentID, CourseID)
+
+Each resulting relation is in 2NF because every non-prime attribute is fully dependent on the entire key.
+
+---
+
+## 8. Third Normal Form (3NF)
+
+### 8.1 Definition
+
+A relation schema $R$ is in **Third Normal Form** with respect to a set of functional dependencies $F$ if, for every non-trivial functional dependency $X \to A$ in $F^+$ (where $A$ is a single attribute), **at least one** of the following holds:
+
+1. $X$ is a **superkey** of $R$, **OR**
+2. $A$ is a **prime attribute** (i.e., $A$ is part of some candidate key of $R$).
+
+An equivalent informal definition: A relation is in 3NF if it is in 2NF and **no non-prime attribute is transitively dependent on any candidate key**.
+
+### 8.2 Transitive Dependency Removal
+
+**Given:** EMPLOYEE(EmpID, DeptID, DeptName, DeptLocation)
+
+FDs:
+- $\text{EmpID} \to \text{DeptID}$
+- $\text{DeptID} \to \text{DeptName, DeptLocation}$
+
+Candidate key: $\{\text{EmpID}\}$
+
+Here, $\text{EmpID} \to \text{DeptName}$ is a transitive dependency (via DeptID). The non-prime attribute DeptName depends on another non-prime attribute DeptID, which in turn depends on the key.
+
+This violates 3NF because in the FD $\text{DeptID} \to \text{DeptName}$, DeptID is not a superkey and DeptName is not a prime attribute.
+
+**Decomposition into 3NF:**
+
+1. **EMPLOYEE**(EmpID, DeptID) — with FD: EmpID → DeptID
+2. **DEPARTMENT**(DeptID, DeptName, DeptLocation) — with FDs: DeptID → DeptName, DeptLocation
+
+### 8.3 3NF Synthesis Algorithm
+
+The **3NF Synthesis Algorithm** (Bernstein's Algorithm) is a principled method to decompose a relation into 3NF while guaranteeing both **lossless join** and **dependency preservation**.
+
+```
+Algorithm: 3NF_SYNTHESIS(R, F)
+
+Step 1: Compute the canonical cover Fc of F.
+        (See Section 12 for canonical cover algorithm)
+
+Step 2: For each FD (X → Y) in Fc:
+        Create a relation schema Ri = X ∪ Y
+        (Group FDs with the same left side into one relation)
+
+Step 3: If none of the schemas Ri contains a candidate key of R,
+        add a new schema containing any one candidate key of R.
+
+Step 4: Eliminate redundant schemas:
+        If any schema Ri is a subset of another schema Rj,
+        remove Ri.
+
+Output: The set of relation schemas {R1, R2, ..., Rn}
+```
+
+**Example:** $R(A, B, C, D)$, $F = \{A \to B, \; B \to C, \; A \to D\}$
+
+Step 1: Canonical cover: $F_c = \{A \to BD, \; B \to C\}$ (combining $A \to B$ and $A \to D$)
+
+Step 2: Create relations:
+- $R_1(A, B, D)$ from $A \to BD$
+- $R_2(B, C)$ from $B \to C$
+
+Step 3: Candidate key of $R$ is $\{A\}$. $A \in R_1$, so the key is covered. No extra schema needed.
+
+Step 4: Neither $R_1 \subseteq R_2$ nor $R_2 \subseteq R_1$. No elimination.
+
+**Result:** $\{R_1(A, B, D), \; R_2(B, C)\}$. Both are in 3NF, the decomposition is lossless and dependency-preserving.
+
+---
+
+## 9. Boyce-Codd Normal Form (BCNF)
+
+### 9.1 Definition
+
+A relation schema $R$ is in **Boyce-Codd Normal Form** if, for every non-trivial functional dependency $X \to Y$ in $F^+$:
+
+$$
+X \text{ is a superkey of } R
+$$
+
+That is the **only** condition — BCNF has no exception for prime attributes. Every determinant must be a superkey.
+
+### 9.2 Difference Between 3NF and BCNF
+
+| Aspect | 3NF | BCNF |
+|--------|-----|------|
+| Condition for $X \to A$ | $X$ is superkey **OR** $A$ is prime | $X$ is superkey (no exception) |
+| Strictness | Less strict | More strict |
+| Every BCNF relation is in 3NF? | Yes | — |
+| Every 3NF relation is in BCNF? | **Not necessarily** | — |
+| Dependency preservation guaranteed? | Yes (via synthesis) | **Not always** |
+| Lossless decomposition? | Yes | Yes |
+
+The critical difference: 3NF allows a non-trivial FD $X \to A$ where $X$ is not a superkey, provided $A$ is a prime attribute. BCNF does not permit this.
+
+### 9.3 A Relation in 3NF but Not BCNF
+
+**Example:** Consider $R(\text{Student}, \text{Subject}, \text{Professor})$ with the constraints:
+- Each student takes each subject from exactly one professor.
+- Each professor teaches only one subject.
+- A subject can be taught by multiple professors.
+
+**FDs:**
+- $\{\text{Student, Subject}\} \to \text{Professor}$
+- $\text{Professor} \to \text{Subject}$
+
+**Candidate keys:**
+- $\{\text{Student, Subject}\}$ — determines Professor
+- $\{\text{Student, Professor}\}$ — determines Subject (since Professor → Subject, and with Student we get all attributes)
+
+**Prime attributes:** Student, Subject, Professor (all three appear in some candidate key)
+
+**3NF Check:** The FD $\text{Professor} \to \text{Subject}$:
+- Is Professor a superkey? No (Professor alone does not determine Student). 
+- Is Subject a prime attribute? **Yes** (part of candidate key {Student, Subject}).
+- So this FD does **not** violate 3NF. [CORRECT] **R is in 3NF**.
+
+**BCNF Check:** The FD $\text{Professor} \to \text{Subject}$:
+- Is Professor a superkey? **No**.
+- BCNF has no exception for prime attributes. [INCORRECT] **R is NOT in BCNF**.
+
+### 9.4 BCNF Decomposition Algorithm
+
+```
+Algorithm: BCNF_DECOMPOSITION(R, F)
+
+Input:  Relation R, set of FDs F
+Output: A set of relations, all in BCNF, with lossless join
+
+1. result := {R}
+2. while there exists Ri in result that is not in BCNF do
+3.     Find a non-trivial FD (X → Y) on Ri such that
+       X is NOT a superkey of Ri and X ∩ Y = ∅
+4.     Decompose Ri into:
+       - R1 = X ∪ Y        (with FD X → Y)
+       - R2 = Ri − Y        (attributes of Ri except Y)
+5.     Replace Ri in result with R1 and R2
+6. end while
+7. return result
+```
+
+**Worked Example:** Decompose $R(\text{Student}, \text{Subject}, \text{Professor})$ into BCNF.
+
+The violating FD is $\text{Professor} \to \text{Subject}$.
+- $X = \{\text{Professor}\}$, $Y = \{\text{Subject}\}$
+- $R_1 = \{\text{Professor, Subject}\}$ with FD Professor → Subject
+- $R_2 = \{\text{Student, Professor}\}$
+
+**Verify BCNF:**
+- $R_1(\text{Professor, Subject})$: FD Professor → Subject. Is Professor a superkey of $R_1$? Professor⁺ = {Professor, Subject} = $R_1$. **Yes**. BCNF [CORRECT]
+- $R_2(\text{Student, Professor})$: No non-trivial FDs (the key is the entire set). BCNF [CORRECT]
+
+**But note:** The original FD $\{\text{Student, Subject}\} \to \text{Professor}$ is **lost** — it cannot be checked within either $R_1$ or $R_2$ alone. This decomposition is **not dependency-preserving**. This illustrates a fundamental trade-off: BCNF decomposition does not always preserve all dependencies.
+
+---
+
+## 10. Lossless Join Decomposition
+
+### 10.1 Definition
+
+A decomposition of relation $R$ into $R_1, R_2, \ldots, R_n$ is **lossless** (also called **non-additive**) if for every legal instance $r$ of $R$:
+
+$$
+r = \pi_{R_1}(r) \bowtie \pi_{R_2}(r) \bowtie \cdots \bowtie \pi_{R_n}(r)
+$$
+
+In a lossless decomposition, the natural join of all projected relations perfectly reconstructs the original relation — no spurious tuples are generated. A **lossy** decomposition generates additional tuples upon joining, making it impossible to recover the original data.
+
+### 10.2 Binary Decomposition Theorem
+
+For a decomposition of $R$ into two relations $R_1$ and $R_2$, the decomposition is **lossless** if and only if:
+
+$$
+R_1 \cap R_2 \to R_1 \quad \text{or} \quad R_1 \cap R_2 \to R_2
+$$
+
+In other words, the **common attributes** must be a superkey of at least one of the decomposed relations.
+
+**Example:** Decompose $R(A, B, C)$ with FDs $\{A \to B\}$ into $R_1(A, B)$ and $R_2(A, C)$.
+
+- $R_1 \cap R_2 = \{A\}$
+- Is $A \to R_1$, i.e., $A \to AB$? We need $A^+ \supseteq \{A, B\}$. Since $A \to B$, $A^+ = \{A, B\} \supseteq \{A, B\}$. **Yes**.
+- Therefore, the decomposition is **lossless**. [CORRECT]
+
+### 10.3 Chase Algorithm (Overview)
+
+For decompositions into more than two relations, the **chase algorithm** (or **tableau method**) is used:
+
+1. Create a tableau (matrix) with one row for each $R_i$ and one column for each attribute of $R$.
+2. For row $i$, column $j$: if attribute $j \in R_i$, place a distinguished variable $a_j$. Otherwise, place a subscripted variable $b_{ij}$.
+3. Apply FDs as rules: for each FD $X \to Y$, if two rows agree on all $X$-columns, make their $Y$-columns equal (prefer $a$ values over $b$ values).
+4. Repeat until no more changes can be made.
+5. If any row becomes all distinguished variables ($a_1, a_2, \ldots, a_n$), the decomposition is **lossless**. Otherwise, it is **lossy**.
+
+**Example:** $R(A, B, C, D)$, FDs: $\{A \to B, \; C \to D\}$, Decomposition: $R_1(A, B)$, $R_2(B, C)$, $R_3(C, D)$
+
+Initial Tableau:
+
+|       | A       | B       | C       | D       |
+|-------|---------|---------|---------|---------|
+| $R_1$ | $a_1$   | $a_2$   | $b_{13}$| $b_{14}$|
+| $R_2$ | $b_{21}$| $a_2$   | $a_3$   | $b_{24}$|
+| $R_3$ | $b_{31}$| $b_{32}$| $a_3$   | $a_4$   |
+
+Apply $C \to D$: Rows $R_2$ and $R_3$ agree on $C$ ($a_3$). So equate their $D$ values: $b_{24}$ becomes $a_4$.
+
+|       | A       | B       | C       | D       |
+|-------|---------|---------|---------|---------|
+| $R_1$ | $a_1$   | $a_2$   | $b_{13}$| $b_{14}$|
+| $R_2$ | $b_{21}$| $a_2$   | $a_3$   | $a_4$   |
+| $R_3$ | $b_{31}$| $b_{32}$| $a_3$   | $a_4$   |
+
+Apply $A \to B$: No two rows agree on $A$. No change.
+
+No row is all $a$'s. The decomposition is **lossy**. [INCORRECT]
+
+A better decomposition — $R_1(A, B)$, $R_2(A, C)$, $R_3(C, D)$ — would pass the chase test.
+
+---
+
+## 11. Dependency Preserving Decomposition
+
+### 11.1 Definition
+
+A decomposition of $R$ into $R_1, R_2, \ldots, R_n$ is **dependency preserving** if the union of the FDs that can be enforced on individual relations (called the **local FDs**) logically implies all the original FDs in $F$. Formally, if $F_i$ is the restriction of $F$ to the attributes of $R_i$ (i.e., the set of all FDs in $F^+$ involving only attributes of $R_i$), then the decomposition preserves dependencies if:
+
+$$
+(F_1 \cup F_2 \cup \cdots \cup F_n)^+ = F^+
+$$
+
+### 11.2 How to Check
+
+For each FD $X \to Y$ in $F$:
+1. Compute $X^+$ using **only** the projected FDs $F_1 \cup F_2 \cup \cdots \cup F_n$.
+2. If $Y \subseteq X^+$, the FD is preserved.
+3. If all FDs in $F$ are preserved, the decomposition is dependency-preserving.
+
+A more efficient algorithm for checking a single FD $X \to Y$:
+
+```
+Algorithm: IS_FD_PRESERVED(X → Y, R1, R2, ..., Rn, F)
+
+1. result := X
+2. changed := true
+3. while (changed) do
+4.     changed := false
+5.     for each Ri do
+6.         t := closure of (result ∩ Ri) under F
+7.         result := result ∪ (t ∩ Ri)
+8.         if result changed then changed := true
+9.     end for
+10. end while
+11. if Y ⊆ result then "Preserved" else "Not Preserved"
+```
+
+### 11.3 Example: BCNF Decomposition Not Preserving Dependencies
+
+Revisiting $R(\text{Student, Subject, Professor})$ with FDs:
+- $F_1$: $\{\text{Student, Subject}\} \to \text{Professor}$
+- $F_2$: $\text{Professor} \to \text{Subject}$
+
+BCNF decomposition gives:
+- $R_1(\text{Professor, Subject})$ — preserves $F_2$
+- $R_2(\text{Student, Professor})$ — no non-trivial projected FDs
+
+Check $F_1$: $\{\text{Student, Subject}\} \to \text{Professor}$
+- $\{\text{Student, Subject}\} \cap R_1 = \{\text{Subject}\}$. $\text{Subject}^+ = \{\text{Subject}\}$. $\text{result} \cap R_1 = \{\text{Subject}\}$.
+- $\{\text{Student, Subject}\} \cap R_2 = \{\text{Student}\}$. $\text{Student}^+ = \{\text{Student}\}$. $\text{result} \cap R_2 = \{\text{Student}\}$.
+- result = {Student, Subject}. No change. $\text{Professor} \notin \text{result}$.
+
+**FD $F_1$ is not preserved**. This confirms that while the BCNF decomposition is lossless, it fails to preserve all dependencies. To enforce $F_1$, an application-level check or trigger would be required.
+
+**This is the fundamental trade-off:** 3NF synthesis guarantees both lossless join and dependency preservation. BCNF decomposition guarantees lossless join but may sacrifice dependency preservation.
+
+---
+
+## 12. Canonical Cover (Minimal Cover)
+
+### 12.1 Definition
+
+A **canonical cover** (also called **minimal cover**) $F_c$ of a set of functional dependencies $F$ is an equivalent set of FDs (i.e., $F_c^+ = F^+$) that is minimal in the following sense:
+
+1. **No extraneous attributes:** No attribute can be removed from the left side or right side of any FD in $F_c$ without changing $F_c^+$.
+2. **No redundant FDs:** No FD in $F_c$ can be removed without changing $F_c^+$.
+3. **Combined left sides:** Each left side in $F_c$ is unique. If multiple FDs have the same left side, they are combined using the union rule.
+
+### 12.2 Extraneous Attributes
+
+An attribute is **extraneous** in an FD $X \to Y$ if it can be removed without changing the closure $F^+$.
+
+- Attribute $A$ is extraneous on the **left side** of $X \to Y$ if $A \in X$ and $F$ logically implies $(X - A) \to Y$. To test: compute $(X - A)^+$ under $F$. If $Y \subseteq (X - A)^+$, then $A$ is extraneous.
+
+- Attribute $A$ is extraneous on the **right side** of $X \to Y$ if $A \in Y$ and the modified set $F' = (F - \{X \to Y\}) \cup \{X \to (Y - A)\}$ logically implies $X \to A$. To test: compute $X^+$ under $F'$. If $A \in X^+$, then $A$ is extraneous.
+
+### 12.3 Algorithm
+
+```
+Algorithm: CANONICAL_COVER(F)
+
+Step 1: Apply the Union Rule
+  Combine FDs with the same left side:
+  If X → Y1 and X → Y2 exist, replace with X → Y1Y2.
+
+Step 2: Remove Extraneous Attributes
+  For each FD (X → Y) in F:
+    For each attribute A in X:
+      If A is extraneous on the left side, remove it.
+    For each attribute A in Y:
+      If A is extraneous on the right side, remove it.
+
+Step 3: Remove Empty FDs
+  If any FD becomes X → ∅, remove it.
+
+Step 4: Repeat Steps 1-3 until no more changes occur.
+
+Output: Fc (the canonical cover)
+```
+
+### 12.4 Worked Example
+
+**Given:** $F = \{A \to BC, \; B \to C, \; A \to B, \; AB \to C\}$
+
+**Step 1: Combine FDs with the same left side**
+- $A \to BC$ and $A \to B$ combine to $A \to BC$ (B is already in BC).
+- Result: $F = \{A \to BC, \; B \to C, \; AB \to C\}$
+
+**Step 2: Remove extraneous attributes**
+
+*Check $AB \to C$:* Is $B$ extraneous on the left side?
+- Compute $A^+$ under current $F$: $A \to BC$, so $A^+ = \{A, B, C\}$. Since $C \in A^+$, we can derive $A \to C$ without needing $B$ on the left side of $AB \to C$. So $B$ is extraneous.
+- Replace $AB \to C$ with $A \to C$. But $A \to BC$ already implies $A \to C$, so $A \to C$ is now redundant.
+- Result: $F = \{A \to BC, \; B \to C\}$
+
+*Check $A \to BC$:* Is $C$ extraneous on the right side?
+- Let $F' = \{A \to B, \; B \to C\}$ (removing $C$ from right side of $A \to BC$).
+- Compute $A^+$ under $F'$: $A \to B \to C$, so $A^+ = \{A, B, C\}$. Since $C \in A^+$, $C$ is extraneous on the right.
+- Replace $A \to BC$ with $A \to B$.
+- Result: $F = \{A \to B, \; B \to C\}$
+
+**Step 3:** No empty FDs.
+
+**Step 4:** No more changes possible.
+
+$$
+F_c = \{A \to B, \; B \to C\}
+$$
+
+Verification: $F_c^+ = F^+$? From original $F$, $A \to BC$ is derivable as $A \to B, B \to C$, so $A \to BC$. $AB \to C$ is derivable from $B \to C$ (since $B \subseteq AB$). Yes, equivalent. [CORRECT]
+
+---
+
+## 13. Comparison Table: Normal Forms at a Glance
+
+| Parameter | 1NF | 2NF | 3NF | BCNF |
+|-----------|-----|-----|-----|------|
+| **Primary requirement** | All values atomic; no repeating groups | No partial dependencies on primary key | No transitive dependencies on candidate key | Every determinant is a superkey |
+| **Prerequisite** | Base requirement | Must be in 1NF | Must be in 2NF | Must be in 3NF |
+| **Addresses** | Multi-valued / composite attributes | Partial functional dependencies | Transitive functional dependencies | All remaining non-superkey determinants |
+| **Formal condition for $X \to A$ (non-trivial)** | — | $X$ is not a proper subset of candidate key, or $A$ is prime | $X$ is superkey OR $A$ is prime | $X$ is superkey |
+| **Can have partial FDs?** | Yes | No | No | No |
+| **Can have transitive FDs?** | Yes | Yes | No | No |
+| **Dependency preservation guaranteed?** | — | — | Yes (via synthesis) | **Not always** |
+| **Lossless join guaranteed?** | — | — | Yes (via synthesis) | Yes |
+| **Handles all anomalies?** | No | Partially | Mostly | Yes (at attribute-level FDs) |
+| **Practical usage** | Minimum standard | Intermediate step | Most common target | Used when full elimination of redundancy is needed |
+| **When 3NF ≠ BCNF** | — | — | When a prime attribute is determined by a non-superkey | Such cases are forced into BCNF |
+
+### Summary of the Normal Form Hierarchy
+
+$$
+\text{1NF} \supseteq \text{2NF} \supseteq \text{3NF} \supseteq \text{BCNF}
+$$
+
+Every BCNF relation is also in 3NF, every 3NF relation is in 2NF, and every 2NF relation is in 1NF. The containment is strict — there exist relations in each lower form that do not satisfy the next higher form.
+
+---
+
+## 14. Previous Year Questions (PYQ) Pattern Analysis
+
+### 14.1 Common Question Types
+
+Normalization is one of the **most heavily tested** topics in both UGC NET Computer Science (Paper 2) and Bihar STET Paper 2. Questions appear in virtually every exam session. The most common patterns are:
+
+1. **Attribute Closure Computation** — Given a set of FDs, compute $X^+$ for a given $X$. (Directly asked or as a sub-step.)
+
+2. **Finding Candidate Keys** — Given $R$ and $F$, identify all candidate keys. Very frequently asked.
+
+3. **Identifying the Highest Normal Form** — Given a relation with FDs, determine whether it is in 1NF, 2NF, 3NF, or BCNF.
+
+4. **Lossless/Dependency-Preserving Checks** — Given a decomposition, check if it is lossless and/or dependency-preserving.
+
+5. **Canonical Cover** — Compute the minimal cover of a set of FDs.
+
+6. **Conceptual/Definitional** — Definitions, comparisons, and properties of normal forms.
+
+### 14.2 Practice Questions with Solution Approaches
+
+**Q1.** Consider a relation $R(A, B, C, D, E)$ with FDs $F = \{AB \to C, \; C \to D, \; D \to B, \; D \to E\}$. Find all candidate keys of $R$.
+
+**Solution Approach:**
+- Classify attributes: $A$ appears only on L side → must be in every key.
+- $A^+ = \{A\}$. Not a superkey.
+- Try $\{A, B\}^+$: $AB \to C \to D \to B, E$. So $\{A, B\}^+ = \{A, B, C, D, E\}$. Superkey. Is it minimal? $\{A\}^+ = \{A\}$ — not a superkey. $\{B\}^+ = \{B\}$ — not a superkey. So **AB is a candidate key**.
+- Try $\{A, C\}^+$: $C \to D \to B, E$. $\{A, C\}^+ = \{A, B, C, D, E\}$. Superkey. $\{C\}^+ = \{C, D, B, E\}$ — not a superkey (missing $A$). **AC is a candidate key**.
+- Try $\{A, D\}^+$: $D \to B, E$; $AB \to C$. $\{A, D\}^+ = \{A, B, C, D, E\}$. Superkey. $\{D\}^+ = \{B, C, D, E\}$ — missing $A$. **AD is a candidate key**.
+- Try $\{A, E\}^+$: $\{A, E\}^+ = \{A, E\}$ — no FD fires. Not a superkey.
+- **Candidate keys: AB, AC, AD**.
+
+---
+
+**Q2.** A relation $R(A, B, C, D)$ has FDs $\{A \to B, \; B \to C\}$. The relation is decomposed into $R_1(A, B)$ and $R_2(B, C, D)$. Is the decomposition lossless?
+
+**Solution Approach:**
+- $R_1 \cap R_2 = \{B\}$
+- Check: $B \to R_1$? i.e., $B^+ \supseteq \{A, B\}$? $B^+ = \{B, C\}$. $A \notin B^+$. No.
+- Check: $B \to R_2$? i.e., $B^+ \supseteq \{B, C, D\}$? $B^+ = \{B, C\}$. $D \notin B^+$. No.
+- **Neither condition holds. The decomposition is LOSSY.** [INCORRECT]
+
+---
+
+**Q3.** Given $R(A, B, C)$ with FDs $\{A \to B, \; B \to C\}$. What is the highest normal form?
+
+**Solution Approach:**
+- Candidate key: $\{A\}$ (since $A^+ = \{A, B, C\}$).
+- Check 2NF: Key is single attribute, so no partial dependencies possible. 2NF [CORRECT].
+- Check 3NF: FD $B \to C$. Is $B$ a superkey? $B^+ = \{B, C\} \neq R$. No. Is $C$ a prime attribute? Prime attributes = $\{A\}$. $C$ is not prime. **3NF violated.** [INCORRECT]
+- **Highest normal form: 2NF.**
+
+---
+
+**Q4.** For the set of FDs $F = \{A \to BC, \; CD \to E, \; B \to D, \; E \to A\}$ on $R(A, B, C, D, E)$, compute the canonical cover.
+
+**Solution Approach:**
+1. Start: $\{A \to BC, \; CD \to E, \; B \to D, \; E \to A\}$
+2. Check extraneous attributes:
+   - $A \to BC$: Is $B$ extraneous? $A^+$ without $B$ on right = compute using $\{A \to C, CD \to E, B \to D, E \to A\}$: $A^+ = \{A, C\}$... then $CD$? Need $D$, don't have it. So $A^+ = \{A, C\}$. $B \notin A^+$. Not extraneous. Is $C$ extraneous? $A^+$ under $\{A \to B, CD \to E, B \to D, E \to A\}$: $A \to B \to D$, then... $CD \to E$? Need $C$, don't have it. $A^+ = \{A, B, D\}$. $C \notin A^+$. Not extraneous.
+   - $CD \to E$: Is $C$ extraneous? $D^+$ under $F$: $D^+ = \{D\}$. $E \notin D^+$. Not extraneous. Is $D$ extraneous? $C^+$ under $F$: $C^+ = \{C\}$. $E \notin C^+$. Not extraneous.
+3. No changes. Canonical cover: $F_c = \{A \to BC, \; CD \to E, \; B \to D, \; E \to A\}$.
+
+---
+
+**Q5.** Which of the following is TRUE?
+- (a) Every relation in BCNF is also in 3NF.
+- (b) Every relation in 3NF is also in BCNF.
+- (c) BCNF decomposition always preserves dependencies.
+- (d) 3NF allows transitive dependencies.
+
+**Answer: (a)**
+
+**Explanation:** BCNF is a stricter version of 3NF. Every BCNF relation trivially satisfies 3NF conditions. Option (b) is false — a relation can be in 3NF but not BCNF (when a prime attribute depends on a non-superkey). Option (c) is false — BCNF decomposition may lose dependencies. Option (d) is false — 3NF specifically eliminates transitive dependencies of non-prime attributes on candidate keys.
+
+---
+
+**Q6.** Consider $R(A, B, C)$ with FDs $\{AB \to C, \; C \to B\}$. Identify the normal form and candidate keys.
+
+**Solution Approach:**
+- Candidate keys: $\{A, B\}^+ = \{A, B, C\} = R$. Is it minimal? $A^+ = \{A\}$, $B^+ = \{B\}$. Yes, AB is a candidate key.
+- $\{A, C\}^+$: $C \to B$, so $\{A, C\}^+ = \{A, B, C\} = R$. $A^+ = \{A\}$, $C^+ = \{B, C\}$. So AC is also a candidate key.
+- **Candidate keys: AB, AC**.
+- Prime attributes: $\{A, B, C\}$ — all attributes are prime.
+- 3NF check: $C \to B$. Is $C$ a superkey? No. Is $B$ prime? **Yes**. 3NF holds. [CORRECT]
+- BCNF check: $C \to B$. Is $C$ a superkey? **No.** BCNF fails. [INCORRECT]
+- **Highest normal form: 3NF (but not BCNF).**
+
+---
+
+**Q7.** The 3NF synthesis algorithm guarantees which of the following?
+- (a) Lossless join only
+- (b) Dependency preservation only
+- (c) Both lossless join and dependency preservation
+- (d) Neither
+
+**Answer: (c)**
+
+**Explanation:** The 3NF synthesis (Bernstein's) algorithm is specifically designed to produce decompositions that are both lossless-join and dependency-preserving, which is a significant advantage over BCNF decomposition.
+
+### 14.3 Exam Tips
+
+- **Always start with attribute closure** when finding candidate keys. Classify attributes into L, R, LR, N categories for efficiency.
+- **For "highest normal form" questions**, check from the top (BCNF) downward. If BCNF fails, check 3NF, then 2NF, then 1NF.
+- **Remember the key distinction:** 3NF allows $X \to A$ where $A$ is prime even if $X$ is not a superkey. BCNF does not.
+- **Binary lossless test** ($R_1 \cap R_2 \to R_1$ or $R_1 \cap R_2 \to R_2$) is the quickest check for two-relation decompositions.
+- **Canonical cover** questions almost always involve removing extraneous attributes — practice the two-case check (left extraneous vs right extraneous) until it becomes mechanical.
+- **Trick questions** often involve relations where all attributes are prime — such relations are automatically in 3NF regardless of FDs, but may not be in BCNF.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="Given relation R(A, B, C, D, E) with Functional Dependencies F = { A → BC, CD → E, B → D, E → A }. What are all the Candidate Keys of relation R?"
+  optionA="{A}, {B}, {CD}"
+  optionB="{A}, {B, C}, {CD}, {E}"
+  optionC="{A}, {E}, {B, C}"
+  optionD="{A}, {E}, {B, C}, {C, D}"
+  correctOption="D"
+  explanation="Compute closures: (A)+ = {A, B, C, D, E} ⟹ A is a key. Since E → A, (E)+ contains all attributes ⟹ E is a key. Since CD → E, (CD)+ = {C, D, E, A, B} ⟹ CD is a key. Since B → D, (BC)+ = {B, C, D, E, A} ⟹ BC is a key. Candidate Keys = {A, E, BC, CD}."
+  examBadge="UGC NET Dec 2020 / Official PYQ"
+/>
+
+<Quiz
+  question="A relation R(A, B, C, D) has functional dependencies F = { AB → C, C → D, D → A }. What is the highest normal form satisfied by relation R?"
+  optionA="1NF"
+  optionB="2NF"
+  optionC="3NF"
+  optionD="BCNF"
+  correctOption="C"
+  explanation="Candidate keys are AB, BC, CD. Prime attributes = {A, B, C, D}. All attributes are prime! 1. 2NF: No partial dependencies (all non-primes are empty). 2. 3NF: For every X → Y, either X is a superkey OR Y is a prime attribute. In C → D and D → A, C and D are not superkeys, but D and A are prime attributes. Thus 3NF holds. 3. BCNF fails because C and D are not superkeys. Highest normal form = 3NF."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="Decomposition of relation R(A, B, C) into R1(A, B) and R2(B, C) with F = { A → B } is:"
+  optionA="Lossless and Dependency Preserving"
+  optionB="Lossless but NOT Dependency Preserving"
+  optionC="Lossy (not lossless)"
+  optionD="BCNF and Minimal"
+  correctOption="C"
+  explanation="A decomposition of R into R1 and R2 is Lossless if and only if R1 ∩ R2 forms a superkey for R1 or R2. Here R1 ∩ R2 = {B}. Is B a key for R1? No (A → B, not B → A). Is B a key for R2? No functional dependency has B as determinant. Therefore, the decomposition is Lossy."
+  examBadge="UGC NET Dec 2019"
+/>
+
+<Quiz
+  question="What is the defining condition for a relation to be in Boyce-Codd Normal Form (BCNF)?"
+  optionA="Every non-prime attribute must be fully functionally dependent on the primary key"
+  optionB="For every non-trivial functional dependency X → Y, X must be a Superkey"
+  optionC="No transitive dependencies exist"
+  optionD="Every determinant is a single attribute"
+  correctOption="B"
+  explanation="BCNF is a stricter version of 3NF. In BCNF, for every non-trivial functional dependency X → Y, the determinant X must strictly be a superkey of the relation. (Unlike 3NF, BCNF does NOT allow the alternative clause where Y is a prime attribute)."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="Which normal form guarantees the complete elimination of all functional dependency anomalies while ALWAYS guaranteeing dependency preservation?"
+  optionA="BCNF"
+  optionB="3NF (Third Normal Form)"
+  optionC="4NF"
+  optionD="5NF"
+  correctOption="B"
+  explanation="While BCNF eliminates all redundancy based on FDs, BCNF decompositions do not always preserve dependencies. 3NF synthesis algorithm guarantees both Lossless Join AND Dependency Preservation simultaneously."
+  examBadge="UGC NET Dec 2022"
+/>
+

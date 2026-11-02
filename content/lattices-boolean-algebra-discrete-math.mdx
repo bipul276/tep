@@ -1,0 +1,373 @@
+---
+title: "Posets, Hasse Diagrams, Lattices, and Boolean Algebra"
+unit: "Unit 1: Digital Logic & Discrete Structures"
+examType: "UGC-NET"
+priority: "Low"
+readTime: "30 min"
+slug: "lattices-boolean-algebra-discrete-math"
+description: "Master Partially Ordered Sets (Posets), Hasse Diagrams, LUB/GLB, Distributive & Complemented Lattices, and Boolean Algebras with divisibility posets for UGC NET and Bihar STET."
+tags: ["Discrete Mathematics", "Posets", "Hasse Diagrams", "Lattices", "Boolean Algebra", "UGC-NET", "STET"]
+---
+
+# Posets, Hasse Diagrams, Lattices, and Boolean Algebra
+
+Partially ordered algebraic structures form a recurring, high-yield area in the **UGC NET** and **Bihar STET Computer Science** syllabi. Examiners regularly test candidate precision on the distinction between **maximal vs. greatest** elements, **LUB/GLB computation**, the **$M_3$ and $N_5$ non-distributive forbidden sublattices**, and the **$2^n$ cardinality rule** for Boolean algebras.
+
+---
+
+## 1. Partially Ordered Sets (Posets)
+
+A relation $R$ on a set $S$ is a **Partial Order** if and only if it satisfies three axiomatic properties:
+
+$$
+\begin{aligned}
+1. \quad &\textbf{Reflexivity:} \quad &&\forall a \in S, \; (a, a) \in R \quad (a \le a) \\
+2. \quad &\textbf{Antisymmetry:} \quad &&\forall a, b \in S, \; ((a \le b) \land (b \le a)) \implies a = b \\
+3. \quad &\textbf{Transitivity:} \quad &&\forall a, b, c \in S, \; ((a \le b) \land (b \le c)) \implies a \le c
+\end{aligned}
+$$
+
+The pair $(S, \le)$ is termed a **Partially Ordered Set** or **Poset**.
+
+### Standard Mathematical Poset Examples
+1. **Subset Inclusion Poset**: $(\mathcal{P}(A), \subseteq)$, where $\mathcal{P}(A)$ is the power set of $A$.
+2. **Divisibility Poset**: $(D_n, \mid)$, where $D_n$ is the set of positive integer divisors of $n$, and $a \mid b$ denotes "$a$ divides $b$ with zero remainder".
+3. **Natural Less-Than-or-Equal**: $(\mathbb{Z}, \le)$, which is a **Totally Ordered Set (Chain)** because every pair is comparable.
+
+> [!NOTE]
+> Two elements $a, b \in S$ are **comparable** if either $a \le b$ or $b \le a$. If neither holds, they are **incomparable** ($a \parallel b$). If every pair of elements in a poset is comparable, the poset is a **Linear Order**, **Total Order**, or **Chain**.
+
+---
+
+## 2. Hasse Diagrams
+
+A **Hasse Diagram** is a simplified graphical representation of a finite poset obtained by eliminating redundant information implied by the partial order axioms.
+
+```
+                    CONSTRUCTION OF A HASSE DIAGRAM
+   1. Digraph Representation: Draw vertices and directed edges (a -> b if a <= b).
+   2. Remove Self-Loops: Implied by Reflexivity (a <= a is discarded).
+   3. Remove Transitive Edges: If a <= b and b <= c, discard edge a -> c.
+   4. Upward Orientation: Position b vertically higher than a if a <= b; replace 
+      arrows with undirected line segments.
+```
+
+### Covering Relation ($a \prec b$)
+In a poset $(S, \le)$, an element $b$ **covers** an element $a$ (written $a \prec b$) if:
+$$a < b \quad \text{and} \quad \nexists c \in S \text{ such that } a < c < b$$
+The Hasse diagram consists exclusively of edges representing covering pairs $(a, b)$ where $b$ is drawn above $a$.
+
+---
+
+## 3. Poset Extremal Elements
+
+Understanding extremal elements is one of the most tested areas in discrete mathematics:
+
+```
++-----------------------------------------------------------------------------------------+
+|                               EXTREMAL ELEMENT DEFINITIONS                              |
++-------------------+---------------------------------------------------------------------+
+| Element Type      | Formal Condition in Poset $(S, \le)$                                |
++-------------------+---------------------------------------------------------------------+
+| Minimal Element   | $a \in S$ is minimal if $\nexists x \in S$ such that $x < a$.       |
+|                   | (No element sits strictly below $a$; can have multiple minimals).   |
++-------------------+---------------------------------------------------------------------+
+| Maximal Element   | $b \in S$ is maximal if $\nexists x \in S$ such that $b < x$.       |
+|                   | (No element sits strictly above $b$; can have multiple maximals).   |
++-------------------+---------------------------------------------------------------------+
+| Least (Minimum)   | $l \in S$ is the least element if $\forall x \in S, \; l \le x$.    |
+| Element           | (Must be unique if it exists. Denoted by $0$ or $\bot$).            |
++-------------------+---------------------------------------------------------------------+
+| Greatest (Maximum)| $g \in S$ is greatest element if $\forall x \in S, \; x \le g$.    |
+| Element           | (Must be unique if it exists. Denoted by $1$ or $\top$).            |
++-------------------+---------------------------------------------------------------------+
+```
+
+> [!WARNING]
+> **Exam Pitfall**: 
+> - A poset can have **multiple** maximal or minimal elements.
+> - A poset can have **at most one** greatest element and **at most one** least element.
+> - If a greatest element exists, it is the **unique** maximal element. However, having a single maximal element does **not** guarantee it is the greatest element unless the set is finite and connected.
+
+### Upper Bounds, Lower Bounds, LUB, and GLB
+For a subset $A \subseteq S$:
+- **Upper Bound of $A$**: An element $u \in S$ such that $\forall x \in A, \; x \le u$.
+- **Lower Bound of $A$**: An element $v \in S$ such that $\forall x \in A, \; v \le x$.
+- **Least Upper Bound (LUB / Supremum / Join $\vee$)**: An upper bound $u^*$ such that for any upper bound $u$ of $A$, $u^* \le u$.
+- **Greatest Lower Bound (GLB / Infimum / Meet $\wedge$)**: A lower bound $v^*$ such that for any lower bound $v$ of $A$, $v \le v^*$.
+
+---
+
+## 4. Lattices: Algebraic and Relational Definitions
+
+A poset $(L, \le)$ is defined as a **Lattice** if and only if:
+$$\forall a, b \in L, \quad \text{both } \operatorname{LUB}(a, b) \ (a \vee b) \quad \text{and} \quad \operatorname{GLB}(a, b) \ (a \wedge b) \quad \text{exist in } L$$
+
+```
+              LATTICE (Valid)                         NOT A LATTICE (Invalid)
+                     1                                          1
+                   /   \                                      / | \
+                  a     b                                    c  |  d
+                   \   /                                      \ | /
+                     0                                          e
+           GLB(a, b) = 0 (Unique)                     Two upper bounds {c, d} of e;
+           LUB(a, b) = 1 (Unique)                     neither is <= the other (No LUB)
+```
+
+### Algebraic Properties of Lattice Operations
+The binary operations Meet ($\wedge$) and Join ($\vee$) satisfy the following laws $\forall a, b, c \in L$:
+1. **Idempotent**: $a \wedge a = a, \quad a \vee a = a$
+2. **Commutative**: $a \wedge b = b \wedge a, \quad a \vee b = b \vee a$
+3. **Associative**: $(a \wedge b) \wedge c = a \wedge (b \wedge c), \quad (a \vee b) \vee c = a \vee (b \vee c)$
+4. **Absorption**: $a \wedge (a \vee b) = a, \quad a \vee (a \wedge b) = a$
+
+---
+
+## 5. Special Classes of Lattices
+
+```
+                                  LATTICES
+                                     │
+                 ┌───────────────────┴───────────────────┐
+                 ▼                                       ▼
+          Bounded Lattice                       Distributive Lattice
+     (Has 0 = least, 1 = greatest)          (a ∧ (b ∨ c) = (a ∧ b) ∨ (a ∧ c))
+                 │                                       │
+                 ▼                                       │
+        Complemented Lattice                             │
+     (∀a, ∃a' such that                                  │
+      a ∧ a' = 0 and a ∨ a' = 1)                         │
+                 │                                       │
+                 └───────────────────┬───────────────────┘
+                                     ▼
+                              Boolean Lattice
+                       (Distributive + Complemented)
+```
+
+### 5.1 Bounded Lattice
+A lattice $L$ is bounded if it contains a least element $0$ and a greatest element $1$:
+$$a \wedge 0 = 0, \quad a \vee 1 = 1, \quad a \vee 0 = a, \quad a \wedge 1 = a \quad (\forall a \in L)$$
+Every finite lattice is inherently bounded.
+
+### 5.2 Distributive Lattice
+A lattice $(L, \wedge, \vee)$ is distributive if operations distribute across each other:
+$$a \wedge (b \vee c) = (a \wedge b) \vee (a \wedge c) \quad \text{and} \quad a \vee (b \wedge c) = (a \vee b) \wedge (a \vee c)$$
+
+#### The Birkhoff Forbidden Sublattice Theorem
+A lattice $L$ is distributive **if and only if** it does not contain a sublattice isomorphic to:
+1. **$M_3$ (Diamond Lattice)**: The five-element non-distributive lattice where 3 middle elements pairwise meet at 0 and join at 1.
+2. **$N_5$ (Pentagon Lattice)**: The five-element non-modular lattice.
+
+```
+             M3 (Diamond - Non-Distributive)           N5 (Pentagon - Non-Distributive)
+                           1                                          1
+                        /  |  \                                     /   \
+                       a   b   c                                   a     b
+                        \  |  /                                    |     |
+                           0                                       c     /
+                                                                    \   /
+                                                                      0
+```
+
+### 5.3 Complemented Lattice
+In a bounded lattice $(L, \wedge, \vee, 0, 1)$, an element $b \in L$ is a **complement** of $a \in L$ if:
+$$a \wedge b = 0 \quad \text{and} \quad a \vee b = 1$$
+A lattice is **complemented** if every element $a \in L$ has at least one complement.
+- In a general complemented lattice, an element may have **multiple** complements.
+- In a **distributive complemented lattice**, every element has a **unique** complement.
+
+---
+
+## 6. Boolean Algebras & Divisibility Posets
+
+A **Boolean Algebra** (or Boolean Lattice) is a lattice that is **both distributive and complemented**.
+
+### Cardinality Invariant for Finite Boolean Algebras
+$$\text{If } B \text{ is a finite Boolean Algebra}, \quad |B| = 2^n \quad (n \in \{0, 1, 2, 3, \dots\})$$
+Every finite Boolean algebra with $2^n$ elements is isomorphic to the power set Boolean algebra $(\mathcal{P}(S), \subseteq)$, where $|S| = n$.
+
+> [!IMPORTANT]
+> **UGC NET Elimination Rule**: If an option asks whether a lattice with $3, 5, 6, 10, 12, \text{or } 14$ elements can form a Boolean algebra, **reject it immediately**. A finite Boolean algebra must contain $2^n$ ($1, 2, 4, 8, 16, 32, \dots$) elements!
+
+### The Divisibility Poset $(D_n, \mid)$
+For the poset of divisors of $n$, $(D_n, \mid)$:
+- **Meet ($\wedge$)**: $\operatorname{GLB}(a, b) = \gcd(a, b)$
+- **Join ($\vee$)**: $\operatorname{LUB}(a, b) = \operatorname{lcm}(a, b)$
+- **Least Element ($0$)**: $1$
+- **Greatest Element ($1$)**: $n$
+
+#### Theorem: When is $(D_n, \mid)$ a Boolean Algebra?
+$$(D_n, \mid) \text{ is a Boolean Algebra} \iff n \text{ is a \textbf{square-free integer}}$$
+An integer $n$ is square-free if its prime factorization contains no repeated factors:
+$$n = p_1 \cdot p_2 \cdot p_3 \cdots p_k \quad (\text{all prime powers are } 1)$$
+
+- **Case 1: $D_{30}$**:
+$$30 = 2 \times 3 \times 5 \implies \text{Square-free ($3$ distinct primes)}$$
+  Number of divisors $|D_{30}| = (1+1)(1+1)(1+1) = 2^3 = 8$.
+  $D_{30}$ **is a Boolean Algebra** isomorphic to $\mathcal{P}(\{2, 3, 5\})$.
+- **Case 2: $D_{12}$**:
+$$12 = 2^2 \times 3 \implies \text{NOT square-free (contains } 2^2 \text{)}$$
+  Number of divisors $|D_{12}| = (2+1)(1+1) = 6 \neq 2^n$.
+  $D_{12}$ **is NOT a Boolean Algebra** (it is a distributive lattice, but not complemented; 2 has no complement).
+
+---
+
+## 7. Step-by-Step Worked Problems
+
+### Problem 1: Analyzing Extremal Elements from a Divisibility Poset
+Consider the poset $(S, \mid)$ where $S = \{2, 3, 4, 6, 8, 12, 24\}$.
+*Tasks*: Find all minimal, maximal, least, and greatest elements.
+
+#### Step-by-step Solution:
+1. **Minimal Elements**:
+   - Elements in $S$ that have no divisors in $S$ other than themselves:
+   - Neither $2$ nor $3$ is divisible by any other element in $S$.
+   - **Minimal elements**: $\{2, 3\}$.
+2. **Least Element**:
+   - Does an element $l \in S$ exist such that $l \mid x$ for all $x \in S$?
+   - $2 \nmid 3$ and $3 \nmid 2$.
+   - **Least element does NOT exist**.
+3. **Maximal Elements**:
+   - Elements in $S$ that do not divide any other element in $S$:
+   - $24$ divides no other element in $S$.
+   - **Maximal element**: $\{24\}$.
+4. **Greatest Element**:
+   - Does an element $g \in S$ exist such that $x \mid g$ for all $x \in S$?
+   - Check: $2\mid 24, 3\mid 24, 4\mid 24, 6\mid 24, 8\mid 24, 12\mid 24, 24\mid 24$. All hold!
+   - **Greatest element**: $\mathbf{24}$.
+
+---
+
+### Problem 2: Finding Complements in $D_{36}$
+Given the divisibility lattice $D_{36} = \{1, 2, 3, 4, 6, 9, 12, 18, 36\}$:
+*Task: Does the element $4$ have a complement in $D_{36}$?*
+
+#### Step-by-step Solution:
+In $D_{36}$, $0 = 1$ and $1 = 36$. For $x \in D_{36}$ to be a complement of $4$:
+$$\gcd(4, x) = 1 \quad \text{and} \quad \operatorname{lcm}(4, x) = 36$$
+
+1. $\gcd(4, x) = 1 \implies x$ cannot share any factors of 2 with 4. Thus, $x$ must be odd.
+   - Odd divisors in $D_{36}$ are: $\{1, 3, 9\}$.
+2. Test candidate $x = 1$: $\operatorname{lcm}(4, 1) = 4 \neq 36$.
+3. Test candidate $x = 3$: $\operatorname{lcm}(4, 3) = 12 \neq 36$.
+4. Test candidate $x = 9$: $\gcd(4, 9) = 1$, and $\operatorname{lcm}(4, 9) = 36$.
+
+**Conclusion**: $4$ has a unique complement in $D_{36}$, which is $\mathbf{9}$.
+*(Note: Although 4 has a complement, $D_{36}$ is not a Boolean algebra because elements like 2 and 6 do not have valid complements).*
+
+---
+
+## 8. UGC NET & Bihar STET PYQ Analysis & Practice
+
+### Question 1 (UGC NET Official PYQ)
+A lattice is defined as a partially ordered set in which every pair of elements has:
+- **A)** A unique maximal and minimal element
+- **B)** A least upper bound and a greatest lower bound
+- **C)** A common complement
+- **D)** A linear chain sequence
+
+**Answer**: **B**
+**Explanation**: By definition, a poset $(L, \le)$ is a lattice if and only if for every pair $a, b \in L$, $\operatorname{LUB}(a, b)$ ($a \vee b$) and $\operatorname{GLB}(a, b)$ ($a \wedge b$) exist.
+
+---
+
+### Question 2 (Bihar STET Higher Secondary Exam)
+Which of the following integers $n$ produces a divisibility poset $(D_n, \mid)$ that is a Boolean algebra?
+- **A)** $n = 18$
+- **B)** $n = 24$
+- **C)** $n = 30$
+- **D)** $n = 45$
+
+**Answer**: **C**
+**Explanation**:
+A divisibility poset $(D_n, \mid)$ is a Boolean algebra if and only if $n$ is square-free.
+- $18 = 2 \times 3^2$ (contains $3^2$, not square-free)
+- $24 = 2^3 \times 3$ (contains $2^3$, not square-free)
+- $30 = 2 \times 3 \times 5$ (square-free, 3 distinct primes $\implies 2^3 = 8$ elements)
+- $45 = 3^2 \times 5$ (contains $3^2$, not square-free)
+
+---
+
+### Question 3 (UGC NET Sublattice Theorem)
+According to Birkhoff's Theorem, a lattice is distributive if and only if it contains no sublattice isomorphic to:
+- **A)** $K_5$ or $K_{3,3}$
+- **B)** $M_3$ (Diamond) or $N_5$ (Pentagon)
+- **C)** $C_4$ or $Q_3$
+- **D)** $P_4$ or $S_3$
+
+**Answer**: **B**
+**Explanation**: A lattice is distributive iff it does not contain the diamond lattice $M_3$ or the pentagon lattice $N_5$ as a sublattice. ($K_5$ and $K_{3,3}$ belong to Kuratowski's theorem for planar graphs).
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="In a divisibility poset (D_n, |) where D_n is the set of all positive divisors of n, for which value of n is (D_n, |) isomorphic to a Boolean algebra?"
+  optionA="n = 12"
+  optionB="n = 30"
+  optionC="n = 36"
+  optionD="n = 16"
+  correctOption="B"
+  explanation="A divisibility lattice D_n is a Boolean algebra if and only if n is square-free (i.e., n is a product of distinct prime factors). 30 = 2 × 3 × 5 (square-free). 12 = 2^2 × 3 (not square-free), 36 = 2^2 × 3^2, 16 = 2^4."
+  examBadge="UGC NET June 2020"
+/>
+
+<Quiz
+  question="What is the number of elements in any finite Boolean lattice?"
+  optionA="Any positive integer n"
+  optionB="Always a power of 2 (2^k for integer k ≥ 0)"
+  optionC="Always a prime number p"
+  optionD="Always an odd integer"
+  correctOption="B"
+  explanation="Every finite Boolean algebra is isomorphic to the power set Boolean algebra P(S) of some finite set S of size k. Consequently, the cardinality of any finite Boolean algebra is always 2^k for some non-negative integer k."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="A lattice (L, ∧, ∨) is called Complemented if every element a ∈ L possesses at least one complement b ∈ L such that:"
+  optionA="a ∧ b = 0 and a ∨ b = 1"
+  optionB="a ∧ b = 1 and a ∨ b = 0"
+  optionC="a ∧ b = a and a ∨ b = b"
+  optionD="a ≤ b or b ≤ a"
+  correctOption="A"
+  explanation="In a bounded lattice with least element 0 and greatest element 1, element b is a complement of a if their meet (GLB) is the lower bound (a ∧ b = 0) and their join (LUB) is the upper bound (a ∨ b = 1)."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="Which of the following Hasse diagrams represents a non-distributive lattice?"
+  optionA="The diamond lattice M3 and pentagon lattice N5"
+  optionB="Any chain with 4 elements"
+  optionC="The divisor lattice D6"
+  optionD="The power set lattice P({a, b})"
+  correctOption="A"
+  explanation="Birkhoff's Theorem states that a lattice is distributive if and only if it does not contain a sublattice isomorphic to the diamond lattice M3 or the pentagon lattice N5."
+  examBadge="UGC NET Dec 2022"
+/>
+
+<Quiz
+  question="In a poset (S, ≤), an element 'm' is called a Minimal element if:"
+  optionA="m ≤ x for all x ∈ S"
+  optionB="There is no x ∈ S such that x &lt; m"
+  optionC="x ≤ m for all x ∈ S"
+  optionD="m is unique in the poset"
+  correctOption="B"
+  explanation="An element m is minimal if no other element strictly precedes it (i.e. x ≤ m implies x = m). A poset can have multiple minimal elements. If m ≤ x for ALL x, it is the 'least element' (which must be unique)."
+  examBadge="UGC NET June 2021"
+/>
+
+
+---
+
+## 9. High-Yield Revision Matrix
+
+| Concept | Defining Invariant | Verification Shortcut |
+|---|---|---|
+| **Poset** | Reflexive, Antisymmetric, Transitive | $(S, \le)$ or $(D_n, \mid)$ |
+| **Covering ($a \prec b$)** | $a < b$ with no intermediary $c$ | Direct vertical edges in Hasse Diagram |
+| **Maximal vs Greatest** | Maximal: Nothing above it. Greatest: Everything below it | Poset may have multiple maximals, but at most ONE greatest |
+| **Lattice** | $\forall a, b: \operatorname{LUB}(a, b)$ and $\operatorname{GLB}(a, b)$ exist | Check pairs at branch points |
+| **Distributive Lattice** | Meet & join distribute; no $M_3$ or $N_5$ sublattices | All elements in bounded distributive lattice have $\le 1$ complement |
+| **Boolean Algebra** | Distributive + Complemented | Must have $2^n$ elements; $D_n$ must have square-free $n$ |

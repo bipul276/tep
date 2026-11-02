@@ -1,0 +1,380 @@
+---
+title: "Multimedia Systems: Audio Compression (MP3 vs MIDI), Video Standards (MPEG), and Animation Principles"
+unit: "Unit 15: Computer Graphics & Multimedia"
+examType: "STET"
+priority: "High"
+readTime: "32 min"
+slug: "multimedia-formats"
+description: "Exhaustive coverage of audio compression (MP3 psychoacoustic model vs MIDI protocol), video compression standards (MPEG I/P/B frame temporal/spatial redundancy), and Disney's 12 principles of animation with keyframing and tweening for Bihar STET Paper 2."
+tags: ["Multimedia", "MP3", "MIDI", "MPEG", "Video Compression", "Animation", "Keyframing", "STET"]
+---
+
+# Multimedia Systems: Audio Compression (MP3 vs MIDI), Video Standards (MPEG), and Animation Principles
+
+Multimedia computing integrates discrete media (text, graphics) with continuous time-dependent media (audio, video, animation). In the **Bihar STET Paper 2 Computer Science** syllabus, **Unit 15 (Multimedia)** represents a dedicated scoring section covering:
+1. **Audio Representation & Compression**: The Nyquist theorem, **MP3 Psychoacoustic masking models**, and the **MIDI event-messaging protocol**.
+2. **Video Compression Standards (MPEG)**: Spatial vs. Temporal redundancy reduction, **I, P, and B frame architectures**, and Group of Pictures (GOP) decoding reordering.
+3. **Principles of Computer Animation**: **Disney's 12 Principles**, **Keyframing vs. Tweening**, Morphing, and Kinematics (FK vs. IK).
+
+---
+
+## 1. Digital Audio Representation & Compression
+
+Sound is an analog continuous mechanical wave caused by atmospheric pressure vibrations. To digitize acoustic signals for computer storage, systems employ **Pulse Code Modulation (PCM)**.
+
+### 1.1 The Nyquist-Shannon Sampling Theorem
+
+To perfectly reconstruct a band-limited continuous signal without destructive frequency overlapping (**aliasing**), the sampling frequency $f_s$ must be strictly greater than twice the highest frequency component $f_{\max}$ present in the audio spectrum:
+
+$$f_s \ge 2 f_{\max}$$
+
+Where:
+- $f_{\text{Nyquist}} = 2 f_{\max}$ is the **Nyquist Rate**.
+- If $f_s < 2 f_{\max}$, high-frequency tones fold down into the audible baseband as false frequency artifacts (**aliasing distortion**).
+- For CD-quality audio (human hearing range spans $20\,\text{Hz} - 20\,\text{kHz}$):
+$$f_{\max} = 20\,\text{kHz} \implies f_s = 2 \times 20\,\text{kHz} = 40\,\text{kHz}$$
+  *(The standard CD sampling rate was engineered at $44.1\,\text{kHz}$ to accommodate practical analog anti-aliasing low-pass roll-off filters).*
+
+### 1.2 Uncompressed Audio Bitrate Formula
+
+$$\text{Bitrate (bps)} = f_s \times B \times N_{\text{channels}}$$
+
+Where $f_s$ is sampling frequency (Hz), $B$ is bit depth (quantization bits per sample), and $N_{\text{channels}}$ is the number of audio channels ($1$ for Mono, $2$ for Stereo).
+
+---
+
+## 2. Audio Compression: MP3 vs. MIDI
+
+### 2.1 The MP3 (MPEG-1 Audio Layer III) Psychoacoustic Model
+
+MP3 is a lossy audio coding standard that achieves a dramatic $10:1$ to $12:1$ compression ratio by exploiting the physiological and neurological limitations of human auditory perception (**Psychoacoustics**):
+
+```
+ Acoustic Input ──► Filterbank (32 Subbands) ──► MDCT Transform ──► Bit Allocation ──► Huffman Coder
+                          │                                                ▲
+                          ▼                                                │
+             [ FFT Spectrum Analysis ] ──► [ Psychoacoustic Model ] ───────┘
+                                          (Masking Thresholds, SMR)
+```
+
+1. **Absolute Threshold of Hearing (ATH)**:
+   - The human ear is not uniformly sensitive across frequencies. It exhibits peak sensitivity between $2\,\text{kHz} - 5\,\text{kHz}$ (the human speech range) and is drastically less sensitive at extreme frequencies ($< 50\,\text{Hz}$ and $> 16\,\text{kHz}$). Sounds below the quiet threshold curve are completely discarded.
+2. **Frequency (Simultaneous) Masking**:
+   - When a loud acoustic tone (the **masker**) is sounded at frequency $f_m$, it raises the threshold of audibility for adjacent, softer frequencies within that **Critical Band** (measured on the **Bark Scale**). The softer neighboring sounds become imperceptible to the human brain and are allocated zero bits.
+3. **Temporal Masking**:
+   - **Pre-masking (Backward)**: Occurs $5 - 20\,\text{ms}$ *before* an unexpected loud transient burst (e.g., a cymbal crash). The auditory cortex cannot register soft sounds immediately preceding the burst.
+   - **Post-masking (Forward)**: Occurs for $50 - 200\,\text{ms}$ *after* a loud sound stops, as the mechanical basilar membrane gradually settles.
+4. **Modified Discrete Cosine Transform (MDCT)**:
+   - Converts time-domain subband samples into high-resolution frequency domain coefficients with $50\%$ overlapping windows, eliminating boundary blocking artifacts.
+
+---
+
+### 2.2 MIDI (Musical Instrument Digital Interface)
+
+**MIDI** is **NOT** digitized sound. It is a standardized communications protocol and hardware specification (established in 1983) that transmits **symbolic performance instructions** (event messages) between electronic musical instruments, synthesizers, and computers.
+
+```
++-----------------------------------------------------------------------------------------------+
+|  Digital Audio (WAV / MP3)        VS         MIDI Protocol (MID)                              |
++-----------------------------------------------------------------------------------------------+
+|  Stores actual sampled pressure              Stores musical instructions (Sheet music data):   |
+|  waveform values (Gigabytes/Megabytes)       "Play Middle C, on Channel 1, with Velocity 95"  |
++-----------------------------------------------------------------------------------------------+
+```
+
+#### MIDI Message Architecture
+A MIDI packet consists of 8-bit bytes transmitted serially at $31.25\,\text{kbps}$. Every MIDI message begins with a **Status Byte** followed by one or two **Data Bytes**:
+
+```
++---------------------------------------------------------------------------------------+
+| Status Byte (MSB = 1):  0x90 (Note On, Channel 1)                                     |
+| Data Byte 1 (MSB = 0):  0x3C (Pitch = Note 60 = Middle C)                             |
+| Data Byte 2 (MSB = 0):  0x64 (Velocity = 100 = Key strike force/volume)              |
++---------------------------------------------------------------------------------------+
+```
+
+### 2.3 Comprehensive Comparison: MP3 vs. MIDI
+
+```
++----------------------+------------------------------------------+------------------------------------------+
+| Feature              | MP3 (Sampled Waveform Audio)             | MIDI (Synthesizer Event Protocol)        |
++----------------------+------------------------------------------+------------------------------------------+
+| Content Nature       | Acoustic recording of physical sound     | Symbolic musical score / performance data|
+| File Size            | Large ($\approx 1\,\text{MB/minute}$)     | Extremely Small ($\approx 10-30\,\text{KB/song}$) |
+| Human Voice / Speech | Fully supported (Spoken voice, vocals)   | **Unsupported** (Cannot synthesize voice)|
+| Sound Fidelity       | Identical playback across all devices    | Dependent on target sound card/synth chip|
+| Editability          | Difficult (Spectral audio DSP editing)   | Trivial (Change tempo, pitch, instrument)|
+| Bandwidth Need       | High (128 kbps to 320 kbps)              | Negligible ($< 1\,\text{kbps}$)          |
++----------------------+------------------------------------------+------------------------------------------+
+```
+
+---
+
+## 3. Video Compression Standards (The MPEG Family)
+
+Video is a rapid sequential presentation of static photographic frames (typically $24, 25, 30,$ or $60\,\text{fps}$). Uncompressed digital video demands astronomical storage and bandwidth. Video compression exploits two primary forms of redundancy:
+1. **Spatial Redundancy (Intra-frame)**: Pixels within the same photographic frame exhibit high correlation (e.g., a blue sky). Reduced using Color Subsampling (YCbCr) and the **Discrete Cosine Transform (DCT)**.
+2. **Temporal Redundancy (Inter-frame)**: Consecutive frames in a video sequence are nearly identical except for small object motions. Reduced using **Motion Estimation & Motion Compensation**.
+
+---
+
+### 3.1 The MPEG Frame Hierarchy: I, P, and B Frames
+
+MPEG structures compressed video into an ordered sequence of three distinct frame types:
+
+```
+           Forward Motion Vector                  Forward & Backward Motion Vectors
+           ┌──────────────────────┐               ┌────────────────────────────────┐
+           │                      ▼               ▼                                │
+      [ I-FRAME ]            [ P-FRAME ]    [ B-FRAME ]                      [ P-FRAME ]
+      (Intra-Coded)          (Predicted)    (Bi-Directional)                 (Predicted)
+```
+
+```
++---------------------+-------------------+-----------------------------------+-----------------------------------+
+| Frame Type          | Coding Mode       | Reference Requirements            | Compression & Relative Size       |
++---------------------+-------------------+-----------------------------------+-----------------------------------+
+| **I-Frame**         | **Intra-coded**   | **None** (Self-contained static   | **Lowest compression**            |
+| (Intra)             |                   | JPEG-like image; uses only DCT)   | (Largest frame size; $100\%$)     |
++---------------------+-------------------+-----------------------------------+-----------------------------------+
+| **P-Frame**         | **Predictive**    | Preceding **I-frame or P-frame**  | **Moderate compression**          |
+| (Predicted)         |                   | (Forward motion vectors)          | ($\approx 30 - 50\%$ of I-frame)  |
++---------------------+-------------------+-----------------------------------+-----------------------------------+
+| **B-Frame**         | **Bi-directional**| Both **past AND future** frames   | **Highest compression**           |
+| (Interpolated)      |                   | (Interpolates bidirectional MV)   | ($\approx 10 - 20\%$ of I-frame)  |
++---------------------+-------------------+-----------------------------------+-----------------------------------+
+```
+
+### 3.2 Group of Pictures (GOP) & Reordering Buffer
+
+A **Group of Pictures (GOP)** begins with an **I-Frame** and establishes the periodic repetition pattern. 
+- Example GOP: `I B B P B B P B B I`
+
+#### Display Order vs. Decoding Order
+Because a **B-Frame** depends mathematically on a future **P-Frame**, the video decoder **cannot** decode the B-frame until it has already received and decoded the future reference frame!
+
+```
+ Display Order (Viewer sees):     I_1    B_2    B_3    P_4    B_5    B_6    P_7
+                                  │      ▲      ▲      │
+                                  │      └──────┴──────┘ (B2 & B3 require P4!)
+                                  ▼
+ Transmission/Decoding Order:     I_1    P_4    B_2    B_3    P_7    B_5    B_6
+```
+
+> **Exam Key Fact**: In transmission and decoding order, future reference frames ($P_4$) must always precede the bidirectional frames ($B_2, B_3$) that reference them. The display device uses a **frame reordering buffer** to restore proper viewing cadence.
+
+---
+
+## 4. Principles of Computer Animation
+
+Animation is the optical illusion of continuous motion created by the rapid presentation of sequential static images, relying on the physiological phenomenon of **Persistence of Vision** (where the human eye retains an image for approximately $1/16^{\text{th}}$ to $1/10^{\text{th}}$ of a second).
+
+### 4.1 Keyframing vs. Tweening
+
+```
++-----------------------------------------------------------------------------------------------+
+|  [ Keyframe 1 ]  ══════════════►  [ Inbetween Frames ]  ══════════════►  [ Keyframe 2 ]       |
+|  Ball at top of apex              Computer generates 22                  Ball squashes on     |
+|  (Drawn by Lead Artist)           interpolated frames (Tweening)         impact with ground   |
++-----------------------------------------------------------------------------------------------+
+```
+
+- **Keyframe**: A master frame drawn or configured by the animator that defines the extreme boundaries, pivotal poses, and timing landmarks of an action.
+- **Tweening (Inbetweening)**: The process of generating intermediate frames between two keyframes to ensure smooth, continuous motion. In digital systems, tweening is automated via algorithmic interpolation:
+  - **Linear Interpolation (Lerp)**: Constant velocity; produces robotic, unnatural motion.
+  - **Bézier Curves & Ease-In / Ease-Out**: Modulates velocity using cubic polynomial curves to simulate physical inertia and gravity.
+
+---
+
+### 4.2 Disney's 12 Canonical Principles of Animation
+
+Formulated by Disney animators Ollie Johnston and Frank Thomas in 1981, these 12 principles remain foundational in both 2D vector and 3D CGI animation curricula:
+
+```
++--------------------+------------------------------------------+-------------------------------------------------------+
+| Principle          | Formal Definition                        | Physical / Visual Realization                         |
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 1. Squash &        | Deforming an object to convey speed,     | **Crucial Invariant**: The total physical volume      |
+|    Stretch         | impact, and elasticity without altering  | of the object must remain strictly constant:          |
+|                    | its total apparent volume                | $V = \text{width} \times \text{height} \times \text{depth} = C$ |
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 2. Anticipation    | Preparing the audience for an upcoming   | A golfer pulling the club backward before the swing;  |
+|                    | action to make the movement realistic    | crouching down before an upward jump                  |
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 3. Staging         | Presenting an idea or character pose so  | Placing the character in clear silhouette; utilizing  |
+|                    | the viewer's attention is unmistakable   | theatrical lighting to eliminate visual clutter       |
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 4. Straight Ahead  | Straight Ahead: Animate frame-by-frame.  | Straight Ahead is ideal for chaotic effects (fire,    |
+|    vs Pose-to-Pose | Pose-to-Pose: Draw keyframes then tween. | water splashes); Pose-to-Pose is best for dramatic storytelling|
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 5. Follow Through  | Follow Through: Appendages keep moving   | A running character stops suddenly, but their hair,  |
+|    & Overlapping   | after the body stops. Overlapping: Parts | cloak, and loose clothing continue moving forward     |
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 6. Slow In &       | Gradual acceleration at the start and    | Simulates inertia; objects require force to accelerate|
+|    Slow Out        | gradual deceleration at the end of action| and friction/brakes to come to a complete halt        |
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 7. Arcs            | Natural organic movements adhere to      | A swinging arm or turning head follows a curved arc;  |
+|                    | circular or parabolic curved paths       | purely linear straight paths appear stiff and robotic |
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 8. Secondary       | An auxiliary motion resulting from and   | A character angrily stomps away (primary), while      |
+|    Action          | enriching the primary action             | vigorously swinging clenched fists (secondary)        |
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 9. Timing          | The number of frames allocated between   | More frames = slow, heavy mass; fewer frames = fast,   |
+|                    | actions to establish physical mass/speed | lightweight action                                    |
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 10. Exaggeration   | Pushing facial expressions and physical  | Widening eyes to the size of dinner plates during     |
+|                    | gestures beyond reality for impact       | terror rather than subtle realistic widening          |
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 11. Solid Drawing  | Imparting a sense of 3D volume, balance, | Avoiding symmetrical 'twinning'; maintaining accurate |
+|                    | anatomical weight, and spatial depth     | perspective foreshortening throughout rotation        |
++--------------------+------------------------------------------+-------------------------------------------------------+
+| 12. Appeal         | Charisma and captivating visual design   | Harmonious proportions, recognizable silhouette, and  |
+|                    | that draws the audience's emotional focus| dynamic asymmetrical posing                           |
++--------------------+------------------------------------------+-------------------------------------------------------+
+```
+
+---
+
+### 4.3 Morphing and Kinematics
+
+- **Morphing**: Seamlessly transforming one visual image or 3D mesh into another through a two-step mathematical combination:
+  1. **Warping**: Geometric coordinate distortion aligning key structural features (e.g., eyes to eyes, chin to chin).
+  2. **Cross-Dissolving (Fade)**: Color interpolation between pixel values as geometry shifts.
+- **Forward Kinematics (FK)**: Animating a joint hierarchy by specifying the rotational angles of parent bones down to child bones (e.g., Shoulder angle $\to$ Elbow angle $\to$ Wrist position).
+- **Inverse Kinematics (IK)**: Specifying the target spatial coordinates of the end effector (e.g., the hand touches a doorknob), while an algorithmic solver computes the required angles for the shoulder and elbow automatically.
+
+---
+
+## 5. Worked Numerical Problems & Calculations
+
+### Numerical 1: Raw Uncompressed CD Audio Storage
+**Problem**: Calculate the uncompressed bitrate (in $\text{kbps}$) and the total storage space (in megabytes, where $1\,\text{MB} = 10^6\,\text{bytes}$) required to record a $74\text{-minute}$ stereo concert at standard CD quality ($f_s = 44.1\,\text{kHz}$, $16\text{-bit}$ resolution).
+
+#### Solution:
+1. **Bitrate Calculation**:
+$$\text{Bitrate} = f_s \times B \times N_{\text{channels}} = 44,100\,\text{samples/sec} \times 16\,\text{bits/sample} \times 2\,\text{channels}$$
+$$\text{Bitrate} = 1,411,200\,\text{bps} = 1,411.2\,\text{kbps}$$
+
+2. **Total Seconds**:
+$$T = 74\,\text{minutes} \times 60\,\text{sec/min} = 4,440\,\text{seconds}$$
+
+3. **Total Data in Bytes**:
+$$\text{Bytes/sec} = \frac{1,411,200\,\text{bits/sec}}{8} = 176,400\,\text{bytes/sec}$$
+$$\text{Total Storage} = 176,400\,\text{bytes/sec} \times 4,440\,\text{sec} = 783,216,000\,\text{bytes} \approx 783.2\,\text{MB}$$
+
+---
+
+### Numerical 2: Raw 1080p Video Bitrate vs. MPEG Compression
+**Problem**: A Full HD digital camera captures uncompressed video at $1920 \times 1080$ resolution, $24\text{-bit}$ TrueColor depth (RGB), and $30\,\text{frames per second}$. Calculate:
+1. The uncompressed raw video data rate in $\text{Gbps}$.
+2. The compression ratio required to stream this video over a standard $15\,\text{Mbps}$ broadband connection.
+
+#### Solution:
+1. **Uncompressed Frame Size**:
+$$\text{Bits per Frame} = 1920 \times 1080 \times 24\,\text{bits} = 49,766,400\,\text{bits/frame}$$
+
+2. **Raw Bitrate**:
+$$\text{Bitrate} = 49,766,400\,\text{bits/frame} \times 30\,\text{frames/sec} = 1,492,992,000\,\text{bps} \approx 1.493\,\text{Gbps}$$
+
+3. **Required Compression Ratio**:
+$$\text{Ratio} = \frac{\text{Raw Bitrate}}{\text{Target Bitrate}} = \frac{1,492.99\,\text{Mbps}}{15\,\text{Mbps}} \approx 99.53 : 1 \approx 100 : 1$$
+
+---
+
+## 7. PCM Telephony Standard Bitrate & Nyquist Sampling
+
+Pulse Code Modulation (PCM) is the digital standard for telephone voice transmission.
+
+### 7.1 The 64 kbps Standard (DS0 Channel)
+Human speech in telephony is filtered to a bandwidth of $4\text{ kHz}$ ($0\text{ to } 4000\text{ Hz}$).
+
+By the **Nyquist-Shannon Sampling Theorem**:
+$$f_s \ge 2 \cdot f_{\max} = 2 \times 4000\text{ Hz} = 8000\text{ samples/second}$$
+
+In standard telephony PCM:
+- **Sampling Frequency ($f_s$)**: $8000\text{ samples/s}$ ($1\text{ sample every } 125\;\mu\text{s}$).
+- **Quantization Resolution ($n$)**: $8\text{ bits per sample}$ (using logarithmic companding: $\mu$-law in North America/Japan, A-law in Europe/India).
+
+$$\text{Standard Voice Bitrate} = f_s \times n = 8000\text{ samples/s} \times 8\text{ bits/sample} = 64\text{ kbps}$$
+
+This $64\text{ kbps}$ digital voice stream forms the fundamental **DS0 (Digital Signal 0)** channel in telecommunications.
+
+### 7.2 Audio & Video Jitter in Real-Time Streaming
+- **Jitter** is the statistical variance in packet arrival delay across a network.
+- Caused by network congestion, queueing delays, and multi-path routing.
+- Real-time protocols (RTP/RTSP) mitigate jitter using **playback buffers** (holding received packets temporarily to play them at a constant, uniform rate).
+
+
+---
+
+## 6. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="In MP3 (MPEG-1 Audio Layer III) psychoacoustic compression, what happens to an audio frequency component that falls below the Absolute Threshold of Hearing (ATH)?"
+  optionA="It is amplified to make it audible to the listener"
+  optionB="It is shifted into the human speech frequency band (2 kHz - 5 kHz)"
+  optionC="It is completely eliminated and allocated zero bits because the human ear cannot perceive it"
+  optionD="It is encoded with lossless Huffman coding at 32 bits per sample"
+  correctOption="C"
+  explanation="The Absolute Threshold of Hearing (ATH) curve defines the minimum sound pressure level required for the human ear to register sound in quiet conditions. Any acoustic frequencies falling below this threshold are imperceptible to human neurology and are completely dropped by the encoder."
+  examBadge="Bihar STET Target Question"
+/>
+
+<Quiz
+  question="Why must an MPEG video decoder reorder frames during transmission and decoding when handling Bi-directional (B) frames?"
+  optionA="B-frames are transmitted first because they contain the highest resolution DCT matrices"
+  optionB="B-frames require motion vectors from both past and future reference frames (I or P), so the future reference frame must be decoded first"
+  optionC="B-frames cannot be decoded without an active Internet connection to the streaming server"
+  optionD="B-frames use audio channels rather than video pixel data"
+  correctOption="B"
+  explanation="B-frames utilize bidirectional predictive coding and depend on both preceding and succeeding reference frames (I or P). Consequently, future reference frames must arrive and be decoded prior to the B-frames that reference them."
+  examBadge="UGC NET / STET Multimedia Standard"
+/>
+
+<Quiz
+  question="Which of Disney's 12 Principles of Animation mandates that when an object deforms to convey speed and elasticity, its overall volume must remain strictly constant?"
+  optionA="Anticipation"
+  optionB="Squash and Stretch"
+  optionC="Follow Through and Overlapping Action"
+  optionD="Secondary Action"
+  correctOption="B"
+  explanation="Squash and Stretch is the most fundamental animation principle. When a bouncing ball flattens on the ground (squash) or elongates during a fast fall (stretch), its volume must remain constant (as it squashes horizontally, it must compress vertically)."
+  examBadge="Animation Principles Official PYQ"
+/>
+
+<Quiz
+  question="Which statement accurately contrasts MIDI files with MP3 digital audio files?"
+  optionA="MIDI files contain sampled acoustic pressure recordings, whereas MP3 files store synthesizer commands"
+  optionB="MIDI files are typically megabytes in size, while MP3 files are only a few kilobytes"
+  optionC="MIDI files cannot encode human vocals or speech, and their playback sound quality depends entirely on the target synthesizer hardware"
+  optionD="MIDI files require higher transmission bandwidth than MP3 files"
+  correctOption="C"
+  explanation="MIDI does not record digitized audio waves; it only transmits musical performance messages (such as note on/off, pitch, velocity). Therefore, it cannot record human speech or singing, and its sound output depends on the synthesizer generating the instruments."
+  examBadge="Bihar STET Official Model"
+/>
+
+<Quiz
+  question="In an MPEG video stream with Group of Pictures (GOP) structure of size 12: 'I B B P B B P B B P B B', how many reference anchor frames (I or P) are used to predict the B-frames within this GOP?"
+  optionA="1 I-frame only"
+  optionB="1 I-frame and 3 P-frames"
+  optionC="12 frames"
+  optionD="0 frames"
+  correctOption="B"
+  explanation="In the GOP sequence 'I B B P B B P B B P B B': there is 1 I-frame and 3 P-frames. Both I and P frames serve as temporal reference anchors for calculating bidirectional motion vectors for the interspersed B-frames."
+  examBadge="Multimedia Systems Standard"
+/>
+
+
+---
+
+## 7. High-Yield Revision Matrix
+
+| Topic Segment | Critical Formulation / Invariant | Common Exam Trap |
+|---|---|---|
+| **Nyquist Theorem** | $f_s \ge 2 f_{\max}$; CD Audio uses **$44.1\,\text{kHz}$** | Thinking Nyquist rate is $f_s = f_{\max}$ (must be $\ge 2 f_{\max}$) |
+| **MP3 Masking** | Simultaneous (Frequency) + Temporal (Pre/Post) | Believing MP3 is lossless (it is lossy psychoacoustic) |
+| **MIDI Architecture** | Status Byte (MSB=1), Data Bytes (MSB=0); No speech | Thinking MIDI stores recorded waveforms like MP3 |
+| **MPEG Frame Roles** | I = Intra (Anchor); P = Predicted; B = Bi-directional | Stating B-frames have the largest size (I-frames are largest) |
+| **GOP Reordering** | Decode order puts future P-frame **before** B-frames | Assuming decoding order is identical to display order |
+| **Squash & Stretch** | Invariant: $\text{Volume} = \text{Constant}$ | Forgetting volume preservation during visual deformation |
+| **FK vs IK** | FK: Joint angles $\to$ Hand pos; IK: Hand pos $\to$ Joint angles | Inverting Kinematics directionality |

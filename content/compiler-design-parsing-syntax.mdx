@@ -1,0 +1,300 @@
+---
+title: "Compiler Design: Lexical Analysis, LL(1) Parsing, and LR Parser Taxonomy"
+unit: "Unit 11: Theory of Computation & Compilers"
+examType: "UGC-NET"
+priority: "High"
+readTime: "34 min"
+slug: "compiler-design-parsing-syntax"
+description: "Master compiler phases, token counting, First & Follow sets, LL(1) parse table construction, and LR(0) vs SLR(1) vs LALR(1) vs CLR(1) parser hierarchies for UGC NET and Bihar STET."
+tags: ["Compiler Design", "TOC", "LL1 Parsing", "LR Parsers", "First and Follow", "Lexical Analysis", "UGC-NET", "STET"]
+---
+
+# Compiler Design: Lexical Analysis, LL(1) Parsing, and LR Parser Taxonomy
+
+Compiler construction bridges formal language theory with concrete software systems. In **UGC NET** (Unit 5: System Software and TOC) and **Bihar STET Computer Science**, parsing and syntax analysis represent a guaranteed source of scoring questions. Core exam themes include **token counting in lexical code snippets**, **First and Follow set computation**, **LL(1) grammar validity criteria**, and **the parsing power and state-count relationships among LR(0), SLR(1), LALR(1), and CLR(1) parsers**.
+
+---
+
+## 1. Compiler Execution Phases
+
+The compilation pipeline translates high-level source code into optimized machine target code across six sequential phases:
+
+```
++-----------------------------------------------------------------------------------------+
+|                                    COMPILER PHASES                                      |
++--------------------------+-----------------------+--------------------------------------+
+| Compiler Phase           | Primary Data Input    | Output Representation                |
++--------------------------+-----------------------+--------------------------------------+
+| 1. Lexical Analysis      | Source Character      | Stream of Tokens                     |
+|    (Scanner)             | Stream                | (Uses Regular Expressions & DFAs)    |
++--------------------------+-----------------------+--------------------------------------+
+| 2. Syntax Analysis       | Stream of Tokens      | Parse Tree / Abstract Syntax Tree    |
+|    (Parser)              |                       | (AST) (Uses Context-Free Grammars)   |
++--------------------------+-----------------------+--------------------------------------+
+| 3. Semantic Analysis     | Parse Tree            | Annotated AST (Type checking,        |
+|                          |                       | scope resolution, attribute grammar) |
++--------------------------+-----------------------+--------------------------------------+
+| 4. Intermediate Code     | Annotated AST         | Three-Address Code (TAC),            |
+|    Generation (ICG)      |                       | Quadruples, Triples, Postfix         |
++--------------------------+-----------------------+--------------------------------------+
+| 5. Code Optimization     | Intermediate Code     | Optimized Intermediate Code          |
+|                          |                       | (Loop unrolling, dead code deletion) |
++--------------------------+-----------------------+--------------------------------------+
+| 6. Target Code           | Optimized TAC         | Relocatable Assembly / Machine Code  |
+|    Generation            |                       | (Register allocation, instruction sel|
++--------------------------+-----------------------+--------------------------------------+
+```
+*(All phases interface continuously with the **Symbol Table** and **Error Handler**).*
+
+---
+
+## 2. Lexical Analysis & Token Counting
+
+A **Token** is a categorized atomic unit of syntax. A **Lexeme** is the specific character sequence matching a token pattern.
+
+### Token Counting Rules (C Programming Standard)
+- **Counted as Tokens**: Keywords (`int`, `while`, `return`), Identifiers (`x`, `total`), Constants/Literals (`10`, `"error"`), Operators (`+`, `++`, `==`, `->`), Punctuation/Delimiters (`;`, `,`, `(`, `{`).
+- **Ignored**: Whitespace, newlines, and source comments (`//`, `/* */`).
+- **Multi-character operators**: Operators like `++`, `<=`, `>>` are counted as a **single token** via the **Maximal Munch (Longest Match)** rule.
+
+*Example*: How many tokens are in the statement: `printf("Sum = %d", x + 10);`?
+1. `printf` (Identifier)
+2. `(` (Delimiter)
+3. `"Sum = %d"` (String Literal)
+4. `,` (Delimiter)
+5. `x` (Identifier)
+6. `+` (Arithmetic Operator)
+7. `10` (Integer Literal)
+8. `)` (Delimiter)
+9. `;` (Delimiter)
+$$\textbf{Total Tokens} = \mathbf{9}$$
+
+---
+
+## 3. Top-Down Parsing & First and Follow Sets
+
+Top-Down parsers construct parse trees from the root (start symbol) down to the leaves. The canonical deterministic top-down parser is **LL(1)**:
+- First **L**: Left-to-right scan of the input.
+- Second **L**: Produces a **Leftmost derivation**.
+- **(1)**: Uses **1 token of lookahead**.
+
+### 3.1 Computation Rules for First($\alpha$)
+$\operatorname{First}(\alpha)$ is the set of terminals that begin strings derived from $\alpha$:
+1. If $X$ is a terminal, $\operatorname{First}(X) = \{X\}$.
+2. If $X \to \epsilon$ is a production, then $\epsilon \in \operatorname{First}(X)$.
+3. If $X$ is a non-terminal and $X \to Y_1 Y_2 \dots Y_k$:
+   - Add all non-$\epsilon$ terminals from $\operatorname{First}(Y_1)$ to $\operatorname{First}(X)$.
+   - If $\epsilon \in \operatorname{First}(Y_1)$, add non-$\epsilon$ terminals from $\operatorname{First}(Y_2)$, and so on.
+   - If $\epsilon \in \operatorname{First}(Y_i)$ for all $1 \le i \le k$, add $\epsilon$ to $\operatorname{First}(X)$.
+
+---
+
+### 3.2 Computation Rules for Follow($A$)
+$\operatorname{Follow}(A)$ is the set of terminals that can appear immediately to the right of non-terminal $A$ in some sentential form:
+1. Place endmarker `$` into $\operatorname{Follow}(S)$, where $S$ is the start symbol.
+2. If there is a production $A \to \alpha B \beta$:
+   - Everything in $\operatorname{First}(\beta)$ except $\epsilon$ is in $\operatorname{Follow}(B)$.
+3. If there is a production $A \to \alpha B$ or $A \to \alpha B \beta$ where $\epsilon \in \operatorname{First}(\beta)$:
+   - Everything in $\operatorname{Follow}(A)$ is in $\operatorname{Follow}(B)$.
+
+> [!IMPORTANT]
+> **Cardinal Follow Rule**: $\operatorname{Follow}(A)$ can **NEVER** contain $\epsilon$!
+
+---
+
+### 3.3 LL(1) Parse Table Construction & Grammar Conditions
+For every production $A \to \alpha$:
+1. For every terminal $a \in \operatorname{First}(\alpha)$, add $A \to \alpha$ to $M[A, a]$.
+2. If $\epsilon \in \operatorname{First}(\alpha)$, for every terminal $b \in \operatorname{Follow}(A)$ (including `$`), add $A \to \alpha$ to $M[A, b]$.
+
+$$\textbf{Theorem:} \quad \text{A Context-Free Grammar is LL(1)} \iff \text{Its LL(1) table contains \textbf{NO multiply defined entries}}$$
+
+#### Necessary Invariants for LL(1) Eligibility
+A grammar **CANNOT be LL(1)** if:
+1. It is **Left-Recursive** ($A \to A\alpha$). (Must eliminate immediate and indirect left recursion).
+2. It is **Ambiguous**.
+3. It is not **Left-Factored** ($A \to \alpha\beta_1 \mid \alpha\beta_2$).
+
+---
+
+## 4. Bottom-Up Parsing & The LR Parser Family
+
+Bottom-Up parsers construct parse trees from leaves up to the root by identifying **handles** and executing **Shift-Reduce** operations. An **LR parser** scans Left-to-right, constructing a **Rightmost derivation in reverse**.
+
+```
+                         THE LR PARSER HIERARCHY
+                         
+                      General Context-Free Grammars
+                                   ▲
+                                   │
+                                 LR(k)
+                                   ▲
+                                   │
+                                CLR(1)
+                                   ▲
+                                   │
+                                LALR(1)
+                                   ▲
+                                   │
+                                SLR(1)
+                                   ▲
+                                   │
+                                 LR(0)
+```
+
+```
++-----------------------------------------------------------------------------------------+
+|                                    LR PARSER TAXONOMY                                   |
++-------------------+--------------------+------------------------+-----------------------+
+| Parser Type       | Item Representation| Reduction Placement    | Relative State Count  |
++-------------------+--------------------+------------------------+-----------------------+
+| 1. LR(0)          | $[A \to \alpha \cdot \beta]$| Across **ALL** terminals in  | Base states ($N$)     |
+|                   | (No lookahead)     | row for complete items |                       |
++-------------------+--------------------+------------------------+-----------------------+
+| 2. SLR(1)         | Uses LR(0) items;  | Only under terminals   | Exactly same as LR(0) |
+|                   | resolves conflicts | belonging to           | ($N$ states)          |
+|                   | with Follow sets   | **$\operatorname{Follow}(A)$** |                       |
++-------------------+--------------------+------------------------+-----------------------+
+| 3. CLR(1)         | $[A \to \alpha \cdot \beta, a]$| Exact 1-token lookahead| Explosive growth      |
+|    (Canonical LR) | (Lookahead carried)| $a$ carried by item    | ($M \gg N$, often 10x)|
++-------------------+--------------------+------------------------+-----------------------+
+| 4. LALR(1)        | Merges CLR(1) states| Merged lookaheads for | Exactly same as LR(0) |
+|    (Lookahead LR) | with identical cores| combined cores         | ($N$ states)          |
++-------------------+--------------------+------------------------+-----------------------+
+```
+
+---
+
+## 5. Parser Conflicts & LALR(1) Invariant Theorems
+
+### Parsing Conflicts Defined
+1. **Shift / Reduce (S/R) Conflict**: The parser cannot determine whether to shift the incoming token or reduce the stack handle:
+$$\text{A state contains both } [A \to \alpha \cdot a \beta] \text{ and } [B \to \gamma \cdot]$$
+2. **Reduce / Reduce (R/R) Conflict**: The parser contains two distinct completed items and cannot decide which production to reduce:
+$$\text{A state contains both } [A \to \alpha \cdot] \text{ and } [B \to \beta \cdot]$$
+
+### Fundamental Theorems of LALR(1) Parsers (High-Yield Exam Focus)
+
+> [!IMPORTANT]
+> **Theorem 1 (Shift/Reduce Invariance)**:
+> Merging states with identical cores to form an LALR(1) parser **CANNOT introduce any new Shift/Reduce conflicts** that were not already present in the CLR(1) parser.
+> 
+> **Theorem 2 (Reduce/Reduce Vulnerability)**:
+> Merging states with identical cores to form an LALR(1) parser **CAN introduce new Reduce/Reduce conflicts** that did not exist in the CLR(1) parser.
+
+---
+
+## 6. Step-by-Step Worked Problems
+
+### Problem 1: First and Follow Computation
+Compute $\operatorname{First}$ and $\operatorname{Follow}$ for the grammar:
+$$
+\begin{aligned}
+S &\to A B \\
+A &\to a \mid \epsilon \\
+B &\to b \mid \epsilon
+\end{aligned}
+$$
+
+#### Step-by-step Solution:
+1. **Compute First Sets**:
+   - $\operatorname{First}(A) = \{a, \epsilon\}$
+   - $\operatorname{First}(B) = \{b, \epsilon\}$
+   - $\operatorname{First}(S)$: Since $S \to AB$, it includes $\operatorname{First}(A) \setminus \{\epsilon\} = \{a\}$. Because $\epsilon \in \operatorname{First}(A)$, it also includes $\operatorname{First}(B) = \{b, \epsilon\}$.
+$$\operatorname{First}(S) = \{a, b, \epsilon\}$$
+2. **Compute Follow Sets**:
+   - Start symbol rule: Place `$` in $\operatorname{Follow}(S)$:
+$$\operatorname{Follow}(S) = \{\$\}$$
+   - For $A$ in $S \to AB$: $\operatorname{Follow}(A)$ gets $\operatorname{First}(B) \setminus \{\epsilon\} = \{b\}$. Since $\epsilon \in \operatorname{First}(B)$, $\operatorname{Follow}(A)$ also inherits $\operatorname{Follow}(S) = \{\$\}$.
+$$\operatorname{Follow}(A) = \{b, \$\}$$
+   - For $B$ in $S \to AB$: Since $B$ is at the right end, $\operatorname{Follow}(B)$ inherits $\operatorname{Follow}(S) = \{\$\}$.
+$$\operatorname{Follow}(B) = \{\$\}$$
+
+---
+
+### Problem 2: Token Counting in C Snippet
+Count the exact number of tokens in the following code block:
+```c
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+```
+
+#### Step-by-step Solution:
+- Line 1: `int` (1), `max` (2), `(` (3), `int` (4), `a` (5), `,` (6), `int` (7), `b` (8), `)` (9), `{` (10)
+- Line 2: `return` (11), `(` (12), `a` (13), `>` (14), `b` (15), `)` (16), `?` (17), `a` (18), `:` (19), `b` (20), `;` (21)
+- Line 3: `}` (22)
+
+$$\mathbf{\text{Total Tokens} = 22}$$
+
+---
+
+## 7. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="Which of the following conflicts can NEVER be introduced by merging states with identical cores in a CLR(1) parser to form an LALR(1) parser?"
+  optionA="Reduce / Reduce conflict"
+  optionB="Shift / Reduce conflict"
+  optionC="Both Shift/Reduce and Reduce/Reduce conflicts"
+  optionD="Lookahead conflict"
+  correctOption="B"
+  explanation="Merging identical cores never creates a Shift/Reduce conflict because shift actions depend strictly on the core item's terminal, which is identical in both states. However, combining different lookaheads for completed items can introduce Reduce/Reduce conflicts."
+  examBadge="UGC NET June 2023"
+/>
+
+<Quiz
+  question="What is the relationship between the number of states in an SLR(1) parser and an LALR(1) parser for the same grammar?"
+  optionA="LALR(1) always has more states than SLR(1)"
+  optionB="SLR(1) always has more states than LALR(1)"
+  optionC="SLR(1) and LALR(1) have the exact same number of states"
+  optionD="LALR(1) has exponentially more states"
+  correctOption="C"
+  explanation="Both SLR(1) and LALR(1) parsers have precisely the same number of states as the canonical LR(0) state machine. LALR(1) simply merges CLR(1) states having identical cores, yielding the exact LR(0) state count."
+  examBadge="Bihar STET 2024"
+/>
+
+<Quiz
+  question="Which grammar condition strictly prevents a grammar from being parsed by any LL(1) parser?"
+  optionA="Immediate Left Recursion"
+  optionB="Being in Chomsky Normal Form"
+  optionC="Having single-character terminals"
+  optionD="Containing epsilon productions"
+  correctOption="A"
+  explanation="A left-recursive grammar (A -> Aα) will cause an infinite expansion loop in top-down parsers and generates multiple entries in the LL(1) parse table. Left recursion must be eliminated before an LL(1) parser can be constructed."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="Given the grammar rules: S  A B A  a | ε B  b What is the FOLLOW set of non-terminal A?"
+  optionA="{ a }"
+  optionB="{ b }"
+  optionC="{ $ }"
+  optionD="{ a, b, $ }"
+  correctOption="B"
+  explanation="In production S  A B, the string immediately following A is B. By rule, FOLLOW(A) includes FIRST(B). Since FIRST(B) = { b }, FOLLOW(A) = { b }."
+  examBadge="UGC NET Dec 2021"
+/>
+
+<Quiz
+  question="When converting an LR(0) collection of canonical item sets into an LALR(1) parser by merging item sets with identical cores, which type of parsing conflict can potentially be introduced?"
+  optionA="Shift / Reduce (S/R) conflict"
+  optionB="Reduce / Reduce (R/R) conflict"
+  optionC="Both Shift/Reduce and Reduce/Reduce conflicts"
+  optionD="Neither conflict can ever occur"
+  correctOption="B"
+  explanation="Merging LR(1) states with identical cores can NEVER introduce a Shift/Reduce conflict because shifts depend purely on the next terminal symbol and grammar core. However, merging can combine different lookahead sets for separate reductions, potentially introducing Reduce/Reduce (R/R) conflicts."
+  examBadge="UGC NET Official PYQ"
+/>
+
+
+---
+
+## 8. High-Yield Revision Matrix
+
+| Parser Model | Derivation Produced | Conflict Resolution Strategy | Grammar Power |
+|---|---|---|---|
+| **LL(1)** | Leftmost derivation | Uses $\operatorname{First}$ and $\operatorname{Follow}$ | Weakest (no left recursion) |
+| **LR(0)** | Rightmost in reverse | None (reduces everywhere) | Extremely limited |
+| **SLR(1)** | Rightmost in reverse | Reduces only in $\operatorname{Follow}(A)$ | Moderate |
+| **LALR(1)** | Rightmost in reverse | Merged core lookaheads | Industrial standard (YACC/Bison) |
+| **CLR(1)** | Rightmost in reverse | Distinct canonical lookaheads | Most powerful LR(1) parser |

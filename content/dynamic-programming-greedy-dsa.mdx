@@ -1,0 +1,368 @@
+---
+title: "Dynamic Programming and Greedy Algorithms: 0/1 Knapsack, LCS, and MCM"
+unit: "Unit 4: Algorithms"
+examType: "Common"
+priority: "High"
+readTime: "34 min"
+slug: "dynamic-programming-greedy-dsa"
+description: "Master DP fundamentals, Memoization vs Tabulation, 0/1 Knapsack, Longest Common Subsequence (LCS), and Matrix Chain Multiplication (MCM) with worked tables and PYQ analysis for UGC NET and Bihar STET."
+tags: ["Algorithms", "Dynamic Programming", "Greedy", "Knapsack", "LCS", "MCM", "UGC-NET", "STET"]
+---
+
+# Dynamic Programming and Greedy Algorithms: 0/1 Knapsack, LCS, and MCM
+
+Dynamic Programming (DP) and Greedy algorithms represent two of the most essential algorithm design paradigms tested in **UGC NET** and **Bihar STET Computer Science**. While Greedy algorithms construct solutions through locally optimal choices without backtracking, Dynamic Programming solves optimization problems by methodically decomposing them into overlapping subproblems governed by Bellman's **Principle of Optimality**.
+
+---
+
+## 1. Algorithmic Paradigms: DP vs. Greedy vs. Divide & Conquer
+
+```
++----------------------------------------------------------------------------------------------------+
+|                                    COMPARATIVE PARADIGM MATRIX                                      |
++---------------------+-------------------------------+-----------------------+----------------------+
+| Dimension           | Divide & Conquer              | Dynamic Programming   | Greedy Algorithm     |
++---------------------+-------------------------------+-----------------------+----------------------+
+| Subproblem Nature   | Disjoint / Independent        | Overlapping / Shared  | Sequence of Choices  |
+|                     | (e.g., Merge Sort partitions) | (e.g., Fibonacci, LCS)| (No lookback/future) |
++---------------------+-------------------------------+-----------------------+----------------------+
+| Substructure        | Independent solutions combined| Optimal Substructure  | Greedy Choice        |
+| Requirement         | directly                      | must hold             | + Optimal Substructure|
++---------------------+-------------------------------+-----------------------+----------------------+
+| Decision Timing     | Solves all partitions first   | Explores subproblems; | Commits locally at   |
+|                     | before combining              | builds table/memo     | each discrete step   |
++---------------------+-------------------------------+-----------------------+----------------------+
+| Backtracking?       | No                            | Avoided via caching   | Never backtracks     |
++---------------------+-------------------------------+-----------------------+----------------------+
+| Typical Complexity  | $O(n \log n)$                 | Polynomial / Pseudo-P | $O(n \log n)$ sorting|
++---------------------+-------------------------------+-----------------------+----------------------+
+```
+
+### The Two Prerequisites for Dynamic Programming
+1. **Optimal Substructure**: An optimal solution to the overall problem contains within it optimal solutions to its constituent subproblems (Bellman's Principle of Optimality).
+2. **Overlapping Subproblems**: The recursive space contains repeated, shared subproblems rather than generating unique subproblems at every branch. DP caches these computations in a table.
+
+```
+       Top-Down (Memoization)                     Bottom-Up (Tabulation)
+   - Recursive with memo lookup              - Iterative table construction
+   - Solves subproblems on-demand            - Solves ALL subproblems in topological order
+   - Call stack overhead ($O(N)$ depth)      - Zero call stack overhead; cache-friendly
+```
+
+---
+
+## 2. The 0/1 Knapsack Problem
+
+Given $n$ items, each with a positive integer weight $w_i$ and value $v_i$, and a knapsack of integer capacity $W$, select a subset of items to maximize total value without exceeding capacity $W$. Items cannot be divided (either include completely or exclude).
+
+### 2.1 Why Greedy Choice Fails for 0/1 Knapsack
+In the **Fractional Knapsack** problem, sorting items by value-to-weight ratio $\frac{v_i}{w_i}$ yields an optimal solution in $O(n \log n)$ time. However, for 0/1 Knapsack, greedy by ratio fails:
+- *Counter-Example*: Knapsack capacity $W = 50$.
+  - Item 1: $w_1 = 10, v_1 = 60 \implies \text{Ratio} = 6.0$
+  - Item 2: $w_2 = 20, v_2 = 100 \implies \text{Ratio} = 5.0$
+  - Item 3: $w_3 = 30, v_3 = 120 \implies \text{Ratio} = 4.0$
+- Greedy selects Item 1 and Item 2 (total weight $30$, total value $160$). Remaining capacity $20$ cannot accommodate Item 3.
+- The true optimal choice is Item 2 and Item 3 (total weight $50$, total value $\mathbf{220}$).
+
+---
+
+### 2.2 Mathematical Recurrence Formulation
+Let $V[i, w]$ be the maximum value attainable using a subset of the first $i$ items with capacity $w$:
+
+$$V[i, w] = \begin{cases} 
+0 & \text{if } i = 0 \text{ or } w = 0 \\
+V[i-1, w] & \text{if } w_i > w \\
+\max\Big(V[i-1, w], \; v_i + V[i-1, w - w_i]\Big) & \text{if } w_i \le w 
+\end{cases}
+$$
+
+- **Case 1 (Item excluded)**: Weight $w_i > w$, or the optimal combination leaves item $i$ out: $V[i-1, w]$.
+- **Case 2 (Item included)**: Knapsack gains value $v_i$, consuming $w_i$ capacity: $v_i + V[i-1, w - w_i]$.
+
+---
+
+### 2.3 Step-by-Step Worked Numerical Example
+Given capacity $W = 5$, and $n = 4$ items:
+- Item 1: $w_1 = 2, v_1 = 12$
+- Item 2: $w_2 = 1, v_2 = 10$
+- Item 3: $w_3 = 3, v_3 = 20$
+- Item 4: $w_4 = 2, v_4 = 15$
+
+#### DP Tabulation Grid Construction:
+
+| Item ($i$) | $(w_i, v_i)$ | $w=0$ | $w=1$ | $w=2$ | $w=3$ | $w=4$ | $w=5$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **$i = 0$** | $(0, 0)$ | 0 | 0 | 0 | 0 | 0 | 0 |
+| **$i = 1$** | $(2, 12)$ | 0 | 0 | 12 | 12 | 12 | 12 |
+| **$i = 2$** | $(1, 10)$ | 0 | 10 | 12 | 22 | 22 | 22 |
+| **$i = 3$** | $(3, 20)$ | 0 | 10 | 12 | 22 | 30 | 32 |
+| **$i = 4$** | $(2, 15)$ | 0 | 10 | 15 | 25 | 30 | **37** |
+
+#### Calculation Walkthrough for $i = 4, w = 5$:
+- $w_4 = 2 \le 5$.
+- Option 1 (Exclude): $V[3, 5] = 32$.
+- Option 2 (Include): $v_4 + V[3, 5 - 2] = 15 + V[3, 3] = 15 + 22 = 37$.
+- $V[4, 5] = \max(32, 37) = \mathbf{37}$.
+
+#### Backtracking to Recover Selected Items:
+1. Start at cell $(4, 5) = 37$. Compare with row above $V[3, 5] = 32$. Since $37 \neq 32$, **Item 4 is selected**.
+   - Remaining capacity: $5 - w_4 = 5 - 2 = 3$. Move to $V[3, 3]$.
+2. At cell $(3, 3) = 22$. Compare with $V[2, 3] = 22$. Values match $\implies$ **Item 3 is NOT selected**.
+   - Capacity remains $3$. Move to $V[2, 3]$.
+3. At cell $(2, 3) = 22$. Compare with $V[1, 3] = 12$. Since $22 \neq 12$, **Item 2 is selected**.
+   - Remaining capacity: $3 - w_2 = 3 - 1 = 2$. Move to $V[1, 2]$.
+4. At cell $(1, 2) = 12$. Compare with $V[0, 2] = 0$. Since $12 \neq 0$, **Item 1 is selected**.
+   - Remaining capacity: $2 - w_1 = 2 - 2 = 0$. Done.
+
+$$\text{Optimal Items Chosen} = \{\text{Item 1, Item 2, Item 4}\}$$
+$$\text{Total Weight} = 2 + 1 + 2 = 5 \le 5, \quad \text{Total Value} = 12 + 10 + 15 = \mathbf{37}$$
+
+### Complexity & Pseudo-Polynomial Classification
+- **Time Complexity**: $O(n \cdot W)$ table iterations.
+- **Space Complexity**: $O(n \cdot W)$, which can be optimized to $O(W)$ using a 1D array traversed backwards ($w = W \to w_i$).
+- **Pseudo-Polynomial Nature**: The input size of capacity $W$ is $\log_2 W$ bits. If $W = 2^k$, the runtime is $O(n \cdot 2^k)$, which is exponential in the number of input bits. Thus, 0/1 Knapsack is **NP-Complete**, but admits a **pseudo-polynomial time** DP solution.
+
+---
+
+## 3. Longest Common Subsequence (LCS)
+
+A subsequence is derived by deleting zero or more characters from a sequence without changing the relative order of the remaining characters. Given strings $X = \langle x_1, x_2, \dots, x_m \rangle$ and $Y = \langle y_1, y_2, \dots, y_n \rangle$, find the maximum length sequence that is a subsequence of both.
+
+### 3.1 Recurrence Relation
+Let $c[i, j]$ denote the length of an LCS of prefixes $X[1 \dots i]$ and $Y[1 \dots j]$:
+
+$$c[i, j] = \begin{cases} 
+0 & \text{if } i = 0 \text{ or } j = 0 \\
+c[i-1, j-1] + 1 & \text{if } x_i = y_j \\
+\max\Big(c[i-1, j], \; c[i, j-1]\Big) & \text{if } x_i \neq y_j 
+\end{cases}
+$$
+
+---
+
+### 3.2 Worked Example
+Let $X = \text{"ABCBDAB"}$ ($m = 7$) and $Y = \text{"BDCABA"}$ ($n = 6$):
+
+```
+          j    0    1    2    3    4    5    6
+               Y    B    D    C    A    B    A
+   i   X  ------------------------------------
+   0       |   0    0    0    0    0    0    0
+   1   A   |   0    0    0    0   ↖1   ←1   ↖1
+   2   B   |   0   ↖1   ←1   ←1   ↑1   ↖2   ←2
+   3   C   |   0   ↑1   ↑1   ↖2   ←2   ↑2   ↑2
+   4   B   |   0   ↖1   ↑1   ↑2   ↑2   ↖3   ←3
+   5   D   |   0   ↑1   ↖2   ↑2   ↑2   ↑3   ↑3
+   6   A   |   0   ↑1   ↑2   ↑2   ↖3   ↑3   ↖4
+   7   B   |   0   ↖1   ↑2   ↑2   ↑3   ↖4   ↑4
+```
+
+#### Backtracking Trace (from $c[7, 6] = 4$):
+- Cell $(7, 6)$: $X[7] = \text{'B'}, Y[6] = \text{'A'}$. $c[7, 6] = 4$. $c[6, 6] = 4$, move up to $(6, 6)$.
+- Cell $(6, 6)$: $X[6] = \text{'A'}, Y[6] = \text{'A'}$. Match! Add **'A'**. Move diagonally to $(5, 5)$.
+- Cell $(5, 5)$: $X[5] = \text{'D'}, Y[5] = \text{'B'}$. $c[5, 5] = 3$. $c[4, 5] = 3$, move up to $(4, 5)$.
+- Cell $(4, 5)$: $X[4] = \text{'B'}, Y[5] = \text{'B'}$. Match! Add **'B'**. Move diagonally to $(3, 4)$.
+- Cell $(3, 4)$: $X[3] = \text{'C'}, Y[4] = \text{'A'}$. $c[3, 4] = 2$. $c[3, 3] = 2$, move left to $(3, 3)$.
+- Cell $(3, 3)$: $X[3] = \text{'C'}, Y[3] = \text{'C'}$. Match! Add **'C'**. Move diagonally to $(2, 2)$.
+- Cell $(2, 2)$: $X[2] = \text{'B'}, Y[2] = \text{'D'}$. $c[2, 2] = 1$. $c[2, 1] = 1$, move left to $(2, 1)$.
+- Cell $(2, 1)$: $X[2] = \text{'B'}, Y[1] = \text{'B'}$. Match! Add **'B'**. Move diagonally to $(1, 0)$.
+
+$$\text{Reconstructed String (Reversed)}: \mathbf{\text{"BCBA"}} \quad (\text{Length} = 4)$$
+*(Note: "BDAB" is another equally valid LCS of length 4).*
+
+### Complexity:
+- **Time Complexity**: $O(m \cdot n)$
+- **Space Complexity**: $O(m \cdot n)$ for 2D table; reducible to $O(\min(m, n))$ if only string length is required.
+
+---
+
+## 4. Matrix Chain Multiplication (MCM)
+
+Given a sequence of $n$ matrices $\langle A_1, A_2, \dots, A_n \rangle$, where matrix $A_i$ has dimension $p_{i-1} \times p_i$, find an optimal parenthesization that minimizes the total number of scalar multiplications.
+
+Matrix multiplication is **associative**:
+$$(A_1 A_2) A_3 = A_1 (A_2 A_3)$$
+However, computational cost depends critically on evaluation order:
+- Multiplying $P \times Q$ matrix by $Q \times R$ matrix takes $P \cdot Q \cdot R$ scalar multiplications.
+- Suppose dimensions are: $A_1(10 \times 100), A_2(100 \times 5), A_3(5 \times 50)$.
+  - **Plan 1 $((A_1 A_2) A_3)$**: $(10 \times 100 \times 5) + (10 \times 5 \times 50) = 5,000 + 2,500 = \mathbf{7,500}$ ops.
+  - **Plan 2 $(A_1 (A_2 A_3))$**: $(100 \times 5 \times 50) + (10 \times 100 \times 50) = 25,000 + 50,000 = \mathbf{75,000}$ ops.
+  - Plan 1 is **10 times faster**.
+
+### 4.1 Number of Parenthesizations (Catalan Number)
+The number of distinct parenthesizations $P(n)$ satisfies the recurrence:
+$$P(n) = \sum_{k=1}^{n-1} P(k) P(n-k) = C_{n-1} = \frac{1}{n} \binom{2n-2}{n-1} = \Omega\left(\frac{4^n}{n^{3/2}}\right)$$
+Exhaustive search is intractable (exponential), requiring Dynamic Programming.
+
+---
+
+### 4.2 DP Recurrence Relation
+Let $m[i, j]$ denote the minimum number of scalar multiplications needed to compute $A_{i \dots j}$:
+
+$$m[i, j] = \begin{cases} 
+0 & \text{if } i = j \\
+\min_{i \le k < j} \Big\{ m[i, k] + m[k+1, j] + p_{i-1} \cdot p_k \cdot p_j \Big\} & \text{if } i < j 
+\end{cases}
+$$
+
+Here, $k$ represents the split position where parenthesization occurs: $(A_i \dots A_k)(A_{k+1} \dots A_j)$.
+
+---
+
+### 4.3 Worked Numerical Example
+Given $n = 4$ matrices with dimension array:
+$$P = \langle p_0, p_1, p_2, p_3, p_4 \rangle = \langle 10, 20, 30, 40, 30 \rangle$$
+- $A_1: 10 \times 20$
+- $A_2: 20 \times 30$
+- $A_3: 30 \times 40$
+- $A_4: 40 \times 30$
+
+#### Phase 1: Base Cases (Chains of length $L = 1$)
+$$m[1, 1] = m[2, 2] = m[3, 3] = m[4, 4] = 0$$
+
+#### Phase 2: Chains of length $L = 2$
+- **$m[1, 2]$**: $k = 1 \implies m[1, 1] + m[2, 2] + p_0 p_1 p_2 = 0 + 0 + (10 \cdot 20 \cdot 30) = \mathbf{6,000}$
+- **$m[2, 3]$**: $k = 2 \implies m[2, 2] + m[3, 3] + p_1 p_2 p_3 = 0 + 0 + (20 \cdot 30 \cdot 40) = \mathbf{24,000}$
+- **$m[3, 4]$**: $k = 3 \implies m[3, 3] + m[4, 4] + p_2 p_3 p_4 = 0 + 0 + (30 \cdot 40 \cdot 30) = \mathbf{36,000}$
+
+#### Phase 3: Chains of length $L = 3$
+- **$m[1, 3]$**: Split candidates $k = 1$ and $k = 2$:
+  - $k = 1$: $m[1, 1] + m[2, 3] + p_0 p_1 p_3 = 0 + 24,000 + (10 \cdot 20 \cdot 40) = 24,000 + 8,000 = 32,000$
+  - $k = 2$: $m[1, 2] + m[3, 3] + p_0 p_2 p_3 = 6,000 + 0 + (10 \cdot 30 \cdot 40) = 6,000 + 12,000 = 18,000$
+  - $m[1, 3] = \min(32000, 18000) = \mathbf{18,000} \quad (\text{Split at } k = 2)$
+- **$m[2, 4]$**: Split candidates $k = 2$ and $k = 3$:
+  - $k = 2$: $m[2, 2] + m[3, 4] + p_1 p_2 p_4 = 0 + 36,000 + (20 \cdot 30 \cdot 30) = 36,000 + 18,000 = 54,000$
+  - $k = 3$: $m[2, 3] + m[4, 4] + p_1 p_3 p_4 = 24,000 + 0 + (20 \cdot 40 \cdot 30) = 24,000 + 24,000 = 48,000$
+  - $m[2, 4] = \min(54000, 48000) = \mathbf{48,000} \quad (\text{Split at } k = 3)$
+
+#### Phase 4: Full Chain (Length $L = 4 \implies m[1, 4]$)
+Split candidates $k \in \{1, 2, 3\}$:
+- $k = 1$: $m[1, 1] + m[2, 4] + p_0 p_1 p_4 = 0 + 48,000 + (10 \cdot 20 \cdot 30) = 48,000 + 6,000 = 54,000$
+- $k = 2$: $m[1, 2] + m[3, 4] + p_0 p_2 p_4 = 6,000 + 36,000 + (10 \cdot 30 \cdot 30) = 42,000 + 9,000 = 51,000$
+- $k = 3$: $m[1, 3] + m[4, 4] + p_0 p_3 p_4 = 18,000 + 0 + (10 \cdot 40 \cdot 30) = 18,000 + 12,000 = \mathbf{30,000}$
+
+$$\mathbf{m[1, 4] = 30,000} \quad (\text{Split at } k = 3)$$
+
+#### Constructing Optimal Parenthesization:
+- The optimal split for $A_{1 \dots 4}$ is at $k = 3$: $((A_1 A_2 A_3) A_4)$.
+- For $A_{1 \dots 3}$, the optimal split was at $k = 2$: $((A_1 A_2) A_3)$.
+- **Final Result**:
+$$\mathbf{(((A_1 A_2) A_3) A_4)} \quad \text{with } \mathbf{30,000} \text{ scalar multiplications}$$
+
+### MCM Complexities:
+- **Time Complexity**: There are $\Theta(n^2)$ subproblems. Each subproblem examines up to $n$ split choices $k$.
+$$\text{Total Time} = O(n^3)$$
+- **Space Complexity**: Storing the $m$ table and split table $s$ requires:
+$$\text{Total Space} = O(n^2)$$
+
+---
+
+## 5. UGC NET & Bihar STET PYQ Analysis & Practice
+
+### Question 1 (UGC NET Official PYQ)
+Given two sequences $X = \langle A, B, C, B, D, A, B \rangle$ and $Y = \langle B, D, C, A, B, A \rangle$, what is the length of the Longest Common Subsequence?
+- **A)** 3
+- **B)** 4
+- **C)** 5
+- **D)** 6
+
+**Answer**: **B**
+**Explanation**:
+As computed in Section 3, subsequences such as $\langle B, C, B, A \rangle$ or $\langle B, D, A, B \rangle$ are present in both strings and have length **4**. No common subsequence of length 5 exists.
+
+---
+
+### Question 2 (Bihar STET Higher Secondary Exam)
+Which algorithmic paradigm is best suited to solve the Fractional Knapsack Problem?
+- **A)** Dynamic Programming
+- **B)** Greedy Algorithm
+- **C)** Backtracking
+- **D)** Branch and Bound
+
+**Answer**: **B**
+**Explanation**: Because items can be divided fractionally, greedy selection based strictly on descending value-to-weight ratio ($\frac{v_i}{w_i}$) is mathematically guaranteed to yield the optimal solution in $O(n \log n)$ time.
+
+---
+
+### Question 3 (UGC NET MCM Analysis)
+In Matrix Chain Multiplication with $n$ matrices, how many distinct ways can the chain be parenthesized?
+- **A)** $2^n$
+- **B)** $n!$
+- **C)** $\frac{1}{n}\binom{2n-2}{n-1}$ (Catalan Number $C_{n-1}$)
+- **D)** $\binom{2n}{n}$
+
+**Answer**: **C**
+**Explanation**: The number of parenthesizations is given by the Catalan number $C_{n-1} = \frac{1}{n}\binom{2n-2}{n-1}$, which grows asymptotically as $\Omega\left(\frac{4^n}{n^{3/2}}\right)$.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="In the Matrix Chain Multiplication problem with matrices A1 (10×30), A2 (30×5), and A3 (5×60), what is the minimum number of scalar multiplications required to compute A1·A2·A3?"
+  optionA="4,500 multiplications"
+  optionB="7,500 multiplications"
+  optionC="9,000 multiplications"
+  optionD="18,000 multiplications"
+  correctOption="A"
+  explanation="Two parenthesizations exist: 1. (A1·A2)·A3: Cost = (10 × 30 × 5) + (10 × 5 × 60) = 1500 + 3000 = 4,500 scalar multiplications. 2. A1·(A2·A3): Cost = (30 × 5 × 60) + (10 × 30 × 60) = 9000 + 18000 = 27,000. Minimum scalar multiplications = 4,500."
+  examBadge="UGC NET Dec 2020"
+/>
+
+<Quiz
+  question="What is the time complexity of the Dynamic Programming solution to the 0/1 Knapsack Problem with n items and maximum knapsack capacity W?"
+  optionA="O(n · log n)"
+  optionB="O(n · W) pseudo-polynomial time"
+  optionC="O(2^n) strictly"
+  optionD="O(n^2)"
+  correctOption="B"
+  explanation="The DP table has dimensions (n + 1) × (W + 1) and each cell takes O(1) time to compute: V[i, w] = max(V[i-1, w], v_i + V[i-1, w - w_i]). The complexity is O(n · W). It is called pseudo-polynomial because W depends on the numerical value of capacity, not the input bit length."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="Why does the Greedy choice strategy fail to guarantee an optimal solution for the 0/1 Knapsack problem, yet succeeds for the Fractional Knapsack problem?"
+  optionA="0/1 Knapsack does not exhibit optimal substructure"
+  optionB="Items cannot be fractionally divided in 0/1 Knapsack, causing greedy selection by value-to-weight ratio to leave unfilled knapsack capacity"
+  optionC="Fractional Knapsack has exponential state space"
+  optionD="Greedy works only for graphs"
+  correctOption="B"
+  explanation="In 0/1 Knapsack, taking an item with high density might prevent taking a combination of other items that collectively utilize the remaining capacity more profitably. In Fractional Knapsack, fractional pieces can completely saturate any remaining capacity."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="What is the length of the Longest Common Subsequence (LCS) between strings X = 'ABCBDAB' and Y = 'BDCABA'?"
+  optionA="3"
+  optionB="4"
+  optionC="5"
+  optionD="6"
+  correctOption="B"
+  explanation="Common subsequences include 'BCBA', 'BDAB', 'BCAB'. All have length 4. (For example, 'B-C-B-A': X has B at 2, C at 3, B at 4, A at 6; Y has B at 1, C at 3, B at 5, A at 6). Length of LCS = 4."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="In Huffman Coding for data compression, what data structure is traditionally used to build the optimal prefix tree in O(n log n) time?"
+  optionA="Stack"
+  optionB="Min-Priority Queue (Min-Heap)"
+  optionC="Circular Queue"
+  optionD="Adjacency Matrix"
+  correctOption="B"
+  explanation="Huffman's greedy algorithm repeatedly extracts the two nodes with the lowest frequencies from a Min-Priority Queue, merges them into an internal tree node whose frequency is their sum, and reinserts the node. Extracting and inserting into a Min-Heap takes O(log n), totaling O(n log n)."
+  examBadge="UGC NET Dec 2019"
+/>
+
+
+---
+
+## 6. High-Yield Revision Matrix
+
+| Problem | Optimal Substructure Recurrence | Time Complexity | Space Complexity |
+|---|---|---|---|
+| **0/1 Knapsack** | $V[i, w] = \max(V[i-1, w], v_i + V[i-1, w - w_i])$ | $O(n \cdot W)$ (Pseudo-polynomial) | $O(n \cdot W)$ or $O(W)$ |
+| **LCS** | $c[i, j] = c[i-1, j-1] + 1$ (if match) else $\max(c[i-1, j], c[i, j-1])$ | $O(m \cdot n)$ | $O(m \cdot n)$ or $O(\min(m, n))$ |
+| **MCM** | $m[i, j] = \min_{k} \{m[i, k] + m[k+1, j] + p_{i-1} p_k p_j\}$ | $O(n^3)$ | $O(n^2)$ |
+| **Floyd-Warshall** | $D^{(k)}[i, j] = \min(D^{(k-1)}[i, j], D^{(k-1)}[i, k] + D^{(k-1)}[k, j])$ | $O(V^3)$ | $O(V^2)$ |
+| **Bellman-Ford** | $\text{dist}[v] = \min(\text{dist}[v], \text{dist}[u] + w(u, v))$ across $V-1$ rounds | $O(V \cdot E)$ | $O(V)$ |

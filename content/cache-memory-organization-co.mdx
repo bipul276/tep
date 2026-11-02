@@ -1,0 +1,373 @@
+---
+title: "Cache Memory Organization, Mapping Techniques & AMAT Calculations"
+unit: "Unit 2: Computer Organization & Architecture"
+examType: "Common"
+priority: "High"
+readTime: "40 min"
+slug: "cache-memory-organization-co"
+description: "Comprehensive guide to cache memory architecture, direct-mapped, fully associative, and set-associative address translation, tag directory overhead, write policies, LRU replacement, and multilevel AMAT problems."
+tags: ["Computer Organization", "COA", "Cache Memory", "AMAT", "Direct Mapped", "Set Associative", "LRU", "Memory Hierarchy"]
+---
+
+# Cache Memory Organization, Mapping Techniques & AMAT Calculations
+
+## 1. Principles of Cache Memory & Locality of Reference
+
+Due to the fundamental **processor-memory speed gap** (the "Memory Wall"), CPU execution cycles operate in sub-nanoseconds while main DRAM accesses require tens to hundreds of nanoseconds. Cache memory serves as a small, extremely fast SRAM buffer situated between the processor and main memory.
+
+The entire efficacy of cache memory relies on the empirical principle of **Locality of Reference**:
+
+```text
+                                Locality of Reference
+                                          |
+                    +---------------------+---------------------+
+                    |                                           |
+                    v                                           v
+            Temporal Locality                           Spatial Locality
+   "If data is referenced now,                "If data at location X is referenced,
+    it will likely be referenced again         nearby locations (X+1, X+2)
+    in the near future."                       will likely be referenced soon."
+   (e.g., Loop variables, code loops)         (e.g., Array traversals, sequential code)
+```
+
+- **Temporal Locality** justifies keeping recently accessed items in cache.
+- **Spatial Locality** justifies transferring data in **blocks (cache lines)** rather than single words.
+
+---
+
+## 2. Memory Hierarchy Architecture
+
+```text
+   +--------------------+  Registers (Fastest, Smallest, Highest Cost/bit)
+   |     Registers      |  < 1 ns, ~1 KB
+   +--------------------+
+   |      L1 Cache      |  SRAM (On-chip, Split: Instruction + Data)
+   +--------------------+  ~1-2 ns, 32 KB - 64 KB
+   |      L2 Cache      |  SRAM (On-chip, Unified)
+   +--------------------+  ~3-10 ns, 256 KB - 1 MB
+   |      L3 Cache      |  SRAM (Shared across cores)
+   +--------------------+  ~10-20 ns, 8 MB - 64 MB
+   |    Main Memory     |  DRAM (Off-chip)
+   +--------------------+  ~50-100 ns, 8 GB - 64 GB
+   | Secondary Storage  |  SSD / NVMe / HDD (Non-volatile, Slowest, Lowest Cost/bit)
+   +--------------------+  Microseconds to Milliseconds, Terabytes
+```
+
+---
+
+## 3. Cache Mapping Techniques & Address Translation
+
+Let the computer system have:
+- Physical Address space: $2^m$ bytes $\implies$ Address size $= m$ bits.
+- Cache capacity: $C$ bytes.
+- Cache block (line) size: $B = 2^b$ bytes $\implies$ Block Offset $= b = \log_2 B$ bits.
+- Total number of cache lines (blocks): $N = \frac{C}{B} = 2^k$.
+
+---
+
+### 3.1 Direct-Mapped Cache
+
+In direct mapping, each main memory block maps to **exactly one** unique cache line determined by:
+
+$$\text{Cache Line Number} = (\text{Main Memory Block Number}) \pmod N$$
+
+#### Address Field Partitioning:
+```text
++-----------------------+---------------------+---------------------+
+|      Tag Field        |     Line (Index)    |     Block Offset    |
+|       (m - k - b)     |      k = log₂(N)    |      b = log₂(B)    |
++-----------------------+---------------------+---------------------+
+```
+
+- **Advantages**: Simple hardware, lowest hit time, zero replacement policy required (direct overwrite).
+- **Disadvantages**: Rigid mapping leads to severe **conflict (collision) misses** when two active blocks map to the same line (cache thrashing).
+
+---
+
+### 3.2 Fully Associative Cache
+
+A main memory block can be loaded into **any available line** in the cache.
+
+#### Address Field Partitioning:
+```text
++---------------------------------------------+---------------------+
+|                  Tag Field                  |     Block Offset    |
+|                   (m - b)                   |      b = log₂(B)    |
++---------------------------------------------+---------------------+
+```
+
+- **Index Field**: $0$ bits (no line field).
+- **Hardware Requirement**: Requires $N$ hardware comparators to search all $N$ tags simultaneously in parallel.
+- **Advantages**: Conflict misses are completely eliminated.
+- **Disadvantages**: Expensive hardware circuitry, high power consumption, slower lookup for large caches.
+
+---
+
+### 3.3 $k$-Way Set-Associative Cache (Industry Standard)
+
+The cache lines are partitioned into $S$ sets, where each set contains $k$ cache lines ($k$-way associative).
+- Number of Sets: $S = \frac{N}{k} = \frac{C}{k \cdot B} = 2^s$.
+- Set Index bits: $s = \log_2 S$.
+- A main memory block maps to a specific set, but can reside in **any of the $k$ lines** within that set:
+$$\text{Set Number} = (\text{Block Number}) \pmod S$$
+
+#### Address Field Partitioning:
+```text
++-----------------------+---------------------+---------------------+
+|      Tag Field        |     Set Index       |     Block Offset    |
+|       (m - s - b)     |      s = log₂(S)    |      b = log₂(B)    |
++-----------------------+---------------------+---------------------+
+```
+
+- Requires exactly $k$ parallel comparators.
+- Striking balance: Provides near-fully-associative hit rates with near-direct-mapped speed and hardware simplicity.
+
+---
+
+### 3.4 Summary Table of Mapping Bit Calculations
+
+| Parameter | Direct Mapped | Fully Associative | $k$-Way Set Associative |
+|---|:---:|:---:|:---:|
+| **Block Offset Bits ($b$)** | $\log_2(B)$ | $\log_2(B)$ | $\log_2(B)$ |
+| **Index Bits** | $k = \log_2(N) = \log_2(C/B)$ | $0$ | $s = \log_2(S) = \log_2\left(\frac{C}{k \cdot B}\right)$ |
+| **Tag Bits** | $m - k - b$ | $m - b$ | $m - s - b$ |
+| **Comparators Needed** | 1 | $N$ | $k$ |
+
+---
+
+## 4. Cache Tag Directory Overhead & Memory Calculation
+
+The actual silicon footprint of a cache includes the **Data Memory** (which stores data words) and the **Tag Directory Memory** (which stores metadata tags and control bits).
+
+For each cache line, the tag directory stores:
+1. **Tag bits**: Determined by address partitioning.
+2. **Valid bit (1 bit)**: Indicates whether the line contains valid data.
+3. **Dirty (Modified) bit (1 bit)**: Required if Write-Back policy is used.
+4. **Replacement bits**: E.g., $\lceil\log_2 k\rceil$ bits for LRU in a $k$-way set.
+
+$$\text{Line Metadata Bits} = \text{Tag Bits} + \text{Valid Bit} + \text{Dirty Bit} + \text{LRU Bits}$$
+
+$$\text{Total Cache Memory} = (\text{Number of Lines}) \times (\text{Block Size in Bits} + \text{Metadata Bits})$$
+
+---
+
+### 4.1 Comprehensive Worked Numerical: Tag Directory Size
+
+**Problem**: A computer system uses a **32-bit byte-addressable** physical address. It has a **64 KB 4-way set-associative cache** with **32-byte block size**. The cache uses a write-back policy with LRU replacement. Compute:
+1. Number of bits in Tag, Set, and Offset fields.
+2. The total size of the Tag Directory memory in bits.
+
+**Step-by-Step Solution**:
+1. **Find Offset bits ($b$)**:
+$$B = 32\text{ bytes} = 2^5 \implies b = 5 \text{ bits}$$
+2. **Find Total Number of Lines ($N$)**:
+$$N = \frac{\text{Cache Size}}{\text{Block Size}} = \frac{64 \text{ KB}}{32 \text{ B}} = \frac{65536}{32} = 2048 = 2^{11} \text{ lines}$$
+3. **Find Number of Sets ($S$)**:
+$$k = 4 \implies S = \frac{N}{k} = \frac{2048}{4} = 512 = 2^9 \text{ sets}$$
+   Set Index bits: $s = \log_2 512 = 9 \text{ bits}$.
+4. **Find Tag bits**:
+$$\text{Tag} = m - s - b = 32 - 9 - 5 = 18 \text{ bits}$$
+5. **Metadata per Line**:
+   - Tag: 18 bits
+   - Valid bit: 1 bit
+   - Dirty bit (Write-Back): 1 bit
+   - LRU bits for 4 lines per set: $\log_2(4) = 2$ bits (or $\log_2(4!) = 5$ bits for exact state; standard exam convention uses $\lceil\log_2 k\rceil = 2$ bits).
+   - Total bits per line directory $= 18 + 1 + 1 + 2 = 22 \text{ bits}$.
+6. **Total Tag Directory Size**:
+$$2048 \text{ lines} \times 22 \text{ bits/line} = 45,056 \text{ bits} = 5.632 \text{ KB}$$
+
+---
+
+## 5. Average Memory Access Time (AMAT)
+
+AMAT measures the effective access time perceived by the processor core.
+
+### 5.1 Single-Level Cache AMAT Formulas
+
+$$\text{AMAT} = T_{\text{cache}} + (1 - h) \times T_{\text{miss\_penalty}}$$
+
+or, if cache lookup and main memory access occur in parallel:
+$$\text{AMAT} = h \times T_{\text{cache}} + (1 - h) \times T_{\text{main}}$$
+
+where:
+- $h$: Hit rate ($0 \le h \le 1$).
+- $(1 - h)$: Miss rate.
+- $T_{\text{cache}}$: Hit latency of cache.
+- $T_{\text{miss\_penalty}}$: Latency to service a miss from lower memory.
+
+---
+
+### 5.2 Multilevel Cache AMAT Architecture
+
+In modern architectures with L1 and L2 caches:
+
+$$\text{AMAT} = T_{L1} + (1 - H_1) \times \left[ T_{L2} + (1 - H_2) \times T_{\text{main}} \right]$$
+
+where:
+- $H_1$: Local hit rate of L1 cache.
+- $H_2$: Local hit rate of L2 cache (hits in L2 out of requests that missed L1).
+- **Global Miss Rate of L2**:
+$$\text{Global Miss Rate}_{L2} = (1 - H_1) \times (1 - H_2)$$
+
+---
+
+### 5.3 Worked Numerical: Multilevel AMAT Calculation
+
+**Problem (UGC NET Style)**:
+A processor has:
+- L1 cache with hit latency $T_{L1} = 1 \text{ ns}$, hit rate $H_1 = 0.90$.
+- L2 cache with hit latency $T_{L2} = 10 \text{ ns}$, local hit rate $H_2 = 0.80$.
+- Main memory access latency $T_{\text{main}} = 100 \text{ ns}$.
+Calculate the overall AMAT of the memory system.
+
+**Solution**:
+$$
+\begin{aligned}
+\text{AMAT} &= T_{L1} + (1 - H_1) \times [T_{L2} + (1 - H_2) \times T_{\text{main}}] \\
+&= 1\text{ ns} + (1 - 0.90) \times [10\text{ ns} + (1 - 0.80) \times 100\text{ ns}] \\
+&= 1 + 0.10 \times [10 + (0.20 \times 100)] \\
+&= 1 + 0.10 \times [10 + 20] \\
+&= 1 + 0.10 \times 30 \\
+&= 1 + 3 = \mathbf{4 \text{ ns}}
+\end{aligned}
+$$
+
+---
+
+## 6. Cache Write Policies
+
+When the CPU executes a Store instruction ($W(A)$), how does the system maintain data consistency between cache and main memory?
+
+```text
+                                Cache Write Hit Policies
+                                          |
+                    +---------------------+---------------------+
+                    |                                           |
+                    v                                           v
+             Write-Through                                 Write-Back
+      (Update Cache AND Main Memory)               (Update Cache ONLY; set Dirty Bit)
+      - Consistent memory state                    - Fast burst performance
+      - High memory bus bandwidth                  - Write to RAM only when evicted
+      - Usually paired with Write Buffers          - Complex coherence management
+```
+
+### 6.1 Policies on Write Miss
+- **Write Allocate (Fetch-on-Write)**: Block containing the target address is loaded from main memory into cache, followed by the write update.
+- **No-Write Allocate (Write-Around)**: Block is NOT loaded into cache; data is written directly to main memory.
+
+> **Standard Design Pairings**:
+> 1. **Write-Back + Write Allocate**: Maximizes write speed in high-performance processors.
+> 2. **Write-Through + No-Write Allocate**: Simplifies hardware and minimizes cache pollution.
+
+---
+
+## 7. Cache Replacement Policies & Miss Classification
+
+### 7.1 The Four C's of Cache Misses
+1. **Compulsory (Cold Start) Misses**: First-time reference to a block. Cannot be avoided by increasing cache size (only by increasing block size or hardware prefetching).
+2. **Capacity Misses**: Cache cannot contain all blocks needed during program execution. Reduced by increasing overall cache capacity.
+3. **Conflict (Collision) Misses**: Multiple blocks compete for the same set in a direct-mapped or set-associative cache. Completely non-existent in fully associative caches.
+4. **Coherence Misses**: In multiprocessor systems, invalidation of a cache block caused by another core writing to the same memory line.
+
+---
+
+## 8. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET 2020 — Address Bit Partitioning)
+Consider a 32-bit microprocessor with a 16 KB direct-mapped cache. If the block size is 16 bytes, what are the number of bits in the Tag, Index, and Block Offset fields?
+
+**Solution**:
+1. Total memory address $= 32$ bits.
+2. Block size $B = 16\text{ bytes} = 2^4 \implies \text{Offset } b = 4 \text{ bits}$.
+3. Number of cache lines:
+$$N = \frac{16 \text{ KB}}{16 \text{ B}} = \frac{16384}{16} = 1024 = 2^{10} \implies \text{Index } k = 10 \text{ bits}$$
+4. Tag bits:
+$$\text{Tag} = 32 - 10 - 4 = \mathbf{18 \text{ bits}}$$
+**Answer**: Tag = 18 bits, Index = 10 bits, Offset = 4 bits.
+
+### Question 2 (UGC NET 2019 — Direct Mapped Conflict Misses)
+A computer has a direct-mapped cache of 8 blocks (numbered 0 to 7). If the program accesses memory blocks in the sequence:
+$$0, 4, 8, 0, 4, 8, 0, 4, 8$$
+how many cache misses occur?
+
+**Solution**:
+- Block mapping formula: $\text{Line} = \text{Block} \pmod 8$.
+- Block 0: $0 \pmod 8 = 0$ (Maps to Line 0).
+- Block 4: $4 \pmod 8 = 4$ (Maps to Line 4).
+- Block 8: $8 \pmod 8 = 0$ (Maps to Line 0 — Conflicts with Block 0!).
+
+Trace of accesses:
+1. Block 0: Miss (Loaded into Line 0)
+2. Block 4: Miss (Loaded into Line 4)
+3. Block 8: Miss (Evicts Block 0 from Line 0)
+4. Block 0: Miss (Evicts Block 8 from Line 0)
+5. Block 4: **HIT** (Block 4 is still safely in Line 4!)
+6. Block 8: Miss (Evicts Block 0 from Line 0)
+7. Block 0: Miss (Evicts Block 8 from Line 0)
+8. Block 4: **HIT** (Still in Line 4)
+9. Block 8: Miss (Evicts Block 0 from Line 0)
+
+Total accesses $= 9$. Hits $= 2$ (at step 5 and step 8).
+Total misses $= 9 - 2 = \mathbf{7 \text{ misses}}$.
+**Answer**: 7 misses.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="A 32-bit byte-addressable CPU has a 64 KB 4-way set-associative cache with 32-byte cache lines. How many bits are in the Tag, Set Index, and Block Offset fields respectively?"
+  optionA="Tag = 18, Index = 9, Offset = 5"
+  optionB="Tag = 17, Index = 10, Offset = 5"
+  optionC="Tag = 16, Index = 11, Offset = 5"
+  optionD="Tag = 19, Index = 8, Offset = 5"
+  correctOption="A"
+  explanation="Line size = 32 bytes ⟹ Offset = log2(32) = 5 bits. Total cache lines = 64 KB / 32 B = 2048 lines. Since it is 4-way set-associative, Number of Sets = 2048 / 4 = 512 sets. Set Index = log2(512) = 9 bits. Tag bits = 32 - (9 + 5) = 32 - 14 = 18 bits."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="A system has a cache access time of 2 ns and main memory access time of 50 ns. If the target average memory access time (AMAT) is 4.4 ns in a hierarchical cache, what minimum cache hit rate is required?"
+  optionA="90%"
+  optionB="92%"
+  optionC="95%"
+  optionD="96%"
+  correctOption="C"
+  explanation="Hierarchical AMAT = t_c + (1 - h) · t_m ⟹ 4.4 = 2 + (1 - h) · 50 ⟹ 2.4 = 50(1 - h) ⟹ 1 - h = 2.4 / 50 = 0.048 ⟹ h = 1 - 0.048 = 0.952 or 95.2% minimum hit rate."
+  examBadge="UGC NET Dec 2022"
+/>
+
+<Quiz
+  question="Which cache write policy requires a 'Dirty Bit' (or Modified bit) in each cache line tag directory?"
+  optionA="Write-Through with Write-Allocate"
+  optionB="Write-Back (Copy-Back)"
+  optionC="Write-Around without allocation"
+  optionD="Direct-Mapped Read Policy"
+  correctOption="B"
+  explanation="In Write-Back cache, writes are performed ONLY to the cache line and main memory is not updated immediately. The Dirty Bit is set to 1 to flag that the cache line has been modified, ensuring it is written back to main memory only upon eviction."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="In a direct-mapped cache, multiple memory blocks competing for the exact same cache slot results in which type of cache miss?"
+  optionA="Compulsory (Cold) Miss"
+  optionB="Conflict (Collision) Miss"
+  optionC="Capacity Miss"
+  optionD="Coherence Miss"
+  correctOption="B"
+  explanation="Conflict misses (collision misses) occur when different memory blocks map to the same set/slot in direct-mapped or set-associative caches even though the cache is not fully occupied. Fully associative caches eliminate conflict misses entirely."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="A 16 KB direct-mapped cache has 16-byte blocks with a 32-bit physical address. What is the total size of the Tag directory memory required (excluding status bits)?"
+  optionA="18,432 bits"
+  optionB="18,000 bits"
+  optionC="16,384 bits"
+  optionD="20,480 bits"
+  correctOption="A"
+  explanation="Block size = 16 B ⟹ Offset = 4 bits. Lines = 16 KB / 16 B = 1024 lines ⟹ Index = log2(1024) = 10 bits. Tag = 32 - (10 + 4) = 18 bits. Total tag directory memory = 1024 lines × 18 bits/tag = 18,432 bits."
+  examBadge="UGC NET Dec 2020"
+/>
+

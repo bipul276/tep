@@ -1,0 +1,602 @@
+---
+title: "TCP/IP, IPv4 Subnetting, Header Analysis & Congestion Control"
+unit: "Unit 7: Computer Networks"
+examType: "Common"
+priority: "High"
+readTime: "45 min"
+slug: "tcp-ip-subnetting-cn"
+description: "Exhaustive guide to IPv4 addressing, FLSM/VLSM subnetting, supernetting, IPv4 fragmentation calculations, TCP 3-way handshake, flow control, and TCP Tahoe/Reno congestion control mechanisms with solved PYQs."
+tags: ["Computer Networks", "IPv4", "Subnetting", "VLSM", "CIDR", "TCP", "Congestion Control", "Slow Start"]
+---
+
+# TCP/IP, IPv4 Subnetting, Header Analysis & Congestion Control
+
+## 1. Introduction to IPv4 Addressing and Architecture
+
+An Internet Protocol Version 4 (IPv4) address is a **32-bit binary identifier** globally uniquely assigned to an interface of a host or router on an IP network. To make addresses human-readable, the 32 bits are segmented into **four 8-bit octets**, separated by periods, and expressed in decimal notation (e.g., $192.168.1.1$). This is known as **dotted-decimal notation**.
+
+$$\text{IPv4 Address} = \underbrace{b_{31} \dots b_{24}}_{\text{Octet 1}} . \underbrace{b_{23} \dots b_{16}}_{\text{Octet 2}} . \underbrace{b_{15} \dots b_{8}}_{\text{Octet 3}} . \underbrace{b_{7} \dots b_{0}}_{\text{Octet 4}}$$
+
+Every IPv4 address is conceptually partitioned into two hierarchical components:
+1. **Network Identifier ($\text{NetID}$)**: Identifies the specific physical or logical network segment to which the device belongs. All devices on the same broadcast domain share the identical $\text{NetID}$.
+2. **Host Identifier ($\text{HostID}$)**: Identifies the specific network interface on that network.
+
+---
+
+## 2. Classful Addressing Architecture & Boundaries
+
+Historically defined in RFC 791 (1981), classful addressing divided the $2^{32} = 4,294,967,296$ theoretical IPv4 addresses into five distinct classes:
+
+```
+Class A: 0------- -------- -------- -------- (Prefix 0,    1 - 127)
+Class B: 10------ -------- -------- -------- (Prefix 10,  128 - 191)
+Class C: 110----- -------- -------- -------- (Prefix 110, 192 - 223)
+Class D: 1110---- -------- -------- -------- (Prefix 1110, 224 - 239)
+Class E: 1111---- -------- -------- -------- (Prefix 1111, 240 - 255)
+```
+
+### 2.1 Class Characteristics and Capacity Matrix
+
+| Class | First Octet (Binary) | First Octet Range | Network Bits ($n$) | Host Bits ($h$) | Default Subnet Mask | Total Networks | Usable Hosts per Network | Primary Use Case |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---|
+| **A** | `0xxxxxxx` | $1 - 126^*$ | 8 | 24 | `255.0.0.0` (/8) | $2^7 - 2 = 126$ | $2^{24} - 2 = 16,777,214$ | Massive organizations / ISPs |
+| **B** | `10xxxxxx` | $128 - 191$ | 16 | 16 | `255.255.0.0` (/16) | $2^{14} = 16,384$ | $2^{16} - 2 = 65,534$ | Medium-to-large universities/enterprises |
+| **C** | `110xxxxx` | $192 - 223$ | 24 | 8 | `255.255.255.0` (/24) | $2^{21} = 2,097,152$ | $2^8 - 2 = 254$ | Small local businesses / LANs |
+| **D** | `1110xxxx` | $224 - 239$ | N/A | N/A | None | N/A | N/A | Multicast Groups (RFC 1112) |
+| **E** | `1111xxxx` | $240 - 255$ | N/A | N/A | None | N/A | N/A | Experimental / Research Reserved |
+
+$^*$*Note*: Network `127.0.0.0/8` is reserved for host loopback testing (inter-process communication on localhost). Network `0.0.0.0/8` denotes "this host on this network".
+
+### 2.2 Why Subtract 2 for Usable Hosts?
+For any network with $h$ host bits:
+- **All host bits set to 0** ($00\dots0_2$): Reserved as the **Network Address (Network ID)**. Used by routing tables to represent the entire subnet.
+- **All host bits set to 1** ($11\dots1_2$): Reserved as the **Directed Broadcast Address (DBA)**. Packets sent to this address are delivered to every host on that specific subnet.
+- **Usable Host Addresses**:
+$$\text{Usable Hosts} = 2^h - 2$$
+
+---
+
+## 3. Classless Inter-Domain Routing (CIDR)
+
+Introduced in 1993 (RFC 1519) to alleviate rapid IPv4 address exhaustion and explosive routing table growth, **CIDR** abolished rigid class boundaries.
+
+Under CIDR, an address is denoted using **slash notation**:
+
+$$\text{IP Address / Prefix Length} \quad \implies \quad 192.168.10.0/26$$
+
+where:
+- The prefix length $n \in [0, 32]$ specifies the number of contiguous binary $1\text{s}$ in the subnet mask.
+- The remaining $h = 32 - n$ bits represent host addresses.
+
+### 3.1 Subnet Mask Conversion Table (Key for Rapid Calculation)
+
+| CIDR Prefix | Subnet Mask | Last Octet (Binary) | Block Size ($2^h$) | Usable Hosts ($2^h - 2$) |
+|:---:|:---:|:---:|:---:|:---:|
+| `/24` | `255.255.255.0` | `00000000` | 256 | 254 |
+| `/25` | `255.255.255.128` | `10000000` | 128 | 126 |
+| `/26` | `255.255.255.192` | `11000000` | 64 | 62 |
+| `/27` | `255.255.255.224` | `11100000` | 32 | 30 |
+| `/28` | `255.255.255.240` | `11110000` | 16 | 14 |
+| `/29` | `255.255.255.248` | `11111000` | 8 | 6 |
+| `/30` | `255.255.255.252` | `11111100` | 4 | 2 (Point-to-Point links) |
+| `/31` | `255.255.255.254` | `11111110` | 2 | 2 (RFC 3021, no broadcast) |
+| `/32` | `255.255.255.255` | `11111111` | 1 | 1 (Host Route) |
+
+---
+
+## 4. Subnetting Mathematics: FLSM (Fixed Length Subnet Masking)
+
+Subnetting is the process of borrowing $s$ bits from the host portion of an IP address to create internal logical subdivisions called **subnets**.
+
+```
+Original Class C: [       NetID (24 bits)       ] [   HostID (8 bits)   ]
+Subnetted (/26):  [       NetID (24 bits)       ] [ s (2) ] [ h (6) ]
+                                                  SubnetID   HostID
+```
+
+### 4.1 Master Subnetting Formulas
+
+1. **Number of Subnets Created**:
+$$\text{Subnets} = 2^s$$
+   *(where $s$ is the number of borrowed bits from the host field)*.
+
+2. **Number of Total Addresses per Subnet (Block Size)**:
+$$\text{Block Size} = 2^{h_{\text{new}}} = 2^{32 - n}$$
+
+3. **Number of Usable Hosts per Subnet**:
+$$\text{Usable Hosts} = 2^{h_{\text{new}}} - 2$$
+
+4. **New Subnet Mask Prefix**:
+$$n_{\text{new}} = n_{\text{old}} + s$$
+
+### 4.2 Comprehensive Worked Example: FLSM
+
+**Problem**: A university is assigned the network block `200.50.10.0/24`. The administrator needs to divide this network into **4 equal departments**. 
+
+**Step 1: Calculate borrowed bits ($s$)**:
+$$2^s \ge 4 \implies s = 2 \text{ bits}$$
+
+**Step 2: Determine new prefix and subnet mask**:
+- New prefix: $24 + 2 = /26$.
+- New subnet mask in binary: `11111111.11111111.11111111.11000000`
+- Dotted decimal: `255.255.255.192`.
+
+**Step 3: Determine remaining host bits ($h$) and block size**:
+- Host bits: $h = 32 - 26 = 6$.
+- Block size (magic number): $2^6 = 64$.
+- Usable hosts per department: $2^6 - 2 = 62$ hosts.
+
+**Step 4: Construct the Subnet Allocation Table**:
+
+| Subnet | Subnet ID | Host Range (First — Last Usable) | Directed Broadcast Address |
+|:---:|:---:|:---:|:---:|
+| Dept 1 | `200.50.10.0/26` | `200.50.10.1` — `200.50.10.62` | `200.50.10.63` |
+| Dept 2 | `200.50.10.64/26` | `200.50.10.65` — `200.50.10.126` | `200.50.10.127` |
+| Dept 3 | `200.50.10.128/26`| `200.50.10.129` — `200.50.10.190` | `200.50.10.191` |
+| Dept 4 | `200.50.10.192/26`| `200.50.10.193` — `200.50.10.254` | `200.50.10.255` |
+
+---
+
+## 5. Variable Length Subnet Masking (VLSM)
+
+FLSM wastes addresses when departments have drastically varying host requirements. **VLSM** allows subnets to use different mask lengths according to their individual host needs.
+
+### 5.1 Golden Rule of VLSM Allocation
+> **Always sort the host requirements in descending order (Largest $\to$ Smallest) before allocating blocks.** This guarantees alignment along natural binary power-of-2 boundaries and prevents address overlap.
+
+### 5.2 Worked VLSM Design Problem
+
+**Scenario**: You have network `172.16.0.0/24` (256 addresses) and must support 4 subnets:
+- **Sales**: 100 hosts
+- **Engineering**: 50 hosts
+- **Finance**: 25 hosts
+- **Router WAN Link**: 2 hosts
+
+#### Step-by-Step Allocation:
+
+**1. Subnet A: Sales (100 hosts)**
+- Requirement: $2^h - 2 \ge 100 \implies h = 7$ ($2^7 - 2 = 126 \ge 100$).
+- Mask prefix: $32 - 7 = /25$ (`255.255.255.128`).
+- Block size: $2^7 = 128$.
+- **Subnet ID**: `172.16.0.0/25`
+- Usable range: `172.16.0.1` — `172.16.0.126`
+- Broadcast: `172.16.0.127`
+
+**2. Subnet B: Engineering (50 hosts)**
+- Requirement: $2^h - 2 \ge 50 \implies h = 6$ ($2^6 - 2 = 62 \ge 50$).
+- Mask prefix: $32 - 6 = /26$ (`255.255.255.192`).
+- Block size: $2^6 = 64$.
+- Next available address: `172.16.0.128`.
+- **Subnet ID**: `172.16.0.128/26`
+- Usable range: `172.16.0.129` — `172.16.0.190`
+- Broadcast: `172.16.0.191`
+
+**3. Subnet C: Finance (25 hosts)**
+- Requirement: $2^h - 2 \ge 25 \implies h = 5$ ($2^5 - 2 = 30 \ge 25$).
+- Mask prefix: $32 - 5 = /27$ (`255.255.255.224`).
+- Block size: $2^5 = 32$.
+- Next available address: `172.16.0.192`.
+- **Subnet ID**: `172.16.0.192/27`
+- Usable range: `172.16.0.193` — `172.16.0.222`
+- Broadcast: `172.16.0.223`
+
+**4. Subnet D: Router WAN Link (2 hosts)**
+- Requirement: $2^h - 2 \ge 2 \implies h = 2$ ($2^2 - 2 = 2$).
+- Mask prefix: $32 - 2 = /30$ (`255.255.255.252`).
+- Block size: $2^2 = 4$.
+- Next available address: `172.16.0.224`.
+- **Subnet ID**: `172.16.0.224/30`
+- Usable range: `172.16.0.225` — `172.16.0.226`
+- Broadcast: `172.16.0.227`
+
+Unused addresses remaining for future growth: `172.16.0.228` through `172.16.0.255` (28 addresses).
+
+---
+
+## 6. Supernetting (Route Aggregation)
+
+Supernetting combines multiple contiguous smaller networks into a single larger routing entry with a shorter prefix length.
+
+### 6.1 Four Mandatory Rules for Valid Supernetting
+1. **Contiguous**: All networks must be strictly sequential with no gaps.
+2. **Equal Size**: All individual network blocks must have the exact same block size (same prefix length).
+3. **Power of Two**: The total number of networks combined ($N$) must be a power of $2$ ($N = 2^k$, where $k$ is the number of bits collapsed).
+4. **Boundary Divisibility**: The first IP address of the first block must be evenly divisible by the total combined block size:
+$$\text{Starting Address Decimal} \pmod{\text{Total Aggregated Size}} = 0$$
+
+### 6.2 Worked Supernetting Example
+Combine the following four Class C networks:
+- `192.168.16.0/24`
+- `192.168.17.0/24`
+- `192.168.18.0/24`
+- `192.168.19.0/24`
+
+Look at the third octet in binary:
+```
+16 = 0 0 0 1 0 0 0 0
+17 = 0 0 0 1 0 0 0 1
+18 = 0 0 0 1 0 0 1 0
+19 = 0 0 0 1 0 0 1 1
+     ^^^^^^ -> First 6 bits are identical!
+```
+- First 6 bits match across all 4 subnets.
+- New third octet prefix length $= 6$ bits.
+- Total new prefix length $= 8 + 8 + 6 = /22$.
+- **Aggregated Supernet Route**: `192.168.16.0/22`
+- Subnet mask: `255.255.252.0`.
+
+---
+
+## 7. IPv4 Datagram Header Architecture
+
+The standard IPv4 header contains a minimum of 20 bytes and up to 60 bytes with optional parameters.
+
+```
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Version|  IHL  |Type of Service|          Total Length         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Identification        |Flags|      Fragment Offset    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Time to Live |    Protocol   |        Header Checksum        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       Source IP Address                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Destination IP Address                     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Options                    |    Padding    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+### 7.1 Field-by-Field Breakdown
+
+1. **Version (4 bits)**: Specifies IP version (`0100` = IPv4, `0110` = IPv6).
+2. **IHL (Internet Header Length, 4 bits)**: Specifies header length in **4-byte (32-bit) words**.
+   - Minimum value: $5 \implies 5 \times 4 = 20\text{ bytes}$ (no options).
+   - Maximum value: $15 \implies 15 \times 4 = 60\text{ bytes}$.
+3. **Type of Service / DSCP + ECN (8 bits)**: Quality of service flags and Explicit Congestion Notification.
+4. **Total Length (16 bits)**: Total datagram size in bytes (Header + Payload).
+   - Maximum size: $2^{16} - 1 = 65,535\text{ bytes}$.
+   - Minimum size: $20\text{ bytes}$ (empty header).
+   - Payload length: $\text{Payload} = \text{Total Length} - (\text{IHL} \times 4)$.
+5. **Identification (16 bits)**: Unique identifier assigned by source to group fragments belonging to the same original datagram.
+6. **Flags (3 bits)**:
+   - Bit 0: Reserved (must be 0).
+   - Bit 1 (**DF - Don't Fragment**): If $1$, intermediate routers must drop the packet if it exceeds MTU and return an ICMP "Fragmentation Needed" error.
+   - Bit 2 (**MF - More Fragments**): If $1$, more fragments follow. If $0$, this is the last fragment (or the datagram was never fragmented).
+7. **Fragment Offset (13 bits)**: Indicates the relative position of the fragment's payload in the original unfragmented payload, **measured in units of 8-byte blocks**.
+$$\text{Byte Offset} = \text{Fragment Offset Value} \times 8$$
+8. **Time to Live (TTL, 8 bits)**: Hop counter decremented by 1 at every router. When $\text{TTL} = 0$, packet is discarded and an ICMP "Time Exceeded" message is returned (preventing routing loops).
+9. **Protocol (8 bits)**: Demultiplexes payload to the correct transport layer protocol:
+   - $1$: ICMP
+   - $2$: IGMP
+   - $6$: **TCP**
+   - $17$: **UDP**
+10. **Header Checksum (16 bits)**: Covers **only the header** (not data). Recomputed at every router because TTL decrements.
+
+---
+
+### 7.2 IPv4 Fragmentation Worked Numerical (High-Frequency Exam Trap)
+
+**Problem**: An IPv4 datagram of **4000 bytes** (20 bytes IP header + 3980 bytes data) arrives at a router whose outgoing interface has an **MTU (Maximum Transmission Unit) of 1500 bytes**. Show all fragments with their Identification, Total Length, Data Length, DF, MF, and Fragment Offset.
+
+**Rule**: MTU includes the 20-byte IP header.
+- Max payload per fragment $\le 1500 - 20 = 1480$ bytes.
+- 1480 must be divisible by 8: $\frac{1480}{8} = 185$ (Valid!).
+
+**Fragmentation Execution**:
+- Total Data to transfer: 3980 bytes (bytes 0 through 3979).
+
+| Fragment | Total Length | Header | Data Payload | Data Byte Range | MF Flag | Fragment Offset Value |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Frag 1** | 1500 B | 20 B | 1480 B | $0 - 1479$ | 1 | $\frac{0}{8} = 0$ |
+| **Frag 2** | 1500 B | 20 B | 1480 B | $1480 - 2959$ | 1 | $\frac{1480}{8} = 185$ |
+| **Frag 3** | 1040 B | 20 B | 1020 B | $2960 - 3979$ | 0 | $\frac{2960}{8} = 370$ |
+
+Check: $1480 + 1480 + 1020 = 3980$ bytes of data. Last fragment has $MF = 0$.
+
+---
+
+## 8. TCP Architecture and Header Layout
+
+TCP (RFC 793) is a connection-oriented, reliable, byte-stream transport protocol.
+
+```
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|          Source Port          |       Destination Port        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        Sequence Number                        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Acknowledgment Number                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Data |           |U|A|P|R|S|F|                               |
+| Offset| Reserved  |R|C|S|S|Y|I|            Window Size        |
+|       |           |G|K|H|T|N|N|                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|           Checksum            |         Urgent Pointer        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Options                    |    Padding    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+### 8.1 Key Header Fields
+- **Sequence Number (32 bits)**: Byte-stream sequence number of the first data byte in this segment.
+- **Acknowledgment Number (32 bits)**: Cumulative acknowledgment. Specifies the **next expected byte** from the sender ($N+1$). Valid only if ACK flag $= 1$.
+- **Data Offset / Header Length (4 bits)**: TCP header length in 4-byte words (Range: 20 to 60 bytes).
+- **The 6 Core Control Flags**:
+  - `URG`: Urgent pointer field is valid.
+  - `ACK`: Acknowledgment field is valid (always 1 after handshake).
+  - `PSH`: Push data immediately to application layer without waiting for buffer to fill.
+  - `RST`: Abort and reset the connection.
+  - `SYN`: Synchronize sequence numbers; initiates connection.
+  - `FIN`: Sender has finished sending data; initiates teardown.
+- **Receive Window Size (`rwnd`, 16 bits)**: Flow control credit; specifies how many bytes the receiver's buffer can currently accept.
+
+---
+
+## 9. TCP Connection Management
+
+### 9.1 Three-Way Handshake (Connection Establishment)
+
+```text
+Client (Active Open)                               Server (Passive Open)
+       |                                                    |
+       |  Segment 1: SYN=1, Seq=x                          |
+       |--------------------------------------------------->| [State: SYN-RCVD]
+[State: SYN-SENT]                                           |
+       |  Segment 2: SYN=1, ACK=1, Seq=y, Ack=x+1          |
+       |<---------------------------------------------------|
+[State: ESTABLISHED]                                        |
+       |  Segment 3: ACK=1, Seq=x+1, Ack=y+1               |
+       |--------------------------------------------------->|
+       |                                                    | [State: ESTABLISHED]
+```
+
+**Key Exam Points**:
+- SYN consumes **1 sequence number** even though it carries 0 bytes of application payload.
+- ACK in segment 3 does **not** consume a sequence number if it carries no payload.
+- **SYN Flood Attack**: Malicious client sends thousands of SYN requests with spoofed IPs, filling the server's backlog queue. **Countermeasure: SYN Cookies**.
+
+### 9.2 Four-Way Handshake (Connection Teardown)
+
+```text
+Client                                             Server
+  |               FIN=1, Seq=u                       |
+  |------------------------------------------------->| [Close-Wait]
+  |               ACK=1, Ack=u+1                     |
+  |<-------------------------------------------------|
+  |                                                  |
+  |               FIN=1, Seq=v, Ack=u+1              |
+  |<-------------------------------------------------| [Last-Ack]
+  |               ACK=1, Ack=v+1                     |
+  |------------------------------------------------->| [Closed]
+[TIME-WAIT] (Waits 2MSL)
+[CLOSED]
+```
+
+**Why is `TIME-WAIT` needed (2MSL = 2 × Maximum Segment Lifetime)?**
+1. To ensure the final ACK arrives safely at the server. If the final ACK is lost, the server retransmits FIN.
+2. To allow lingering, duplicate packets from the old connection to expire in the network so they do not corrupt a new connection using the same socket pair `(IP, Port)`.
+
+---
+
+## 10. TCP Flow Control vs. Congestion Control
+
+- **Flow Control (End-to-End)**: Prevents a fast sender from overwhelming a slow **receiver**. Controlled by the receiver's advertised window: `rwnd`.
+- **Congestion Control (Global)**: Prevents a fast sender from overwhelming the intermediate **network routers/switches**. Controlled by the sender's congestion window: `cwnd`.
+
+$$\text{Effective Window Size} = \min(\text{cwnd}, \text{rwnd})$$
+
+---
+
+## 11. TCP Congestion Control Mechanisms (Tahoe vs. Reno)
+
+TCP maintains a state variable $ssthresh$ (**slow start threshold**), initialized typically to a large value (e.g., 64 KB).
+
+```
+Phase 1: Slow Start             -> cwnd < ssthresh
+Phase 2: Congestion Avoidance    -> cwnd >= ssthresh
+```
+
+### 11.1 The Operational Phases
+
+1. **Slow Start**:
+   - Initial $cwnd = 1 \text{ MSS}$ (Maximum Segment Size).
+   - For every ACK received: $cwnd = cwnd + 1 \text{ MSS}$.
+   - Over one RTT, $cwnd$ **doubles** ($1 \to 2 \to 4 \to 8 \dots$) — Exponential Growth.
+
+2. **Congestion Avoidance**:
+   - Triggered when $cwnd \ge ssthresh$.
+   - $cwnd$ increases by **1 MSS per RTT** (Additive Increase: $+1$ per round of ACKs).
+
+3. **Loss Events & Recovery**:
+
+| Loss Trigger | TCP Tahoe (Legacy) | TCP Reno (Modern Standard) |
+|---|---|---|
+| **Timeout (Severe)** | $ssthresh = \frac{cwnd}{2}$, $cwnd = 1\text{ MSS}$, enter Slow Start | $ssthresh = \frac{cwnd}{2}$, $cwnd = 1\text{ MSS}$, enter Slow Start |
+| **3 Duplicate ACKs (Mild)** | $ssthresh = \frac{cwnd}{2}$, $cwnd = 1\text{ MSS}$, enter Slow Start | **Fast Recovery**: $ssthresh = \frac{cwnd}{2}$, $cwnd = ssthresh$, enter Congestion Avoidance |
+
+---
+
+### 11.2 Comprehensive Worked Example: Trace of TCP Reno
+
+**Scenario**: A TCP Reno sender has $ssthresh = 16\text{ KB}$ and $MSS = 1\text{ KB}$. At round 1, $cwnd = 1\text{ KB}$.
+- In round 8, a timeout occurs.
+- Show the window progression across RTT rounds.
+
+| RTT Round | $cwnd$ (KB) | Phase | Explanation |
+|:---:|:---:|:---:|:---|
+| 1 | 1 | Slow Start | Initial state |
+| 2 | 2 | Slow Start | Double |
+| 3 | 4 | Slow Start | Double |
+| 4 | 8 | Slow Start | Double |
+| 5 | 16 | Reached $ssthresh$ | Switch to Congestion Avoidance |
+| 6 | 17 | Congestion Avoidance | Additive increase (+1) |
+| 7 | 18 | Congestion Avoidance | Additive increase (+1) |
+| 8 | 19 | Loss: **Timeout** | $ssthresh = \lfloor\frac{19}{2}\rfloor = 9\text{ KB}$, $cwnd = 1\text{ KB}$ |
+| 9 | 1 | Slow Start | Reset to 1 |
+| 10 | 2 | Slow Start | Double |
+| 11 | 4 | Slow Start | Double |
+| 12 | 8 | Slow Start | Double |
+| 13 | 9 | Reached new $ssthresh$ | Capped at $ssthresh = 9\text{ KB}$ |
+| 14 | 10 | Congestion Avoidance | Additive increase (+1) |
+
+---
+
+## 12. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET 2020 — Subnet Masking)
+An organization has been assigned the prefix `212.56.132.0/24`. The organization wants to create 32 subnets. What is the subnet mask and the number of usable hosts per subnet?
+
+**Solution**:
+1. Borrowed bits: $2^s \ge 32 \implies s = 5$ bits.
+2. New Prefix: $/24 + 5 = /29$.
+3. Subnet mask in binary: `11111111.11111111.11111111.11111000`
+   - In decimal: `255.255.255.248`.
+4. Host bits remaining: $h = 32 - 29 = 3$ bits.
+5. Usable hosts: $2^3 - 2 = 8 - 2 = 6$ hosts per subnet.
+**Answer**: Mask = `255.255.255.248`, Usable hosts = 6.
+
+### Question 2 (UGC NET 2018 — Fragmentation)
+An IP datagram of length 1200 bytes reaches a router that must forward it onto a link with an MTU of 400 bytes. How many fragments are generated, and what is the fragment offset of the second fragment?
+
+**Solution**:
+- IP header = 20 bytes $\implies$ Maximum payload per fragment $\le 400 - 20 = 380$ bytes.
+- Must be multiple of 8: $\lfloor \frac{380}{8} \rfloor \times 8 = 47 \times 8 = 376$ bytes.
+- Datagram data $= 1200 - 20 = 1180$ bytes.
+- Fragment 1: Payload = 376 bytes (offset $= 0/8 = 0$).
+- Fragment 2: Payload = 376 bytes (offset $= 376/8 = 47$).
+- Fragment 3: Payload = 376 bytes (offset $= 752/8 = 94$).
+- Fragment 4: Payload = 52 bytes (offset $= 1128/8 = 141$).
+**Answer**: 4 fragments; Fragment offset of 2nd fragment = 47.
+
+
+---
+
+## 8. UDP Header Hexadecimal Decoding & Bandwidth-Delay Product
+
+### 8.1 UDP Header Format (8 Bytes / 64 Bits)
+The User Datagram Protocol (UDP) header consists of exactly 4 fields of 16 bits (2 bytes) each:
+
+```
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|          Source Port          |       Destination Port        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|            Length             |           Checksum            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+### 8.2 Worked Decoding Example (UGC NET Official Pattern)
+> **Problem:** An IP datagram contains the following UDP header dump in hexadecimal notation:
+> `CB84000D001C001C`
+> Determine the Source Port, Destination Port, Total Length, and Payload Size.
+>
+> **Step-by-Step Solution:**
+> 1. **Source Port** (first 4 hex digits = 2 bytes):
+>    `CB84`$_{16} = (12 \times 16^3) + (11 \times 16^2) + (8 \times 16^1) + (4 \times 16^0) = 49152 + 2816 + 128 + 4 = 52,100$.
+> 2. **Destination Port** (next 4 hex digits):
+>    `000D`$_{16} = 13$ (Well-known Daytime protocol).
+> 3. **Total UDP Length** (next 4 hex digits):
+>    `001C`$_{16} = (1 \times 16) + 12 = 28\text{ bytes}$ (Header + Payload).
+> 4. **Application Payload Size**:
+>    $\text{Payload} = \text{Total Length} - \text{Header Size} = 28 - 8 = 20\text{ bytes}$.
+
+### 8.3 Bandwidth-Delay Product (BDP) in Flow Control
+The **Bandwidth-Delay Product** defines the maximum capacity of data "in flight" on the transmission link:
+
+### 8.4 Hamming Code Error Detection and Correction Bounds
+
+In digital communications, Hamming code introduces redundant parity bits $p$ to detect and correct transmission bit-flips.
+
+#### 1. Parity Bit Inequality
+To protect an $m$-bit data word, the number of parity bits $p$ must satisfy:
+
+$$2^p \ge m + p + 1$$
+
+- $p$ parity bits can represent $2^p$ unique states.
+- 1 state represents the 'no error' case.
+- $m + p$ states represent an error in each of the $m + p$ total bit positions.
+
+#### 2. Minimum Hamming Distance ($d_{\min}$) Conditions
+- **To Detect $e$ errors:**
+$$d_{\min} \ge e + 1$$
+- **To Correct $t$ errors:**
+$$d_{\min} \ge 2t + 1$$
+
+#### Worked Example:
+For a 7-bit ASCII character ($m = 7$):
+- If $p = 3$: $2^3 = 8 < 7 + 3 + 1 = 11$ (Insufficient).
+- If $p = 4$: $2^4 = 16 \ge 7 + 4 + 1 = 12$ (Satisfied!).
+Thus, **4 parity bits** are required, resulting in an 11-bit codeword $(11, 7)$.
+
+
+$$\text{BDP} = \text{Bandwidth} \times \text{RTT}$$
+
+For a $1\text{ Mbps}$ link with $30\text{ ms}$ Round-Trip Time:
+$$\text{BDP} = (1 \times 10^6\text{ bps}) \times (30 \times 10^{-3}\text{ s}) = 30,000\text{ bits} \approx 3,750\text{ bytes}$$
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="An organization is assigned the IPv4 block 200.100.50.0/26. How many total usable host IP addresses are available within this subnet?"
+  optionA="64"
+  optionB="62"
+  optionC="30"
+  optionD="126"
+  correctOption="B"
+  explanation="CIDR prefix /26 leaves 32 - 26 = 6 host bits. Total IP addresses = 2^6 = 64. Usable host addresses = 2^6 - 2 = 64 - 2 = 62 (excluding network ID 200.100.50.0 and broadcast ID 200.100.50.63)."
+  examBadge="UGC NET Dec 2019 / Official PYQ"
+/>
+
+<Quiz
+  question="A TCP connection is in Congestion Avoidance with CWND = 16 MSS. A timeout occurs. In TCP Tahoe, what are the new values of ssthresh and CWND respectively?"
+  optionA="ssthresh = 8 MSS, CWND = 1 MSS"
+  optionB="ssthresh = 8 MSS, CWND = 8 MSS"
+  optionC="ssthresh = 16 MSS, CWND = 1 MSS"
+  optionD="ssthresh = 4 MSS, CWND = 2 MSS"
+  correctOption="A"
+  explanation="On a timeout event in TCP Tahoe: ssthresh is set to half the current CWND (16 / 2 = 8 MSS), and CWND drops down to 1 MSS, resetting the connection to the Slow Start phase."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="What is the purpose of Nagle's Algorithm in TCP transport?"
+  optionA="To prevent buffer overflows on high-speed networks"
+  optionB="To solve the Silly Window Syndrome at the sender side by buffering tiny application data packets until an ACK arrives or a full MSS accumulates"
+  optionC="To reorder out-of-order packets"
+  optionD="To increase TCP window size dynamically"
+  correctOption="B"
+  explanation="Nagle's Algorithm combats sender-side Silly Window Syndrome (sending 40 bytes of header for 1 byte of user data, e.g. Telnet). It allows only one small segment to be in-flight; subsequent tiny bytes are coalesced in the send buffer until an ACK is received."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="An IPv4 datagram has a Total Length of 4000 bytes and Header Length (IHL) of 20 bytes. If it traverses a network with MTU = 1500 bytes, what are the Total Length and Fragment Offset values of the second fragment?"
+  optionA="Length = 1500, Offset = 185"
+  optionB="Length = 1500, Offset = 370"
+  optionC="Length = 1480, Offset = 185"
+  optionD="Length = 1040, Offset = 370"
+  correctOption="A"
+  explanation="MTU = 1500 bytes. Data capacity per fragment = 1500 - 20 (header) = 1480 bytes (divisible by 8). Fragment 1 carries 1480 data bytes (offset 0), Total Length = 1500. Fragment 2 carries 1480 data bytes, Total Length = 1500. Fragment Offset for Frag 2 = 1480 / 8 = 185."
+  examBadge="UGC NET Dec 2020"
+/>
+
+<Quiz
+  question="During the TCP 3-way handshake, client sends SYN with SEQ = 1000. Server responds with SYN+ACK with server SEQ = 2000. What is the ACK number sent by the server to the client?"
+  optionA="1000"
+  optionB="1001"
+  optionC="2001"
+  optionD="3000"
+  correctOption="B"
+  explanation="The SYN flag consumes exactly 1 sequence number. The server acknowledges receipt of client's SYN by sending ACK = client_SEQ + 1 = 1000 + 1 = 1001."
+  examBadge="Bihar STET Paper 2 2023"
+/>
+

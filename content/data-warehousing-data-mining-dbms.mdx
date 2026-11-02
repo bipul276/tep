@@ -1,0 +1,289 @@
+---
+title: "Data Warehousing, OLAP, and Data Mining: Schemas, Operations, and Apriori Algorithm"
+unit: "Unit 6: Database Management System"
+examType: "Common"
+priority: "Med"
+readTime: "32 min"
+slug: "data-warehousing-data-mining-dbms"
+description: "Master Star vs Snowflake vs Fact Constellation schemas, OLAP operations (Roll-up, Drill-down, Slice, Dice, Pivot), and the Apriori Association Rule Mining algorithm for UGC NET and Bihar STET."
+tags: ["DBMS", "Data Warehouse", "OLAP", "Data Mining", "Apriori", "Association Rules", "UGC-NET", "STET"]
+---
+
+# Data Warehousing, OLAP, and Data Mining: Schemas, Operations, and Apriori Algorithm
+
+Data Warehousing and Knowledge Discovery in Databases (KDD) represent high-frequency scoring topics in **UGC NET** (Unit 4: DBMS) and **Bihar STET Computer Science**. Competitive exams routinely test structural distinctions between **Star and Snowflake schemas**, **OLTP vs. OLAP architecture**, the **five fundamental multidimensional OLAP operations**, and numerical calculations for **Support, Confidence, and Lift** in the **Apriori Algorithm**.
+
+---
+
+## 1. OLTP vs. OLAP Architecture
+
+```
++-----------------------------------------------------------------------------------------+
+|                                    OLTP VS. OLAP MATRIX                                 |
++---------------------+-----------------------------------+-------------------------------+
+| Dimension           | OLTP (Online Transaction Processing)| OLAP (Online Analytical Proc.)|
++---------------------+-----------------------------------+-------------------------------+
+| Primary Focus       | Operational day-to-day transactions| Historical analysis & decision|
+|                     | (e.g., ATM withdrawals, ticketing)| support (e.g., sales trends)  |
++---------------------+-----------------------------------+-------------------------------+
+| Database Design     | Highly normalized (3NF / BCNF) to | Denormalized (Star/Snowflake) |
+|                     | eliminate update anomalies        | for lightning-fast read queries|
++---------------------+-----------------------------------+-------------------------------+
+| Data Nature         | Current, up-to-date, detailed     | Historical, summarized,       |
+|                     | (Snapshot of the present)         | multidimensional, consolidated|
++---------------------+-----------------------------------+-------------------------------+
+| Query Profile       | Simple, short `INSERT`/`UPDATE`   | Complex aggregations, group-by|
+|                     | affecting few rows; indexed lookups| across millions of rows       |
++---------------------+-----------------------------------+-------------------------------+
+| View of Data        | Flat relational tables (2D)       | Multidimensional Data Cube (nD|
++---------------------+-----------------------------------+-------------------------------+
+```
+
+---
+
+## 2. Multidimensional Data Warehouse Schemas
+
+A Data Warehouse organizes data around subjects using **Fact Tables** and **Dimension Tables**.
+
+```
+                STAR SCHEMA                              SNOWFLAKE SCHEMA
+            [Dim: Customer]                             [Sub-Dim: City]
+                   │                                           │
+                   ▼                                           ▼
+ [Dim: Store] ──► [FACT TABLE] ◄── [Dim: Time]     [Dim: Store] ──► [FACT TABLE] ◄── [Dim: Time]
+                   ▲                                                   ▲
+                   │                                                   │
+             [Dim: Product]                                   [Dim: Product]
+                                                                       │
+                                                                       ▼
+                                                             [Sub-Dim: Category]
+```
+
+### 2.1 The Star Schema
+- Consists of a single central **Fact Table** surrounded by multiple denormalized **Dimension Tables**.
+- Each dimension table is directly linked to the fact table via a foreign key without sub-dimension hierarchies.
+- **Advantages**: Minimal join complexity (single-level joins); highly intuitive for SQL queries.
+- **Disadvantage**: Data redundancy inside dimension tables because dimensional hierarchies (e.g., City $\to$ State $\to$ Country) are not normalized.
+
+---
+
+### 2.2 The Snowflake Schema
+- A normalized variant of the Star schema where dimensional hierarchies are decomposed into normalized sub-dimension tables.
+- Example: The `Product` dimension is broken into `Product` $\to$ `SubCategory` $\to$ `Category`.
+- **Advantages**: Eliminates dimensional data redundancy; saves storage space.
+- **Disadvantages**: Degrades query throughput due to multi-level relational joins (`Fact` $\bowtie$ `Product` $\bowtie$ `SubCategory` $\bowtie$ `Category`).
+
+---
+
+### 2.3 The Fact Constellation (Galaxy Schema)
+- Contains **multiple Fact Tables** that share common (conformed) dimension tables.
+- Used in enterprise-scale systems modeling sophisticated business domains (e.g., `Sales_Fact` and `Shipping_Fact` sharing `Time_Dimension`, `Store_Dimension`, and `Item_Dimension`).
+
+---
+
+## 3. Multidimensional OLAP Cube Operations
+
+The core analytical power of an OLAP cube stems from five geometric transformations on $n$-dimensional hypercubes:
+
+```
++-----------------------------------------------------------------------------------------+
+|                                    FIVE OLAP OPERATIONS                                 |
++---------------------+-------------------------------------------------------------------+
+| Operation           | Formal Definition & Dimensional Effect                            |
++---------------------+-------------------------------------------------------------------+
+| 1. Roll-up          | Performs aggregation by climbing up a concept hierarchy or by     |
+|    (Drill-up)       | dimension reduction. (e.g., Aggregating Day -> Month -> Year,     |
+|                     | or dropping the `Store` dimension). Decreases granularity.        |
++---------------------+-------------------------------------------------------------------+
+| 2. Drill-down       | The reverse of Roll-up. Navigates from less detailed data to more |
+|    (Roll-down)      | detailed data by stepping down a concept hierarchy or introducing |
+|                     | new dimensions. Increases granularity.                            |
++---------------------+-------------------------------------------------------------------+
+| 3. Slice            | Selects a specific 1-dimensional sub-table by fixing one dimension|
+|                     | to a constant value. (e.g., Setting `Time = "Q1 2024"`).          |
++---------------------+-------------------------------------------------------------------+
+| 4. Dice             | Selects a subcube by executing a selection predicate across two   |
+|                     | or more dimensions simultaneously.                                |
+|                     | (e.g., `Location = {"Patna", "Delhi"}` AND `Time = {"Q1", "Q2"}`).|
++---------------------+-------------------------------------------------------------------+
+| 5. Pivot (Rotate)   | Rotates the dimensional axes of the data presentation to provide  |
+|                     | an alternative visual perspective (e.g., swapping Rows and Cols). |
++---------------------+-------------------------------------------------------------------+
+```
+
+---
+
+## 4. Association Rule Mining & The Apriori Algorithm
+
+Association Rule Mining discovers interesting correlations, associations, and co-occurrences among items in transactional databases ($D$).
+
+An association rule is an implication of the form:
+$$X \Longrightarrow Y \quad (\text{where } X, Y \subset I \text{ and } X \cap Y = \emptyset)$$
+- $X$: Antecedent (Body)
+- $Y$: Consequent (Head)
+
+### 4.1 Foundational Metrics: Support, Confidence, and Lift
+
+Let $\sigma(A)$ denote the frequency count (support count) of itemset $A$ in transaction database $D$ with $|D| = N$ total transactions:
+
+$$\textbf{1. Support:} \quad \operatorname{Supp}(X \Rightarrow Y) = \frac{\sigma(X \cup Y)}{N} = P(X \cup Y)$$
+$$\textbf{2. Confidence:} \quad \operatorname{Conf}(X \Rightarrow Y) = \frac{\sigma(X \cup Y)}{\sigma(X)} = \frac{\operatorname{Supp}(X \cup Y)}{\operatorname{Supp}(X)} = P(Y \mid X)$$
+$$\textbf{3. Lift (Correlation):} \quad \operatorname{Lift}(X \Rightarrow Y) = \frac{\operatorname{Conf}(X \Rightarrow Y)}{\operatorname{Supp}(Y)} = \frac{P(X \cup Y)}{P(X) \cdot P(Y)}$$
+
+#### Interpreting Lift Values
+- $\operatorname{Lift}(X \Rightarrow Y) = 1$: $X$ and $Y$ are completely **independent**.
+- $\operatorname{Lift}(X \Rightarrow Y) > 1$: $X$ and $Y$ are **positively correlated** (buying $X$ increases the likelihood of buying $Y$).
+- $\operatorname{Lift}(X \Rightarrow Y) < 1$: $X$ and $Y$ are **negatively correlated** (buying $X$ decreases the likelihood of buying $Y$).
+
+---
+
+### 4.2 The Apriori Property (Downward-Closure Property)
+The computational bottleneck in association mining is the exponential search space ($2^{|I|}$ itemsets). R. Agrawal's **Apriori Algorithm** prunes the search space using the **Downward-Closure Property of Support**:
+
+$$\textbf{The Apriori Invariant:} \quad \text{All non-empty subsets of a frequent itemset must also be frequent.}$$
+$$\textbf{Contrapositive (Pruning Rule):} \quad \text{If an itemset is infrequent, all of its supersets are guaranteed to be infrequent.}$$
+
+```
+                [ {A, B, C} ]  <--- IF {A, B} is INFREQUENT...
+                 /    │    \
+                /     │     \
+         [{A, B}]  [{A, C}]  [{B, C}]
+            ▲
+            │ (Infrequent!)
+         PRUNED! Supersets {A, B, C}, {A, B, D} are pruned WITHOUT scanning database!
+```
+
+---
+
+## 5. Step-by-Step Worked Apriori Numerical
+
+Consider transaction database $D$ with $N = 4$ transactions:
+
+| TID | Items Purchased |
+|:---:|:---|
+| $T_1$ | $\{A, C, D\}$ |
+| $T_2$ | $\{B, C, E\}$ |
+| $T_3$ | $\{A, B, C, E\}$ |
+| $T_4$ | $\{B, E\}$ |
+
+*Parameters*: Minimum Support Count ($\text{min\_sup}$) = $2$ ($50\%$), Minimum Confidence ($\text{min\_conf}$) = $75\%$.
+
+### Step 1: Generate Frequent 1-Itemsets ($L_1$)
+Count frequencies of individual items:
+- $\sigma(\{A\}) = 2$ ($\ge 2$) $\to$ Frequent
+- $\sigma(\{B\}) = 3$ ($\ge 2$) $\to$ Frequent
+- $\sigma(\{C\}) = 3$ ($\ge 2$) $\to$ Frequent
+- $\sigma(\{D\}) = 1$ ($< 2$) $\to$ **Pruned!**
+- $\sigma(\{E\}) = 3$ ($\ge 2$) $\to$ Frequent
+
+$$L_1 = \{\{A\}, \{B\}, \{C\}, \{E\}\}$$
+
+---
+
+### Step 2: Generate Candidate 2-Itemsets ($C_2$) and Frequent 2-Itemsets ($L_2$)
+Join $L_1 \bowtie L_1$ and scan database:
+- $\sigma(\{A, B\}) = 1$ ($< 2$) $\to$ Pruned
+- $\sigma(\{A, C\}) = 2$ ($\ge 2$) $\to$ Frequent
+- $\sigma(\{A, E\}) = 1$ ($< 2$) $\to$ Pruned
+- $\sigma(\{B, C\}) = 2$ ($\ge 2$) $\to$ Frequent
+- $\sigma(\{B, E\}) = 3$ ($\ge 2$) $\to$ Frequent
+- $\sigma(\{C, E\}) = 2$ ($\ge 2$) $\to$ Frequent
+
+$$L_2 = \{\{A, C\}, \{B, C\}, \{B, E\}, \{C, E\}\}$$
+
+---
+
+### Step 3: Candidate 3-Itemsets ($C_3$) Generation & Pruning
+Join $L_2 \bowtie L_2$:
+- Combining $\{B, C\}$ and $\{B, E\}$ gives candidate $\{B, C, E\}$.
+- **Check subsets of $\{B, C, E\}$**:
+  - Subsets: $\{B, C\} \in L_2$, $\{B, E\} \in L_2$, $\{C, E\} \in L_2$. All subsets are frequent!
+- Scan database for frequency of $\{B, C, E\}$:
+  - Present in $T_2$ and $T_3 \implies \sigma(\{B, C, E\}) = 2 \ge 2$.
+
+$$L_3 = \{\{B, C, E\}\}$$
+
+---
+
+### Step 4: Association Rule Derivation & Confidence Filtering
+From frequent itemset $\{B, C, E\}$, evaluate candidate rules:
+1. **Rule $B \wedge C \Rightarrow E$**:
+$$\operatorname{Conf} = \frac{\sigma(\{B, C, E\})}{\sigma(\{B, C\})} = \frac{2}{2} = \mathbf{100\%} \ge 75\% \quad \text{(VALID)}$$
+2. **Rule $B \wedge E \Rightarrow C$**:
+$$\operatorname{Conf} = \frac{\sigma(\{B, C, E\})}{\sigma(\{B, E\})} = \frac{2}{3} = \mathbf{66.67\%} < 75\% \quad \text{(REJECTED)}$$
+3. **Rule $C \wedge E \Rightarrow B$**:
+$$\operatorname{Conf} = \frac{\sigma(\{B, C, E\})}{\sigma(\{C, E\})} = \frac{2}{2} = \mathbf{100\%} \ge 75\% \quad \text{(VALID)}$$
+
+---
+
+## 6. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="Which OLAP operation performs a selection on two or more dimensions simultaneously to construct a smaller subcube?"
+  optionA="Roll-up"
+  optionB="Drill-down"
+  optionC="Slice"
+  optionD="Dice"
+  correctOption="D"
+  explanation="Slice fixes exactly ONE dimension to a single value, whereas Dice executes selection conditions across two or more dimensions simultaneously to carve out a subcube."
+  examBadge="UGC NET 2022"
+/>
+
+<Quiz
+  question="In a transactional database with 100 transactions, itemset {Milk, Bread} appears in 40 transactions, while {Milk} alone appears in 80 transactions. What is the confidence of the rule Milk => Bread?"
+  optionA="20%"
+  optionB="40%"
+  optionC="50%"
+  optionD="80%"
+  correctOption="C"
+  explanation="Confidence(Milk => Bread) = Supp(Milk U Bread) / Supp(Milk) = 40 / 80 = 0.50 (50%)."
+  examBadge="Bihar STET 2024"
+/>
+
+<Quiz
+  question="What is the primary architectural difference between a Star schema and a Snowflake schema?"
+  optionA="Star schema has multiple fact tables, while Snowflake has only one"
+  optionB="Dimension tables in Snowflake schema are normalized, while in Star schema they are denormalized"
+  optionC="Fact tables in Snowflake schema are split across multiple databases"
+  optionD="Star schema does not support primary keys"
+  correctOption="B"
+  explanation="A Snowflake schema normalizes its dimension tables into multiple related sub-tables to reduce redundancy, whereas a Star schema keeps all dimensions denormalized for faster query performance."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="In the Apriori association rule mining algorithm, if itemset {A, B} has a support of 60% and itemset {A, B, C} has a support of 45%, what is the Confidence of the association rule: {A, B} ⇒ {C}?"
+  optionA="60%"
+  optionB="75%"
+  optionC="45%"
+  optionD="27%"
+  correctOption="B"
+  explanation="Confidence(X ⇒ Y) = Support(X ∪ Y) / Support(X). Here X = {A, B} and Y = {C}. Support({A, B, C}) = 0.45, Support({A, B}) = 0.60. Confidence = 0.45 / 0.60 = 0.75 or 75%."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="Which OLAP multidimensional data operation transforms summary data into more granular, detailed data (navigating down the dimensional hierarchy)?"
+  optionA="Roll-up"
+  optionB="Drill-down"
+  optionC="Slice"
+  optionD="Pivot"
+  correctOption="B"
+  explanation="Drill-down navigates from less detailed data to more detailed data (e.g. from Year  Quarter  Month). Roll-up does the opposite (aggregating data up the hierarchy). Slice selects a single dimension slice, and Pivot rotates axes."
+  examBadge="UGC NET Dec 2020"
+/>
+
+
+---
+
+## 7. High-Yield Revision Matrix
+
+| Concept | Key Architectural Invariant | Common Exam Trap |
+|---|---|---|
+| **Star Schema** | Denormalized dimensions, single-level joins | Confusing with multi-fact Constellation |
+| **Snowflake Schema** | Normalized dimensions, multiple join levels | Slower query execution due to extra joins |
+| **Roll-up vs Drill-down** | Roll-up: less detail; Drill-down: more detail | Inverting the direction of hierarchy traversal |
+| **Slice vs Dice** | Slice: 1 dimension fixed; Dice: $\ge 2$ dimensions bounded | Calling a 2-dimensional sub-selection a 'Slice' |
+| **Support** | $P(X \cup Y) = \frac{\sigma(X \cup Y)}{N}$ | Dividing by $\sigma(X)$ instead of total $N$ |
+| **Confidence** | $P(Y \mid X) = \frac{\sigma(X \cup Y)}{\sigma(X)}$ | Dividing by $\sigma(Y)$ (that is converse confidence) |
+| **Apriori Property** | Any subset of a frequent itemset must be frequent | Pruning frequent itemsets instead of infrequent |

@@ -1,0 +1,170 @@
+---
+title: "Combinational and Sequential Circuits: Design, Analysis, and Flip-Flops"
+unit: "Unit 1: Digital Logic & Discrete Structures"
+examType: "Common"
+priority: "High"
+readTime: "28 min"
+description: "Master combinational logic (Adders, Multiplexers, Decoders, Encoders) and sequential circuits (Latches, SR/JK/D/T Flip-Flops, Race-Around Condition, Counters, and State Tables) for UGC NET and Bihar STET."
+tags: ["Digital Logic", "Multiplexer", "Flip-Flops", "Counters", "Sequential Circuits", "Adders"]
+---
+
+# Combinational and Sequential Circuits: Design, Analysis, and Flip-Flops
+
+Digital circuits form the hardware bedrock of all computing systems. In competitive examinations like **UGC NET** and **Bihar STET**, questions test the mathematical formulation, truth tables, gate counts, propagation delays, and timing analysis of both combinational and sequential logic circuits.
+
+---
+
+## 1. Combinational vs. Sequential Logic Circuits
+
+| Characteristic | Combinational Circuit | Sequential Circuit |
+| :--- | :--- | :--- |
+| **Output Dependency** | Depends **only** on current inputs | Depends on current inputs **and** past history (state) |
+| **Memory Elements** | No memory elements required | Memory elements (Flip-Flops/Latches) required |
+| **Feedback Loop** | Strictly feed-forward; no feedback paths | Contains feedback from output back to input |
+| **Clock Signal** | Asynchronous; does not require a clock | Usually synchronous (clock-driven) |
+| **Examples** | Adders, Subtractors, MUX, DEMUX, Decoders | Flip-Flops, Registers, Counters, FSMs |
+| **Speed** | Faster (bounded strictly by gate propagation delays) | Slower (bounded by clock setup/hold times and cycle periods) |
+
+---
+
+## 2. Standard Combinational Circuits
+
+### 2.1 Binary Adders and Subtractors
+- **Half Adder**: Adds two 1-bit inputs ($A, B$).
+$$\text{Sum} = A \oplus B, \quad \text{Carry} = A \cdot B$$
+  Requires **1 XOR gate** and **1 AND gate** (or 5 NAND gates).
+- **Full Adder**: Adds three 1-bit inputs ($A, B, C_{\text{in}}$).
+$$\text{Sum} = A \oplus B \oplus C_{\text{in}}$$
+$$\text{Carry} = A \cdot B + C_{\text{in}} \cdot (A \oplus B) = A \cdot B + B \cdot C_{\text{in}} + A \cdot C_{\text{in}}$$
+  Constructed from **2 Half Adders** and **1 OR gate** (or 9 NAND gates).
+- **Ripple Carry Adder (RCA)**: An $n$-bit adder cascades $n$ Full Adders. Total delay:
+$$T_{\text{delay}} = n \cdot t_{\text{carry}}$$
+- **Carry Lookahead Adder (CLA)**: Generates carries in parallel using Generate ($G_i = A_i \cdot B_i$) and Propagate ($P_i = A_i \oplus B_i$) signals, achieving $O(1)$ constant propagation delay at the cost of higher gate fan-in.
+
+### 2.2 Multiplexers (Data Selectors)
+A $2^n \times 1$ multiplexer routes one of $2^n$ data inputs to a single output line using $n$ select lines ($S_{n-1}, \dots, S_0$).
+
+$$\text{Output } Y = \sum_{i=0}^{2^n - 1} m_i \cdot I_i$$
+
+<Callout type="important">
+**Universal Logic Implementation**:
+- Any Boolean function of $n$ variables can be implemented using a $2^{n-1} \times 1$ MUX with no external inverters if one variable is tied to the data inputs ($0, 1, V, \overline{V}$), or using a $2^n \times 1$ MUX directly with inputs tied to constant logic 0 or 1.
+</Callout>
+
+### 2.3 Decoders and Encoders
+- **$n$-to-$2^n$ Decoder**: Activates exactly one of $2^n$ output minterms based on $n$ binary inputs when the Enable ($E$) line is active.
+- **Priority Encoder**: If multiple input lines are active simultaneously, the output code reflects the input line with the highest designated priority (e.g., $D_3 > D_2 > D_1 > D_0$).
+
+---
+
+## 3. Latches and Flip-Flops (Sequential Elements)
+
+A **Latch** is level-sensitive (transparent while clock/enable is active). A **Flip-Flop** is edge-triggered (transitions strictly on rising $\uparrow$ or falling $\downarrow$ clock edges).
+
+### 3.1 Characteristic Equations and Truth Tables
+
+| Flip-Flop | Characteristic Equation | Inputs | Next State $Q_{n+1}$ | Operation |
+| :--- | :--- | :--- | :--- | :--- |
+| **SR** | $Q_{n+1} = S + R' Q_n$ ($S \cdot R = 0$) | $S=0, R=0$<br/>$S=0, R=1$<br/>$S=1, R=0$<br/>$S=1, R=1$ | $Q_n$<br/>$0$<br/>$1$<br/>$\text{Invalid / Forbidden}$ | No Change<br/>Reset<br/>Set<br/>Indeterminate |
+| **JK** | $Q_{n+1} = J Q_n' + K' Q_n$ | $J=0, K=0$<br/>$J=0, K=1$<br/>$J=1, K=0$<br/>$J=1, K=1$ | $Q_n$<br/>$0$<br/>$1$<br/>$Q_n'$ | No Change<br/>Reset<br/>Set<br/>**Toggle** |
+| **D (Data)** | $Q_{n+1} = D$ | $D=0$<br/>$D=1$ | $0$<br/>$1$ | Reset<br/>Set |
+| **T (Toggle)**| $Q_{n+1} = T \oplus Q_n$ | $T=0$<br/>$T=1$ | $Q_n$<br/>$Q_n'$ | No Change<br/>Toggle |
+
+### 3.2 Excitation Tables
+Required input conditions to transition from current state $Q_n$ to desired next state $Q_{n+1}$:
+
+| $Q_n \to Q_{n+1}$ | $S$ | $R$ | $J$ | $K$ | $D$ | $T$ |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| $0 \to 0$ | $0$ | $X$ | $0$ | $X$ | $0$ | $0$ |
+| $0 \to 1$ | $1$ | $0$ | $1$ | $X$ | $1$ | $1$ |
+| $1 \to 0$ | $0$ | $1$ | $X$ | $1$ | $0$ | $1$ |
+| $1 \to 1$ | $X$ | $0$ | $X$ | $0$ | $1$ | $0$ |
+
+*(where $X$ denotes Don't Care)*
+
+### 3.3 The Race-Around Condition in JK Flip-Flop
+When $J = 1, K = 1$ in a level-triggered JK latch, the output toggles repeatedly if the clock pulse width $t_p$ is greater than the propagation delay of the flip-flop $t_{\text{pd}}$:
+
+$$t_{\text{pd}} < t_p < T_{\text{clk}}$$
+
+**Remedies to eliminate race-around**:
+1. **Edge Triggering**: Use narrow clock pulses generated via differentiating circuits.
+2. **Master-Slave JK Flip-Flop**: Master responds during clock high ($\text{Clk}=1$); Slave updates output during clock low ($\text{Clk}=0$).
+3. Ensure $t_p < t_{\text{pd}}$.
+
+---
+
+## 4. Registers and Counters
+
+### 4.1 Synchronous vs. Asynchronous (Ripple) Counters
+- **Asynchronous (Ripple) Counter**: Clock input of flip-flop $i+1$ is driven by the output $Q_i$ of flip-flop $i$.
+  - Total settling time = $n \cdot t_{\text{pd}}$.
+  - Maximum operating frequency: $f_{\max} = \frac{1}{n \cdot t_{\text{pd}}}$.
+- **Synchronous Counter**: Clock inputs of ALL flip-flops are connected in parallel to a common system clock pulse.
+  - All flip-flops trigger simultaneously.
+  - Maximum operating frequency: $f_{\max} = \frac{1}{t_{\text{pd}} + t_{\text{logic}}}$, independent of $n$!
+
+### 4.2 Counter Modulus and State Counts
+- An $n$-flip-flop counter has $2^n$ natural states ($0 \text{ to } 2^n - 1$).
+- A **Mod-$M$ Counter** cycles through $M$ states before resetting ($M \le 2^n$).
+  - Minimum flip-flops required: $n = \lceil \log_2 M \rceil$.
+  - Unused states = $2^n - M$.
+
+---
+
+## 5. Interactive Examination PYQ Practice
+
+<Quiz
+  question="How many 2-to-1 multiplexers are required to construct a 16-to-1 multiplexer without any external logic gates?"
+  optionA="15"
+  optionB="16"
+  optionC="8"
+  optionD="4"
+  correctOption="A"
+  explanation="To construct a 2^n to 1 MUX using 2-to-1 MUXes: Stage 1 requires 16/2 = 8 MUXes. Stage 2 requires 8/2 = 4 MUXes. Stage 3 requires 4/2 = 2 MUXes. Stage 4 requires 2/2 = 1 MUX. Total 2-to-1 MUXes = 8 + 4 + 2 + 1 = 15 (general formula: N - 1 = 16 - 1 = 15)."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="A 4-bit ripple counter uses flip-flops with a propagation delay of 25 ns each. What is the maximum clock frequency at which this counter can reliably operate?"
+  optionA="10 MHz"
+  optionB="40 MHz"
+  optionC="25 MHz"
+  optionD="50 MHz"
+  correctOption="A"
+  explanation="In an n-bit ripple counter, the clock pulses must have a period T_clk ≥ n · t_pd. Here n = 4 and t_pd = 25 ns. T_min = 4 × 25 ns = 100 ns. Maximum clock frequency f_max = 1 / T_min = 1 / (100 × 10^-9 s) = 10 × 10^6 Hz = 10 MHz."
+  examBadge="Bihar STET / GATE PYQ"
+/>
+
+<Quiz
+  question="In a JK Flip-Flop, the race-around condition occurs when:"
+  optionA="J = 1, K = 1, and the clock pulse width is greater than flip-flop propagation delay"
+  optionB="J = 0, K = 0, and the clock pulse width is less than propagation delay"
+  optionC="J = 1, K = 0, and propagation delay is zero"
+  optionD="J = 0, K = 1 during the falling edge of the clock"
+  correctOption="A"
+  explanation="Race-around condition occurs in level-triggered JK flip-flops when both inputs J = 1 and K = 1 (toggle mode) and the clock pulse duration t_p exceeds the propagation delay t_pd. The output toggles uncontrollably back and forth between 0 and 1 before the clock goes low."
+  examBadge="UGC NET Computer Science"
+/>
+
+<Quiz
+  question="To construct a Mod-12 counter, what is the minimum number of flip-flops required, and how many unused states are there?"
+  optionA="4 flip-flops and 4 unused states"
+  optionB="3 flip-flops and 2 unused states"
+  optionC="4 flip-flops and 2 unused states"
+  optionD="5 flip-flops and 20 unused states"
+  correctOption="A"
+  explanation="Modulus M = 12. Minimum flip-flops n = log2(12) = 4 flip-flops (since 2^3 = 8 &lt; 12 and 2^4 = 16 ≥ 12). Total states provided by 4 flip-flops = 2^4 = 16. Unused states = 2^n - M = 16 - 12 = 4 unused states."
+  examBadge="UGC NET / Bihar STET PYQ"
+/>
+
+<Quiz
+  question="What are the required inputs (J, K) to cause a JK Flip-Flop to transition from state Q_n = 1 to next state Q_{n+1} = 0?"
+  optionA="J = X, K = 1"
+  optionB="J = 0, K = 1"
+  optionC="J = 1, K = X"
+  optionD="J = 0, K = X"
+  correctOption="A"
+  explanation="From the JK Excitation Table: For transition 1 -> 0, the flip-flop can either Reset (J=0, K=1) or Toggle (J=1, K=1). Since J can be either 0 or 1 while K must strictly be 1, the excitation requirement is J = X (Don't Care) and K = 1."
+  examBadge="UGC NET June 2019"
+/>

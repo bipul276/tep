@@ -1,0 +1,373 @@
+---
+title: "Transactions, Serializability, Concurrency Control & Deadlocks in DBMS"
+unit: "Unit 6: Database Management System"
+examType: "Common"
+priority: "High"
+readTime: "40 min"
+slug: "transactions-concurrency-dbms"
+description: "Comprehensive guide to DBMS transaction processing, ACID properties, conflict and view serializability, precedence graphs, 2PL variants, timestamp protocols, and deadlock management."
+tags: ["DBMS", "Transactions", "ACID", "Concurrency Control", "2PL", "Serializability", "Precedence Graph", "Deadlocks"]
+---
+
+# Transactions, Serializability, Concurrency Control & Deadlocks in DBMS
+
+## 1. Concept of a Transaction & Transaction States
+
+A **transaction** is a logical unit of database processing that includes one or more database access operations (read, write, insert, delete). A transaction must either execute in its entirety or not at all.
+
+### 1.1 Transaction State Transition Model
+
+During its execution lifetime, a transaction passes through a sequence of formal states:
+
+```text
+               +--------------+
+               |    Active    |
+               +--------------+
+                 /          \
+                /            \
+               v              v
+     +-------------------+   +--------------+
+     |Partially Committed|   |    Failed    |
+     +-------------------+   +--------------+
+               |                    |
+               v                    v
+     +-------------------+   +--------------+
+     |     Committed     |   |   Aborted    |
+     +-------------------+   +--------------+
+                             /              \
+                            /                \
+                           v                  v
+                 +---------------+    +---------------+
+                 |   Restart     |    |     Kill      |
+                 +---------------+    +---------------+
+```
+
+1. **Active**: The initial state. The transaction stays here while executing its read and write operations.
+2. **Partially Committed**: Entered after the final operation of the transaction has been executed in main memory, but changes have not yet been flushed permanently to non-volatile storage.
+3. **Committed**: Entered after successful completion and verification that all updates are safely recorded in the write-ahead log on stable storage.
+4. **Failed**: Entered upon discovering that normal execution can no longer proceed (e.g., hardware fault, integrity violation, deadlock victim).
+5. **Aborted**: Entered after the database has rolled back all changes made by the transaction, restoring the database to its consistent state prior to the transaction's start. The transaction may then be restarted or killed.
+
+---
+
+## 2. ACID Properties & Their Architectural Enforcement
+
+The database management system guarantees four foundational properties, known by the acronym **ACID**:
+
+| Property | Meaning | What Could Go Wrong? | Responsible DBMS Component |
+|---|---|---|---|
+| **Atomicity** | "All or Nothing" — either every operation executes successfully, or the database reverts to its pre-transaction state. | System crash halfway through a balance transfer leaves money deducted from Account A but not credited to Account B. | **Recovery Manager** (Undo logging, Write-Ahead Logging / WAL, Shadow Paging) |
+| **Consistency** | Preserves database integrity constraints ($A + B = \text{Constant}$, foreign keys, check constraints). | Total sum of bank balances changes before and after a fund transfer. | **Application Programmer** + **Integrity Subsystem** (Triggers, Constraints) |
+| **Isolation** | Intermediate states of a transaction are invisible to concurrent transactions. | Transaction 2 reads an uncommitted balance updated by Transaction 1, which subsequently aborts. | **Concurrency Control Manager** (Locking, Timestamps, Validation) |
+| **Durability** | Once committed, updates persist permanently, surviving any subsequent system crash. | Server loses power 2 seconds after displaying "Transfer Successful", losing records of the transfer. | **Recovery Manager** (Redo logging, Non-volatile write buffers, Checkpoints) |
+
+---
+
+## 3. Concurrency Anomalies (When Isolation Fails)
+
+When multiple transactions interleave without proper concurrency control, four classic anomalies occur:
+
+### 3.1 Dirty Read Problem (Temporary Update / Read Uncommitted)
+Occurs when Transaction $T_2$ reads a data item modified by $T_1$ before $T_1$ commits. If $T_1$ later aborts, $T_2$ has read a value that **never logically existed**.
+
+```text
+T1: W(A=500) ------------------> Abort
+T2:               R(A=500) -> Computes based on phantom data
+```
+
+### 3.2 Lost Update Problem
+Occurs when two transactions read the same data item and independently update it. The second write **overwrites and obliterates** the first transaction's update without incorporating it.
+
+```text
+T1: R(A=100)                      W(A=150)
+T2:               R(A=100)                   W(A=120) [Overwrites T1's work!]
+```
+*Result*: Balance is 120 instead of 170.
+
+### 3.3 Unrepeatable (Fuzzy) Read Problem
+Occurs when $T_1$ reads data item $A$, then $T_2$ modifies or deletes $A$ and commits, then $T_1$ reads $A$ again. $T_1$ observes **two different values** for the same data item within the same transaction.
+
+### 3.4 Phantom Read Problem
+Occurs when $T_1$ executes a range query (e.g., `SELECT COUNT(*) WHERE Dept = 'CS'`). $T_2$ inserts a new employee tuple into 'CS' and commits. $T_1$ re-runs the range query and discovers a **"phantom" row** that was not present previously.
+
+---
+
+## 4. Schedules & Conflict Serializability
+
+A **schedule (or history)** $S$ of $n$ transactions is an ordering of the operations of those transactions such that for each individual transaction $T_i$, the operations of $T_i$ appear in $S$ in the exact relative order in which they occur in $T_i$.
+
+### 4.1 Conflicting Operations
+Two operations $I_i$ and $I_j$ belonging to a schedule $S$ are said to be in **conflict** if and only if **all three** conditions hold:
+1. They belong to **different transactions** ($i \neq j$).
+2. They access the **same data item** ($Q$).
+3. **At least one** of the operations is a **Write** operation.
+
+$$
+\begin{aligned}
+R_i(Q) \text{ and } R_j(Q) &\implies \textbf{No Conflict} \text{ (Read-Read is safe)} \\
+R_i(Q) \text{ and } W_j(Q) &\implies \textbf{Conflict} \text{ (Read-Write)} \\
+W_i(Q) \text{ and } R_j(Q) &\implies \textbf{Conflict} \text{ (Write-Read)} \\
+W_i(Q) \text{ and } W_j(Q) &\implies \textbf{Conflict} \text{ (Write-Write)}
+\end{aligned}
+$$
+
+### 4.2 Conflict Equivalence & Conflict Serializability
+- Two schedules $S$ and $S'$ are **conflict equivalent** if $S$ can be transformed into $S'$ by a series of swaps of non-conflicting adjacent operations.
+- A schedule $S$ is **conflict serializable** if it is conflict equivalent to some serial schedule.
+
+---
+
+## 5. Testing for Conflict Serializability: The Precedence Graph
+
+To test whether a schedule $S$ is conflict serializable, we construct a directed graph $G = (V, E)$ called the **Precedence Graph (or Serialization Graph)**.
+
+### 5.1 Algorithm for Graph Construction
+1. **Vertices ($V$)**: Create a node for every committed transaction $T_i$ in $S$.
+2. **Directed Edges ($E$)**: Draw a directed edge $T_i \to T_j$ ($i \neq j$) if $T_i$ performs an operation that conflicts with an operation of $T_j$, and $T_i$'s operation occurs **earlier in the schedule** than $T_j$'s operation.
+   - $R_i(Q)$ before $W_j(Q)$
+   - $W_i(Q)$ before $R_j(Q)$
+   - $W_i(Q)$ before $W_j(Q)$
+
+> **Fundamental Serializability Theorem**:
+> A schedule $S$ is **conflict serializable** if and only if its precedence graph $G$ contains **no directed cycles**.
+> If $G$ is acyclic, a valid serial order is obtained by finding a **topological sort** of $G$.
+
+---
+
+### 5.2 Step-by-Step Worked Precedence Graph Example
+
+**Schedule $S_1$**:
+$$S_1: R_1(A), R_2(A), W_1(A), R_2(B), W_2(B), R_3(B), W_1(B), W_3(B)$$
+
+**Identify all conflicts and directed edges**:
+- Item $A$:
+  - $R_2(A)$ precedes $W_1(A) \implies \text{Edge: } T_2 \to T_1$
+  - $W_1(A)$ has no subsequent accesses on $A$.
+- Item $B$:
+  - $R_2(B)$ precedes $W_1(B) \implies \text{Edge: } T_2 \to T_1$ (Duplicate)
+  - $W_2(B)$ precedes $R_3(B) \implies \text{Edge: } T_2 \to T_3$
+  - $W_2(B)$ precedes $W_1(B) \implies \text{Edge: } T_2 \to T_1$ (Duplicate)
+  - $W_2(B)$ precedes $W_3(B) \implies \text{Edge: } T_2 \to T_3$ (Duplicate)
+  - $R_3(B)$ precedes $W_1(B) \implies \text{Edge: } T_3 \to T_1$
+  - $W_1(B)$ precedes $W_3(B) \implies \text{Edge: } T_1 \to T_3$
+
+**Graph Analysis**:
+- We have the edge $T_3 \to T_1$ (from $R_3(B)$ before $W_1(B)$).
+- We also have the edge $T_1 \to T_3$ (from $W_1(B)$ before $W_3(B)$).
+- **Cycle Detected**: $T_1 \to T_3 \to T_1$.
+- **Conclusion**: Schedule $S_1$ is **NOT conflict serializable**!
+
+---
+
+## 6. View Serializability & Blind Writes
+
+View serializability is a weaker (more permissive) notion of equivalence based on the view of data that each transaction observes.
+
+### 6.1 Three Conditions for View Equivalence
+Two schedules $S$ and $S'$ over the same transactions are **view equivalent** if:
+1. **Initial Read**: For each data item $Q$, if transaction $T_i$ reads the initial value of $Q$ in $S$, then $T_i$ must also read the initial value of $Q$ in $S'$.
+2. **Updated Read (Read-From)**: If $T_i$ reads a value of $Q$ produced by $W_j(Q)$ in $S$, then $T_i$ must read the value produced by the same $W_j(Q)$ in $S'$.
+3. **Final Write**: For each data item $Q$, if $T_i$ executes the final write on $Q$ in $S$, then $T_i$ must execute the final write on $Q$ in $S'$.
+
+### 6.2 Key Theorems on View Serializability
+- **Containment**: Every conflict serializable schedule is view serializable:
+$$\text{Conflict Serializable} \subset \text{View Serializable}$$
+- **Blind Writes**: A schedule that is view serializable but **not** conflict serializable **must contain at least one blind write** ($W(Q)$ performed without a preceding $R(Q)$ in the same transaction).
+- **Computational Complexity**: Testing view serializability is **NP-Complete**. Testing conflict serializability is **$O(V + E)$** (polynomial via cycle detection).
+
+---
+
+## 7. Recoverability & Cascading Rollbacks
+
+Serializability ensures consistency when all transactions commit. **Recoverability** ensures consistency when transactions abort.
+
+```
++-------------------------------------------------------------+
+|                     All Schedules                           |
+|  +-------------------------------------------------------+  |
+|  |                  Recoverable                          |  |
+|  |  +-------------------------------------------------+  |  |
+|  |  |         Cascadeless (Avoids Cascading Aborts)   |  |  |
+|  |  |  +-------------------------------------------+  |  |  |
+|  |  |  |                 Strict                    |  |  |  |
+|  |  |  |  +-------------------------------------+  |  |  |  |
+|  |  |  |  |               Serial                |  |  |  |  |
+|  |  |  |  +-------------------------------------+  |  |  |  |
+|  |  |  +-------------------------------------------+  |  |  |
+|  |  +-------------------------------------------------+  |  |
+|  +-------------------------------------------------------+  |
++-------------------------------------------------------------+
+```
+
+### 7.1 Formal Definitions
+
+1. **Unrecoverable Schedule**: $T_j$ reads data written by $T_i$, and $T_j$ commits **before** $T_i$. If $T_i$ subsequently aborts, the database cannot undo $T_j$'s committed state (violates Durability).
+2. **Recoverable Schedule**: For each pair where $T_j$ reads data written by $T_i$, the commit operation of $T_i$ must precede the commit of $T_j$ ($C_i < C_j$).
+3. **Cascadeless Schedule (Avoids Cascading Aborts - ACA)**: Every transaction reads only values written by **already committed** transactions:
+$$\forall T_j, \text{ if } T_j \text{ reads } Q \text{ written by } T_i \implies C_i < R_j(Q)$$
+4. **Strict Schedule**: No transaction can read OR overwrite an item until the transaction that previously wrote it has **either committed or aborted**:
+$$W_i(Q) < R_j(Q) \implies (C_i < R_j(Q) \text{ or } A_i < R_j(Q))$$
+$$W_i(Q) < W_j(Q) \implies (C_i < W_j(Q) \text{ or } A_i < W_j(Q))$$
+   *Advantage*: Recovery requires only restoring the before-image of the data item (trivial rollback).
+
+---
+
+## 8. Two-Phase Locking (2PL) Protocols
+
+Locking ensures isolation by granting temporary exclusive or shared rights to data items.
+
+### 8.1 Lock Compatibility Matrix
+
+| Requested \ Held | Shared Lock ($S$) | Exclusive Lock ($X$) |
+|:---:|:---:|:---:|
+| **Shared ($S$)** | **Compatible (True)** | Conflict (False) |
+| **Exclusive ($X$)** | Conflict (False) | Conflict (False) |
+
+### 8.2 The Four Variants of 2PL
+
+```text
+Basic 2PL:       [---- Growing Phase ----] Lock Point [---- Shrinking Phase ----]
+                 (Only acquire locks)                 (Only release locks)
+
+Strict 2PL:      [---- Growing Phase ----] ... [Release X-locks ONLY after Commit/Abort]
+
+Rigorous 2PL:    [---- Growing Phase ----] ... [Release ALL locks ONLY after Commit/Abort]
+```
+
+| 2PL Variant | Locking Rule | Guarantees Conflict Serializability? | Free from Cascading Aborts? | Free from Deadlocks? |
+|---|---|:---:|:---:|:---:|
+| **Basic 2PL** | Cannot acquire any lock after releasing first lock | **Yes** | No | No |
+| **Conservative (Static) 2PL** | Must acquire ALL locks before starting execution | **Yes** | No | **Yes** |
+| **Strict 2PL** | Basic 2PL + Hold all Exclusive ($X$) locks until Commit/Abort | **Yes** | **Yes** (Strict) | No |
+| **Rigorous 2PL** | Basic 2PL + Hold ALL locks ($S$ and $X$) until Commit/Abort | **Yes** | **Yes** (Strict) | No |
+
+---
+
+## 9. Timestamp-Based Concurrency & Thomas' Write Rule
+
+Each transaction $T_i$ is assigned a unique monotonically increasing timestamp $TS(T_i)$ at initiation. For every data item $Q$, the system maintains:
+- $W\text{-TS}(Q)$: Largest timestamp of any transaction that successfully wrote $Q$.
+- $R\text{-TS}(Q)$: Largest timestamp of any transaction that successfully read $Q$.
+
+### 9.1 Standard Timestamp Ordering Rules
+1. **When $T_i$ issues $R(Q)$**:
+   - If $TS(T_i) < W\text{-TS}(Q)$: $T_i$ is trying to read an overwritten value. **Abort and restart $T_i$**.
+   - If $TS(T_i) \ge W\text{-TS}(Q)$: Execute $R(Q)$, set $R\text{-TS}(Q) = \max(R\text{-TS}(Q), TS(T_i))$.
+2. **When $T_i$ issues $W(Q)$**:
+   - If $TS(T_i) < R\text{-TS}(Q)$: A younger transaction already read the older value. **Abort and restart $T_i$**.
+   - If $TS(T_i) < W\text{-TS}(Q)$: An attempt is made to overwrite a newer value. **Abort and restart $T_i$**.
+   - Otherwise: Execute $W(Q)$, set $W\text{-TS}(Q) = TS(T_i)$.
+
+### 9.2 Thomas' Write Rule (Optimization for Writes)
+If $T_i$ issues $W(Q)$ and $TS(T_i) < W\text{-TS}(Q)$:
+- Instead of aborting $T_i$, **simply ignore (skip) the write**!
+- *Rationale*: A younger transaction has already overwritten $Q$. $T_i$'s write would be obsolete anyway.
+- **Exam Crux**: Thomas' Write Rule generates schedules that are **View Serializable but NOT Conflict Serializable**.
+
+---
+
+## 10. Deadlock Management in DBMS
+
+A deadlock occurs when two or more transactions form a cyclic wait-for dependency: each holds a lock the other requires.
+
+### 10.1 Deadlock Prevention Protocols (Timestamp-Based)
+Suppose $T_i$ requests a lock held by $T_j$:
+
+| Scheme | Type | Rule | Intuition |
+|---|---|---|---|
+| **Wait-Die** | Non-preemptive | If $TS(T_i) < TS(T_j)$ (Older wants lock of Younger) $\implies$ **$T_i$ waits**.<br />Else ($T_i$ is younger) $\implies$ **$T_i$ dies (aborts)**. | "Older transactions wait; younger transactions die." |
+| **Wound-Wait** | Preemptive | If $TS(T_i) < TS(T_j)$ (Older wants lock of Younger) $\implies$ **$T_i$ wounds (preempts/aborts) $T_j$**.<br />Else ($T_i$ is younger) $\implies$ **$T_i$ waits**. | "Older transactions preempt younger ones; younger ones wait." |
+
+*Exam Memory Trick*:
+- In **Wait-Die**, only older can wait.
+- In **Wound-Wait**, only younger can wait. Both prevent deadlocks by disallowing cycles in timestamps.
+
+---
+
+## 11. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET June 2021 — Serializability)
+Consider the following schedule involving transactions $T_1, T_2, T_3$:
+$$S: R_1(X), W_2(X), W_1(X), W_3(X)$$
+Is the schedule conflict serializable? If yes, what is the serial order?
+
+**Solution**:
+1. Check conflicts on $X$:
+   - $R_1(X)$ precedes $W_2(X) \implies T_1 \to T_2$
+   - $W_2(X)$ precedes $W_1(X) \implies T_2 \to T_1$
+2. Cycle check: $T_1 \to T_2$ and $T_2 \to T_1$ form an immediate **2-node cycle** ($T_1 \rightleftarrows T_2$).
+**Answer**: The schedule is **NOT conflict serializable**.
+
+### Question 2 (UGC NET Dec 2019 — Recoverability)
+Consider the schedule:
+$$S: W_1(A), R_2(A), W_2(B), C_2, W_1(C), C_1$$
+Is this schedule recoverable? Is it cascadeless?
+
+**Solution**:
+- $T_2$ reads item $A$ from $T_1$ ($W_1(A) \to R_2(A)$).
+- $T_2$ commits at step 4 ($C_2$).
+- $T_1$ commits at step 6 ($C_1$).
+- Here, $T_2$ read uncommitted data from $T_1$, and $T_2$ committed **before** $T_1$ ($C_2 < C_1$).
+- If $T_1$ were to fail before step 6, $T_2$ could not be rolled back.
+**Answer**: The schedule is **Unrecoverable** (and therefore neither cascadeless nor strict).
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="Consider a schedule S with transactions T1 and T2: r1(X); r2(X); w1(X); r1(Y); w2(X); w1(Y). Is schedule S conflict serializable?"
+  optionA="Yes, equivalent to T1  T2"
+  optionB="Yes, equivalent to T2  T1"
+  optionC="No, because the precedence graph contains a directed cycle between T1 and T2"
+  optionD="Yes, because all reads precede writes"
+  correctOption="C"
+  explanation="Identify conflicting operations on shared variable X: 1. r2(X) precedes w1(X) ⟹ Directed edge T2  T1. 2. w1(X) precedes w2(X) ⟹ Directed edge T1  T2. The precedence graph contains the cycle T1 ⇄ T2. Hence S is NOT conflict serializable."
+  examBadge="UGC NET Dec 2020 / Official PYQ"
+/>
+
+<Quiz
+  question="How does Strict Two-Phase Locking (Strict 2PL) fundamentally prevent Cascading Aborts (Cascading Rollbacks)?"
+  optionA="By releasing shared read locks immediately"
+  optionB="By holding all exclusive (write) locks until the transaction explicitly Commits or Aborts"
+  optionC="By using timestamps"
+  optionD="By executing transactions serially"
+  correctOption="B"
+  explanation="Cascading aborts occur when a transaction reads uncommitted dirty data written by another transaction that later aborts. Strict 2PL mandates holding all exclusive locks until transaction completion, ensuring no transaction ever reads uncommitted data."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="According to the Thomas Write Rule in timestamp-based concurrency control, what action is taken if transaction Ti attempts to execute write(Q) but TS(Ti) &lt; W_TS(Q)?"
+  optionA="Transaction Ti is aborted and restarted with a new timestamp"
+  optionB="The outdated write operation is simply ignored without aborting Ti"
+  optionC="All active transactions are rolled back"
+  optionD="Transaction Ti is placed in a sleep wait queue"
+  correctOption="B"
+  explanation="The Thomas Write Rule observes that a write operation from an older transaction is obsolete because a newer transaction has already overwritten item Q. Instead of rolling back Ti, it simply ignores the write, generating valid view serializable schedules."
+  examBadge="UGC NET Dec 2022"
+/>
+
+<Quiz
+  question="Which component of the ACID properties is primarily enforced by the DBMS Concurrency Control Manager using locking or timestamp protocols?"
+  optionA="Atomicity"
+  optionB="Consistency"
+  optionC="Isolation"
+  optionD="Durability"
+  correctOption="C"
+  explanation="The Concurrency Control Manager guarantees Isolation (transactions execute without interference from concurrently executing transactions). Atomicity and Durability are managed by the Recovery Manager (via WAL logs)."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="In database recovery, what does the Write-Ahead Logging (WAL) protocol mandate?"
+  optionA="Database log records must be written to disk BEFORE the corresponding dirty data pages are flushed to disk"
+  optionB="Transactions must commit before writing logs"
+  optionC="Log files must be written in RAM only"
+  optionD="Checkpoints must occur after every write"
+  correctOption="A"
+  explanation="WAL guarantees Atomicity and Durability by mandating that: 1. The undo log record must be on non-volatile disk before dirty data is written to disk. 2. All commit log records must be on non-volatile disk before a transaction is acknowledged as committed."
+  examBadge="UGC NET June 2020"
+/>
+

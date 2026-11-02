@@ -1,0 +1,1097 @@
+---
+title: "Propositional Logic: Tautologies, Equivalences & Truth Table Mastery"
+unit: "Unit 11: Theory of Computation & Compilers"
+examType: "Common"
+priority: "Low"
+readTime: "30 min"
+slug: "propositional-logic-toc"
+description: "Complete guide to propositional logic covering logical connectives, truth tables, tautologies, contradictions, satisfiability, logical equivalences, normal forms (CNF/DNF), and exam-focused problem-solving strategies."
+tags: ["Mathematical Logic", "Propositional Logic", "Truth Tables", "Tautology", "CNF", "DNF", "De Morgan's Law"]
+---
+
+# Propositional Logic: Tautologies, Equivalences & Truth Table Mastery
+
+Propositional logic (also called **sentential logic** or **zeroth-order logic**) is the most fundamental branch of mathematical logic. It deals with declarative statements that are either true or false, and the rules by which complex statements can be formed and analyzed using logical connectives. A deep understanding of propositional logic is essential not only for the theory of computation but also for digital circuit design, database query optimization, artificial intelligence, and formal software verification. In competitive exams such as UGC NET and Bihar STET Paper 2, propositional logic questions appear with high frequency — typically 2 to 4 questions per paper — making this a non-negotiable topic for any serious aspirant.
+
+---
+
+## 1. Introduction to Propositional Logic
+
+### 1.1 What Is a Proposition?
+
+A **proposition** (or **statement**) is a declarative sentence that is either **true (T)** or **false (F)**, but not both simultaneously. The truth value of a proposition is its membership in exactly one of these two categories. This binary nature is called the **Law of the Excluded Middle** — there is no "maybe" or "partially true" in classical propositional logic.
+
+**Examples of propositions:**
+
+- "Delhi is the capital of India." — This is a proposition (truth value: **T**).
+- "2 + 3 = 7." — This is a proposition (truth value: **F**).
+- "Every even number greater than 2 can be expressed as the sum of two primes." — This is a proposition (Goldbach's Conjecture — we may not know its truth value, but it is definitively either true or false).
+- "The Earth revolves around the Sun." — Proposition (**T**).
+
+### 1.2 What Is NOT a Proposition?
+
+Not every sentence qualifies as a proposition. The following categories of sentences are **not** propositions:
+
+| Category | Example | Why It Fails |
+|---|---|---|
+| **Questions** | "What time is it?" | Not declarative; asks for information |
+| **Commands/Imperatives** | "Close the door." | Not declarative; gives an order |
+| **Exclamations** | "What a beautiful day!" | Expresses emotion, not a truth claim |
+| **Paradoxes** | "This statement is false." | Cannot be assigned a consistent truth value (Liar's Paradox) |
+| **Open sentences** | "$x + 5 = 10$" | Truth value depends on the value of $x$; becomes a proposition only when $x$ is specified or quantified |
+| **Opinions/Subjective** | "Chocolate ice cream is the best." | No objective truth value |
+| **Prayers/Wishes** | "May God bless you." | Expresses a wish, not a fact |
+
+> **Exam Tip:** The Liar's Paradox ("This statement is false") is a favourite trap in MCQs. It is NOT a proposition because it leads to a logical contradiction — if it is true, then it must be false; if it is false, then it must be true.
+
+### 1.3 Propositional Variables and Constants
+
+We use lowercase letters — typically $p, q, r, s, \ldots$ — to represent propositions. These are called **propositional variables** (or **atomic propositions**). The two truth values are denoted:
+
+- **T** (True), also written as **1** in Boolean algebra
+- **F** (False), also written as **0** in Boolean algebra
+
+A **compound proposition** is formed by combining atomic propositions using **logical connectives** (discussed in the next section). For example, if $p$ = "It is raining" and $q$ = "I carry an umbrella," then $p \to q$ = "If it is raining, then I carry an umbrella" is a compound proposition.
+
+---
+
+## 2. Logical Connectives
+
+Logical connectives are operators that combine one or more propositions to form new compound propositions. There are five principal connectives in standard propositional logic.
+
+### 2.1 Negation (NOT) — $\lnot$
+
+The **negation** of a proposition $p$, written $\lnot p$ (read "not $p$"), reverses its truth value. Negation is a **unary** connective — it operates on a single proposition.
+
+**Truth Table for Negation:**
+
+| $p$ | $\lnot p$ |
+|:---:|:---:|
+| T | F |
+| F | T |
+
+**Natural language equivalents:** "It is not the case that $p$", "It is false that $p$".
+
+**Example:** If $p$ = "The sky is blue," then $\lnot p$ = "The sky is not blue."
+
+### 2.2 Conjunction (AND) — $\land$
+
+The **conjunction** of $p$ and $q$, written $p \land q$ (read "$p$ and $q$"), is true only when **both** $p$ and $q$ are true.
+
+**Truth Table for Conjunction:**
+
+| $p$ | $q$ | $p \land q$ |
+|:---:|:---:|:---:|
+| T | T | T |
+| T | F | F |
+| F | T | F |
+| F | F | F |
+
+**Key observation:** Conjunction is the logical analog of multiplication in Boolean algebra: $1 \cdot 1 = 1$, and anything multiplied by $0$ is $0$.
+
+**Natural language equivalents:** "$p$ and $q$", "$p$ but $q$", "$p$ yet $q$", "$p$ while $q$", "$p$ although $q$".
+
+### 2.3 Disjunction (OR) — $\lor$
+
+The **disjunction** of $p$ and $q$, written $p \lor q$ (read "$p$ or $q$"), is true when **at least one** of $p$ or $q$ is true. This is the **inclusive OR** — it includes the case where both are true.
+
+**Truth Table for Disjunction:**
+
+| $p$ | $q$ | $p \lor q$ |
+|:---:|:---:|:---:|
+| T | T | T |
+| T | F | T |
+| F | T | T |
+| F | F | F |
+
+**Key observation:** Disjunction is false **only** when both operands are false. In Boolean algebra, it corresponds to addition clipped at 1.
+
+**Note on Exclusive OR (XOR):** The exclusive disjunction $p \oplus q$ is true when exactly one of $p$ or $q$ is true. It can be expressed as $(p \lor q) \land \lnot(p \land q)$. While XOR appears occasionally in exams, the standard "or" ($\lor$) in logic is always inclusive.
+
+### 2.4 Implication (Conditional) — $\to$
+
+The **implication** (or **conditional**) $p \to q$ (read "if $p$, then $q$") is one of the most important and most misunderstood connectives. Here, $p$ is called the **hypothesis** (or antecedent), and $q$ is the **conclusion** (or consequent).
+
+**Truth Table for Implication:**
+
+| $p$ | $q$ | $p \to q$ |
+|:---:|:---:|:---:|
+| T | T | T |
+| T | F | F |
+| F | T | T |
+| F | F | T |
+
+**The critical insight:** An implication $p \to q$ is false **only** when the hypothesis is true and the conclusion is false. When the hypothesis is false, the implication is **vacuously true** — a false premise can imply anything.
+
+**Why is "F → T" true?** Consider the statement: "If it rains, I will carry an umbrella." Suppose it does not rain (F). Whether or not you carry an umbrella (T or F), you have not violated the promise. The promise is broken only when it rains (T) and you do NOT carry an umbrella (F).
+
+**Natural language equivalents:** "If $p$ then $q$", "$p$ implies $q$", "$p$ only if $q$", "$q$ if $p$", "$p$ is sufficient for $q$", "$q$ is necessary for $p$", "$q$ whenever $p$", "$q$ unless $\lnot p$".
+
+> **Exam Alert:** "$p$ only if $q$" means $p \to q$ (NOT $q \to p$). This is a frequently tested translation.
+
+### 2.5 Biconditional — $\leftrightarrow$
+
+The **biconditional** $p \leftrightarrow q$ (read "$p$ if and only if $q$", abbreviated "iff") is true when $p$ and $q$ have the **same truth value**.
+
+**Truth Table for Biconditional:**
+
+| $p$ | $q$ | $p \leftrightarrow q$ |
+|:---:|:---:|:---:|
+| T | T | T |
+| T | F | F |
+| F | T | F |
+| F | F | T |
+
+**Key observation:** $p \leftrightarrow q$ is equivalent to $(p \to q) \land (q \to p)$. It is also the negation of XOR: $p \leftrightarrow q \equiv \lnot(p \oplus q)$.
+
+**Natural language equivalents:** "$p$ if and only if $q$", "$p$ is necessary and sufficient for $q$", "$p$ exactly when $q$".
+
+### 2.6 Precedence (Priority) of Logical Connectives
+
+When a formula contains multiple connectives without parentheses, the following precedence order determines the grouping (from highest to lowest precedence):
+
+| Priority | Connective | Symbol | Associativity |
+|:---:|---|:---:|---|
+| 1 (Highest) | Negation | $\lnot$ | Right to left |
+| 2 | Conjunction | $\land$ | Left to right |
+| 3 | Disjunction | $\lor$ | Left to right |
+| 4 | Implication | $\to$ | Right to left |
+| 5 (Lowest) | Biconditional | $\leftrightarrow$ | Left to right |
+
+**Mnemonic:** **N**ot **A**nd **O**r **I**mplies **I**ff — "NAOII" or think "Not And Or → ↔"
+
+**Example:** The formula $\lnot p \land q \lor r \to s$ is parsed as:
+
+$$
+((\lnot p) \land q) \lor r) \to s
+$$
+
+Step by step: First, $\lnot$ binds to $p$. Then $\land$ groups $\lnot p$ with $q$. Then $\lor$ groups the result with $r$. Finally, $\to$ connects everything to $s$.
+
+---
+
+## 3. Well-Formed Formulas (WFFs)
+
+### 3.1 Recursive Definition
+
+Not every string of symbols is a meaningful logical expression. A **Well-Formed Formula (WFF)** is a syntactically correct proposition built according to strict rules. The recursive definition is:
+
+**Basis (Base Case):**
+1. Every propositional variable ($p, q, r, \ldots$) is a WFF.
+2. The constants **T** (True) and **F** (False) are WFFs.
+
+**Recursive (Inductive) Step:**
+3. If $\alpha$ is a WFF, then $(\lnot \alpha)$ is a WFF.
+4. If $\alpha$ and $\beta$ are WFFs, then each of the following is a WFF:
+   - $(\alpha \land \beta)$
+   - $(\alpha \lor \beta)$
+   - $(\alpha \to \beta)$
+   - $(\alpha \leftrightarrow \beta)$
+
+**Closure:** Nothing else is a WFF.
+
+### 3.2 Examples
+
+| Expression | WFF? | Reason |
+|---|:---:|---|
+| $p$ | [CORRECT] | Atomic proposition (base case) |
+| $\lnot p$ | [CORRECT] | Negation of a WFF |
+| $p \land q$ | [CORRECT] | Conjunction of two WFFs |
+| $p \to (q \lor r)$ | [CORRECT] | Implication with WFFs on both sides |
+| $\land p q$ | [INCORRECT] | Connective cannot precede both operands (not infix) |
+| $p \land \lor q$ | [INCORRECT] | Two binary connectives in sequence without operand |
+| $p q$ | [INCORRECT] | No connective between two propositions |
+| $\lnot$ | [INCORRECT] | Connective without an operand |
+| $(p \land (q \to r)) \leftrightarrow s$ | [CORRECT] | Properly nested compound WFF |
+
+### 3.3 Parse Trees
+
+A **parse tree** (or **formation tree**) visually represents the hierarchical structure of a WFF. The root of the tree is the main (outermost) connective, and the leaves are atomic propositions.
+
+**Example:** Parse tree for $(p \land q) \to (\lnot r \lor s)$:
+
+```
+        →
+       / \
+      ∧    ∨
+     / \  / \
+    p   q ¬   s
+          |
+          r
+```
+
+The main connective is $\to$ (at the root). The left subtree represents $p \land q$, and the right subtree represents $\lnot r \lor s$. Parse trees are useful for determining the order of evaluation and for converting formulas into normal forms.
+
+---
+
+## 4. Truth Table Construction
+
+### 4.1 Systematic Method
+
+A truth table evaluates a compound proposition for **every possible combination** of truth values of its atomic propositions. If a formula contains $n$ distinct propositional variables, then:
+
+$$
+\text{Number of rows} = 2^n
+$$
+
+This is because each variable can independently take one of two values (T or F), giving $2 \times 2 \times \cdots \times 2 = 2^n$ combinations.
+
+| Variables ($n$) | Rows ($2^n$) |
+|:---:|:---:|
+| 1 | 2 |
+| 2 | 4 |
+| 3 | 8 |
+| 4 | 16 |
+| 5 | 32 |
+
+**Systematic ordering:** The standard convention lists truth values in decreasing binary order. For $n = 3$ variables ($p, q, r$):
+- $p$ alternates every $2^{n-1} = 4$ rows: T T T T F F F F
+- $q$ alternates every $2^{n-2} = 2$ rows: T T F F T T F F
+- $r$ alternates every $2^{n-3} = 1$ row: T F T F T F T F
+
+### 4.2 Complete Worked Example (3 Variables)
+
+**Problem:** Construct the truth table for $(p \to q) \land (q \to r) \to (p \to r)$.
+
+This formula represents the **Hypothetical Syllogism** — "If $p$ implies $q$ and $q$ implies $r$, then $p$ implies $r$."
+
+**Step 1:** Identify sub-formulas: $p \to q$, $q \to r$, $(p \to q) \land (q \to r)$, $p \to r$, and the full formula.
+
+**Step 2:** Build the table with $2^3 = 8$ rows.
+
+| $p$ | $q$ | $r$ | $p \to q$ | $q \to r$ | $(p \to q) \land (q \to r)$ | $p \to r$ | **Full Formula** |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| T | T | T | T | T | T | T | **T** |
+| T | T | F | T | F | F | F | **T** |
+| T | F | T | F | T | F | T | **T** |
+| T | F | F | F | F | F | F | **T** |
+| F | T | T | T | T | T | T | **T** |
+| F | T | F | T | F | F | T | **T** |
+| F | F | T | T | T | T | T | **T** |
+| F | F | F | T | T | T | T | **T** |
+
+**Observation:** The final column contains **all T's**, which means this formula is a **tautology**. Hypothetical Syllogism is a logically valid argument form.
+
+**Verification note:** In row 2, $(p \to q) \land (q \to r) = F$, and $p \to r = F$. But $F \to F = T$ (a false hypothesis makes the implication vacuously true).
+
+---
+
+## 5. Tautology, Contradiction, and Contingency
+
+### 5.1 Definitions
+
+Every compound proposition falls into exactly one of three categories based on the results of its truth table:
+
+| Category | Definition | Truth Table Characteristic |
+|---|---|---|
+| **Tautology** | A formula that is **always true** regardless of the truth values of its components | All entries in the final column are **T** |
+| **Contradiction** | A formula that is **always false** regardless of the truth values of its components | All entries in the final column are **F** |
+| **Contingency** | A formula that is **sometimes true and sometimes false** depending on the truth values of its components | The final column contains a **mix** of T and F |
+
+### 5.2 Key Tautology Examples
+
+**Example 1: Law of Excluded Middle — $p \lor \lnot p$**
+
+| $p$ | $\lnot p$ | $p \lor \lnot p$ |
+|:---:|:---:|:---:|
+| T | F | **T** |
+| F | T | **T** |
+
+All entries are T → **Tautology**. This is the principle that every proposition must be either true or false.
+
+**Example 2: Self-Implication — $p \to p$**
+
+| $p$ | $p \to p$ |
+|:---:|:---:|
+| T | **T** |
+| F | **T** |
+
+All entries are T → **Tautology**. Every proposition implies itself.
+
+**Example 3: Modus Ponens Form — $(p \land (p \to q)) \to q$**
+
+| $p$ | $q$ | $p \to q$ | $p \land (p \to q)$ | $(p \land (p \to q)) \to q$ |
+|:---:|:---:|:---:|:---:|:---:|
+| T | T | T | T | **T** |
+| T | F | F | F | **T** |
+| F | T | T | F | **T** |
+| F | F | T | F | **T** |
+
+All entries are T → **Tautology**. This validates the rule of Modus Ponens.
+
+### 5.3 Key Contradiction Examples
+
+**Example 1: $p \land \lnot p$**
+
+| $p$ | $\lnot p$ | $p \land \lnot p$ |
+|:---:|:---:|:---:|
+| T | F | **F** |
+| F | T | **F** |
+
+All entries are F → **Contradiction**. A proposition and its negation cannot both be true (Law of Non-Contradiction).
+
+**Example 2: $(p \to q) \land (p \land \lnot q)$**
+
+| $p$ | $q$ | $p \to q$ | $\lnot q$ | $p \land \lnot q$ | $(p \to q) \land (p \land \lnot q)$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| T | T | T | F | F | **F** |
+| T | F | F | T | T | **F** |
+| F | T | T | F | F | **F** |
+| F | F | T | T | F | **F** |
+
+All entries are F → **Contradiction**.
+
+### 5.4 Key Contingency Example
+
+**Example: $p \to q$**
+
+| $p$ | $q$ | $p \to q$ |
+|:---:|:---:|:---:|
+| T | T | **T** |
+| T | F | **F** |
+| F | T | **T** |
+| F | F | **T** |
+
+Mixed T and F values → **Contingency**. Most compound propositions you encounter in everyday logic are contingencies.
+
+### 5.5 Important Relationships
+
+The following relationships between tautologies, contradictions, and contingencies are frequently tested:
+
+1. **$\alpha$ is a tautology** $\Leftrightarrow$ **$\lnot\alpha$ is a contradiction**.
+2. **$\alpha$ is a contradiction** $\Leftrightarrow$ **$\lnot\alpha$ is a tautology**.
+3. The negation of a contingency is also a contingency.
+4. If $\alpha$ is a tautology and $\beta$ is any formula, then $\alpha \lor \beta$ is a tautology.
+5. If $\alpha$ is a contradiction and $\beta$ is any formula, then $\alpha \land \beta$ is a contradiction.
+6. Tautology $\land$ Tautology = Tautology.
+7. Contradiction $\lor$ Contradiction = Contradiction.
+
+---
+
+## 6. Logical Equivalences — The Complete Reference
+
+Two propositions $\alpha$ and $\beta$ are **logically equivalent**, written $\alpha \equiv \beta$, if they have the **same truth value** in every possible interpretation — i.e., their truth tables produce identical final columns. Equivalently, $\alpha \equiv \beta$ if and only if $\alpha \leftrightarrow \beta$ is a tautology.
+
+### 6.1 Complete Table of Standard Logical Equivalences
+
+| # | Law | Equivalence |
+|:---:|---|---|
+| 1 | **Identity Laws** | $p \land T \equiv p$ and $p \lor F \equiv p$ |
+| 2 | **Domination Laws** | $p \lor T \equiv T$ and $p \land F \equiv F$ |
+| 3 | **Idempotent Laws** | $p \land p \equiv p$ and $p \lor p \equiv p$ |
+| 4 | **Double Negation** | $\lnot(\lnot p) \equiv p$ |
+| 5 | **Commutative Laws** | $p \land q \equiv q \land p$ and $p \lor q \equiv q \lor p$ |
+| 6 | **Associative Laws** | $(p \land q) \land r \equiv p \land (q \land r)$ and $(p \lor q) \lor r \equiv p \lor (q \lor r)$ |
+| 7 | **Distributive Laws** | $p \land (q \lor r) \equiv (p \land q) \lor (p \land r)$ and $p \lor (q \land r) \equiv (p \lor q) \land (p \lor r)$ |
+| 8 | **De Morgan's Laws** | $\lnot(p \land q) \equiv \lnot p \lor \lnot q$ and $\lnot(p \lor q) \equiv \lnot p \land \lnot q$ |
+| 9 | **Absorption Laws** | $p \land (p \lor q) \equiv p$ and $p \lor (p \land q) \equiv p$ |
+| 10 | **Negation Laws** | $p \lor \lnot p \equiv T$ and $p \land \lnot p \equiv F$ |
+| 11 | **Implication Elimination** | $p \to q \equiv \lnot p \lor q$ |
+| 12 | **Biconditional Elimination** | $p \leftrightarrow q \equiv (p \to q) \land (q \to p)$ |
+| 13 | **Contrapositive** | $p \to q \equiv \lnot q \to \lnot p$ |
+| 14 | **Exportation** | $(p \land q) \to r \equiv p \to (q \to r)$ |
+
+### 6.2 De Morgan's Laws — Detailed Proof by Truth Table
+
+De Morgan's Laws are among the most frequently tested equivalences. Let us prove both rigorously.
+
+**Law 1: $\lnot(p \land q) \equiv \lnot p \lor \lnot q$**
+
+| $p$ | $q$ | $p \land q$ | $\lnot(p \land q)$ | $\lnot p$ | $\lnot q$ | $\lnot p \lor \lnot q$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| T | T | T | **F** | F | F | **F** |
+| T | F | F | **T** | F | T | **T** |
+| F | T | F | **T** | T | F | **T** |
+| F | F | F | **T** | T | T | **T** |
+
+Columns 4 and 7 are identical → **Proved**. [CORRECT]
+
+**Intuition:** "It is not the case that both $p$ and $q$ are true" means "at least one of them is false," which is "$\lnot p$ or $\lnot q$."
+
+**Law 2: $\lnot(p \lor q) \equiv \lnot p \land \lnot q$**
+
+| $p$ | $q$ | $p \lor q$ | $\lnot(p \lor q)$ | $\lnot p$ | $\lnot q$ | $\lnot p \land \lnot q$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| T | T | T | **F** | F | F | **F** |
+| T | F | T | **F** | F | T | **F** |
+| F | T | T | **F** | T | F | **F** |
+| F | F | F | **T** | T | T | **T** |
+
+Columns 4 and 7 are identical → **Proved**. [CORRECT]
+
+**Intuition:** "Neither $p$ nor $q$ is true" means "both are false," which is "$\lnot p$ and $\lnot q$."
+
+### 6.3 Distributive Laws — Proof
+
+**Law: $p \land (q \lor r) \equiv (p \land q) \lor (p \land r)$**
+
+| $p$ | $q$ | $r$ | $q \lor r$ | $p \land (q \lor r)$ | $p \land q$ | $p \land r$ | $(p \land q) \lor (p \land r)$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| T | T | T | T | **T** | T | T | **T** |
+| T | T | F | T | **T** | T | F | **T** |
+| T | F | T | T | **T** | F | T | **T** |
+| T | F | F | F | **F** | F | F | **F** |
+| F | T | T | T | **F** | F | F | **F** |
+| F | T | F | T | **F** | F | F | **F** |
+| F | F | T | T | **F** | F | F | **F** |
+| F | F | F | F | **F** | F | F | **F** |
+
+Columns 5 and 8 are identical → **Proved**. [CORRECT]
+
+### 6.4 Absorption Laws — Proof
+
+**Law: $p \lor (p \land q) \equiv p$**
+
+| $p$ | $q$ | $p \land q$ | $p \lor (p \land q)$ |
+|:---:|:---:|:---:|:---:|
+| T | T | T | **T** |
+| T | F | F | **T** |
+| F | T | F | **F** |
+| F | F | F | **F** |
+
+The final column matches $p$ in all rows → **Proved**. [CORRECT]
+
+**Intuition:** If $p$ is true, $p \lor \text{anything}$ is true. If $p$ is false, $p \land q$ is false, so $F \lor F = F$. Either way, the result equals $p$.
+
+### 6.5 Contrapositive, Converse, and Inverse
+
+Given an implication $p \to q$, three related conditionals are:
+
+| Name | Form | Relationship to $p \to q$ |
+|---|---|---|
+| **Contrapositive** | $\lnot q \to \lnot p$ | **Logically equivalent** to $p \to q$ |
+| **Converse** | $q \to p$ | **NOT** logically equivalent to $p \to q$ |
+| **Inverse** | $\lnot p \to \lnot q$ | **NOT** logically equivalent to $p \to q$ |
+
+**Critical facts:**
+- The **converse** and **inverse** are logically equivalent to each other: $q \to p \equiv \lnot p \to \lnot q$.
+- The **original** and the **contrapositive** are logically equivalent: $p \to q \equiv \lnot q \to \lnot p$.
+- If an implication and its converse are both true, we have a biconditional: $(p \to q) \land (q \to p) \equiv p \leftrightarrow q$.
+
+**Proof that $p \to q \equiv \lnot q \to \lnot p$:**
+
+| $p$ | $q$ | $p \to q$ | $\lnot q$ | $\lnot p$ | $\lnot q \to \lnot p$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| T | T | **T** | F | F | **T** |
+| T | F | **F** | T | F | **F** |
+| F | T | **T** | F | T | **T** |
+| F | F | **T** | T | T | **T** |
+
+Columns 3 and 6 are identical → **Proved**. [CORRECT]
+
+### 6.6 Implication Elimination
+
+This is one of the most frequently used equivalences in simplification:
+
+$$
+p \to q \equiv \lnot p \lor q
+$$
+
+**Proof:**
+
+| $p$ | $q$ | $p \to q$ | $\lnot p$ | $\lnot p \lor q$ |
+|:---:|:---:|:---:|:---:|:---:|
+| T | T | **T** | F | **T** |
+| T | F | **F** | F | **F** |
+| F | T | **T** | T | **T** |
+| F | F | **T** | T | **T** |
+
+Columns 3 and 5 are identical → **Proved**. [CORRECT]
+
+This equivalence is the gateway to converting implications into CNF/DNF form, since CNF and DNF use only $\land$, $\lor$, and $\lnot$.
+
+---
+
+## 7. Satisfiability
+
+### 7.1 Definition
+
+A propositional formula $\alpha$ is said to be **satisfiable** if there exists **at least one assignment** of truth values to its variables that makes $\alpha$ true. If no such assignment exists — i.e., $\alpha$ is false under every interpretation — then $\alpha$ is **unsatisfiable**.
+
+| Category | Satisfiable? | Example |
+|---|:---:|---|
+| **Tautology** | Yes (true under ALL assignments) | $p \lor \lnot p$ |
+| **Contingency** | Yes (true under SOME assignments) | $p \land q$ |
+| **Contradiction** | No (true under NO assignment) | $p \land \lnot p$ |
+
+### 7.2 The SAT Problem
+
+The **Boolean Satisfiability Problem (SAT)** asks: "Given a propositional formula, is it satisfiable?" SAT was the first problem proven to be **NP-complete** (Cook-Levin Theorem, 1971). This means:
+
+1. If a satisfying assignment exists, it can be **verified** in polynomial time.
+2. No known polynomial-time algorithm can **find** a satisfying assignment for all formulas.
+3. Every problem in NP can be reduced to SAT in polynomial time.
+
+**Special cases:**
+- **2-SAT** (each clause has at most 2 literals): Solvable in **polynomial time** ($O(n)$ using strongly connected components in the implication graph).
+- **3-SAT** (each clause has exactly 3 literals): **NP-complete**.
+- **Horn-SAT** (each clause has at most one positive literal): Solvable in **polynomial time** (using unit propagation).
+
+### 7.3 Relationship Between Tautology and Unsatisfiability
+
+This is a fundamental duality that is frequently tested:
+
+$$
+\alpha \text{ is a tautology} \iff \lnot\alpha \text{ is unsatisfiable (a contradiction)}
+$$
+
+**Proof:** $\alpha$ is a tautology means $\alpha$ is true under every interpretation. Therefore, $\lnot\alpha$ is false under every interpretation, which means $\lnot\alpha$ is unsatisfiable.
+
+**Application:** To check if $\alpha$ is a tautology, we can instead check if $\lnot\alpha$ is unsatisfiable. This approach is used in **resolution-based theorem proving** and **SAT solvers**.
+
+---
+
+## 8. Normal Forms
+
+Normal forms are standardized representations of propositional formulas. They are essential for automated reasoning, circuit design, and exam problem-solving.
+
+### 8.1 Preliminaries: Literals, Clauses, Minterms, Maxterms
+
+**Literal:** A propositional variable or its negation. Examples: $p$, $\lnot q$, $r$, $\lnot s$.
+- A **positive literal** is a variable itself: $p$.
+- A **negative literal** (or **complemented literal**) is the negation of a variable: $\lnot p$.
+
+**Clause:** A disjunction (OR) of literals. Example: $p \lor \lnot q \lor r$.
+
+**Minterm:** A conjunction (AND) of literals in which **every variable** of the formula appears exactly once (either complemented or uncomplemented). For $n$ variables, there are $2^n$ possible minterms. For variables $p, q$:
+
+| Minterm | Binary | Decimal | Notation |
+|---|:---:|:---:|:---:|
+| $\lnot p \land \lnot q$ | 00 | 0 | $m_0$ |
+| $\lnot p \land q$ | 01 | 1 | $m_1$ |
+| $p \land \lnot q$ | 10 | 2 | $m_2$ |
+| $p \land q$ | 11 | 3 | $m_3$ |
+
+A minterm evaluates to **T** for exactly **one** row of the truth table.
+
+**Maxterm:** A disjunction (OR) of literals in which every variable appears exactly once. A maxterm evaluates to **F** for exactly **one** row of the truth table. For variables $p, q$:
+
+| Maxterm | Binary | Decimal | Notation |
+|---|:---:|:---:|:---:|
+| $p \lor q$ | 00 | 0 | $M_0$ |
+| $p \lor \lnot q$ | 01 | 1 | $M_1$ |
+| $\lnot p \lor q$ | 10 | 2 | $M_2$ |
+| $\lnot p \lor \lnot q$ | 11 | 3 | $M_3$ |
+
+> **Important Convention:** In minterms, the variable appears uncomplemented for binary 1 and complemented for binary 0. In maxterms, it is **reversed**: the variable appears **complemented** for binary 1 and **uncomplemented** for binary 0. Maxterm $M_i$ is the complement of minterm $m_i$: $M_i = \lnot m_i$.
+
+### 8.2 Disjunctive Normal Form (DNF)
+
+A formula is in **Disjunctive Normal Form (DNF)** if it is a **disjunction of conjunctive clauses** — i.e., an OR of ANDs:
+
+$$
+\text{DNF: } (l_{11} \land l_{12} \land \cdots) \lor (l_{21} \land l_{22} \land \cdots) \lor \cdots
+$$
+
+where each $l_{ij}$ is a literal.
+
+**Example:** $(p \land q) \lor (\lnot p \land r) \lor (q \land \lnot r)$ is in DNF.
+
+**Conversion Algorithm (to DNF):**
+
+1. **Eliminate implications and biconditionals:**
+   - Replace $p \to q$ with $\lnot p \lor q$
+   - Replace $p \leftrightarrow q$ with $(\lnot p \lor q) \land (\lnot q \lor p)$
+
+2. **Push negations inward** using De Morgan's Laws and Double Negation:
+   - $\lnot(p \land q) \Rightarrow \lnot p \lor \lnot q$
+   - $\lnot(p \lor q) \Rightarrow \lnot p \land \lnot q$
+   - $\lnot(\lnot p) \Rightarrow p$
+
+3. **Distribute $\land$ over $\lor$** (apply distributive law):
+   - $p \land (q \lor r) \Rightarrow (p \land q) \lor (p \land r)$
+
+4. **Simplify** using idempotent and complementation laws.
+
+**Worked Example:** Convert $(p \to q) \land r$ to DNF.
+
+- Step 1: Eliminate $\to$: $(\lnot p \lor q) \land r$
+- Step 2: No negations to push.
+- Step 3: Distribute $\land$ over $\lor$: $(\lnot p \land r) \lor (q \land r)$
+- **Result:** $(\lnot p \land r) \lor (q \land r)$ — this is in DNF. [CORRECT]
+
+### 8.3 Conjunctive Normal Form (CNF)
+
+A formula is in **Conjunctive Normal Form (CNF)** if it is a **conjunction of disjunctive clauses** — i.e., an AND of ORs:
+
+$$
+\text{CNF: } (l_{11} \lor l_{12} \lor \cdots) \land (l_{21} \lor l_{22} \lor \cdots) \land \cdots
+$$
+
+where each $l_{ij}$ is a literal.
+
+**Example:** $(p \lor q) \land (\lnot p \lor r) \land (q \lor \lnot r)$ is in CNF.
+
+**Conversion Algorithm (to CNF):**
+
+1. **Eliminate implications and biconditionals** (same as DNF Step 1).
+2. **Push negations inward** (same as DNF Step 2).
+3. **Distribute $\lor$ over $\land$:**
+   - $p \lor (q \land r) \Rightarrow (p \lor q) \land (p \lor r)$
+4. **Simplify.**
+
+**Worked Example:** Convert $\lnot(p \to q)$ to CNF.
+
+- Step 1: Eliminate $\to$: $\lnot(\lnot p \lor q)$
+- Step 2: De Morgan's: $p \land \lnot q$
+- Step 3: This is already a conjunction of single-literal clauses, which is technically CNF (each clause has one literal).
+- **Result:** $p \land \lnot q$ — this is in CNF. [CORRECT]
+
+**Worked Example:** Convert $p \lor (q \land r)$ to CNF.
+
+- Step 1: No implications to eliminate.
+- Step 2: No negations to push.
+- Step 3: Distribute $\lor$ over $\land$: $(p \lor q) \land (p \lor r)$
+- **Result:** $(p \lor q) \land (p \lor r)$ — this is in CNF. [CORRECT]
+
+### 8.4 Principal (Canonical) DNF and CNF from Truth Tables
+
+The **Principal DNF** (also called **Canonical Sum-of-Products**) and **Principal CNF** (also called **Canonical Product-of-Sums**) are unique normal form representations derived directly from a truth table.
+
+**Rule for Principal DNF:**
+- For each row where the formula is **TRUE**, write the corresponding **minterm**.
+- The Principal DNF is the **disjunction (OR)** of all such minterms.
+
+**Rule for Principal CNF:**
+- For each row where the formula is **FALSE**, write the corresponding **maxterm**.
+- The Principal CNF is the **conjunction (AND)** of all such maxterms.
+
+**Complete Worked Example:** Find the Principal DNF and CNF for $p \to q$.
+
+**Truth Table:**
+
+| Row | $p$ | $q$ | $p \to q$ | Minterm | Maxterm |
+|:---:|:---:|:---:|:---:|---|---|
+| 0 | T | T | **T** | $m_3 = p \land q$ | — |
+| 1 | T | F | **F** | — | $M_2 = \lnot p \lor q$ |
+| 2 | F | T | **T** | $m_1 = \lnot p \land q$ | — |
+| 3 | F | F | **T** | $m_0 = \lnot p \land \lnot q$ | — |
+
+**Principal DNF** (OR of minterms where result is T):
+
+$$
+p \to q \equiv (p \land q) \lor (\lnot p \land q) \lor (\lnot p \land \lnot q)
+$$
+
+In shorthand notation: $\sum m(0, 1, 3)$
+
+**Principal CNF** (AND of maxterms where result is F):
+
+$$
+p \to q \equiv (\lnot p \lor q)
+$$
+
+In shorthand notation: $\prod M(2)$
+
+**Verification:** $\lnot p \lor q$ is indeed equivalent to $p \to q$ (implication elimination), confirming our result.
+
+---
+
+## 9. Logical Implication vs. Logical Equivalence
+
+These two concepts are often confused but are fundamentally distinct:
+
+| Aspect | Logical Implication | Logical Equivalence |
+|---|---|---|
+| **Notation** | $\alpha \Rightarrow \beta$ or $\alpha \models \beta$ | $\alpha \equiv \beta$ or $\alpha \Leftrightarrow \beta$ |
+| **Meaning** | Whenever $\alpha$ is true, $\beta$ is also true | $\alpha$ and $\beta$ have the same truth value in every interpretation |
+| **Truth table test** | $\alpha \to \beta$ is a **tautology** | $\alpha \leftrightarrow \beta$ is a **tautology** |
+| **Symmetry** | **Not symmetric**: $\alpha \Rightarrow \beta$ does NOT imply $\beta \Rightarrow \alpha$ | **Symmetric**: $\alpha \equiv \beta$ implies $\beta \equiv \alpha$ |
+| **Substitutability** | Cannot substitute $\alpha$ for $\beta$ in formulas | Can substitute $\alpha$ for $\beta$ freely |
+
+**Example:** $p \land q \Rightarrow p$ (logical implication — whenever both are true, $p$ is certainly true). But $p \land q \not\equiv p$ (they are not logically equivalent — consider $p = T, q = F$).
+
+**Logical equivalence implies mutual logical implication:** $\alpha \equiv \beta$ if and only if ($\alpha \Rightarrow \beta$ and $\beta \Rightarrow \alpha$).
+
+---
+
+## 10. Arguments and Validity
+
+### 10.1 What Is an Argument?
+
+An **argument** in propositional logic is a sequence of propositions: the **premises** $P_1, P_2, \ldots, P_n$ and a **conclusion** $C$. The argument is written as:
+
+$$
+P_1, P_2, \ldots, P_n \therefore C
+$$
+
+or equivalently:
+
+$$
+P_1 \land P_2 \land \cdots \land P_n \to C
+$$
+
+### 10.2 Valid Arguments
+
+An argument is **valid** if the conclusion is true whenever **all** the premises are true simultaneously. Formally, the argument is valid if and only if:
+
+$$
+(P_1 \land P_2 \land \cdots \land P_n) \to C \text{ is a tautology}
+$$
+
+Note that a valid argument can have a false conclusion — as long as at least one premise is also false (making the conjunction of premises false, and the implication vacuously true).
+
+### 10.3 Rules of Inference
+
+Rules of inference are **valid argument forms** — tautologies that serve as templates for deriving new truths from known truths. Here are the eight fundamental rules:
+
+| # | Rule | Tautological Form | Pattern |
+|:---:|---|---|---|
+| 1 | **Modus Ponens** | $(p \land (p \to q)) \to q$ | $p$, $p \to q$ $\therefore q$ |
+| 2 | **Modus Tollens** | $(\lnot q \land (p \to q)) \to \lnot p$ | $\lnot q$, $p \to q$ $\therefore \lnot p$ |
+| 3 | **Hypothetical Syllogism** | $((p \to q) \land (q \to r)) \to (p \to r)$ | $p \to q$, $q \to r$ $\therefore p \to r$ |
+| 4 | **Disjunctive Syllogism** | $((p \lor q) \land \lnot p) \to q$ | $p \lor q$, $\lnot p$ $\therefore q$ |
+| 5 | **Addition** | $p \to (p \lor q)$ | $p$ $\therefore p \lor q$ |
+| 6 | **Simplification** | $(p \land q) \to p$ | $p \land q$ $\therefore p$ |
+| 7 | **Conjunction** | $((p) \land (q)) \to (p \land q)$ | $p$, $q$ $\therefore p \land q$ |
+| 8 | **Resolution** | $((p \lor q) \land (\lnot p \lor r)) \to (q \lor r)$ | $p \lor q$, $\lnot p \lor r$ $\therefore q \lor r$ |
+
+### 10.4 Detailed Study of Key Rules
+
+**Modus Ponens (Law of Detachment):**
+
+This is the most fundamental rule. "If it rains, the ground is wet. It is raining. Therefore, the ground is wet."
+
+```
+Premise 1:   p → q
+Premise 2:   p
+─────────────────
+Conclusion:  q
+```
+
+**Modus Tollens (Contrapositive Reasoning):**
+
+"If it rains, the ground is wet. The ground is NOT wet. Therefore, it is NOT raining."
+
+```
+Premise 1:   p → q
+Premise 2:   ¬q
+─────────────────
+Conclusion:  ¬p
+```
+
+**Resolution:**
+
+Resolution is the foundation of automated theorem proving. It works on clauses in CNF:
+
+```
+Premise 1:   p ∨ q       (clause containing p)
+Premise 2:   ¬p ∨ r      (clause containing ¬p)
+─────────────────
+Conclusion:  q ∨ r       (resolvent — p and ¬p cancel out)
+```
+
+The variable $p$ that appears in complementary form in the two clauses is called the **resolved variable**. If resolution produces an **empty clause** ($\square$), the original set of clauses is **unsatisfiable**.
+
+### 10.5 Worked Example: Proving Argument Validity
+
+**Problem:** Prove the validity of the following argument:
+- Premise 1: $p \to q$
+- Premise 2: $q \to r$
+- Premise 3: $\lnot r$
+- Conclusion: $\lnot p$
+
+**Proof using rules of inference:**
+
+| Step | Statement | Justification |
+|:---:|---|---|
+| 1 | $q \to r$ | Premise 2 |
+| 2 | $\lnot r$ | Premise 3 |
+| 3 | $\lnot q$ | Modus Tollens on steps 1 and 2 |
+| 4 | $p \to q$ | Premise 1 |
+| 5 | $\lnot p$ | Modus Tollens on steps 4 and 3 |
+
+The conclusion $\lnot p$ is derived. The argument is **valid**. [CORRECT]
+
+---
+
+## 11. Exam Speed Tricks
+
+### 11.1 Shortcut: "Try to Make It False" for Tautology Detection
+
+Instead of building a full truth table, use this faster technique to check if a formula is a tautology:
+
+**Method:** Assume the formula is **false** and try to find a consistent assignment of truth values. If you reach a **contradiction**, the formula is a tautology.
+
+**Example:** Is $(p \to q) \to (\lnot q \to \lnot p)$ a tautology?
+
+1. Assume the formula is **False**: For $A \to B$ to be false, we need $A = T$ and $B = F$.
+2. So $p \to q = T$ and $\lnot q \to \lnot p = F$.
+3. For $\lnot q \to \lnot p = F$: we need $\lnot q = T$ (i.e., $q = F$) and $\lnot p = F$ (i.e., $p = T$).
+4. Now check: $p = T, q = F$. Is $p \to q = T$? We get $T \to F = F$. But we need $p \to q = T$. **Contradiction!**
+5. Therefore, the formula cannot be false → it is a **tautology**. [CORRECT]
+
+### 11.2 Shortcut: Counting T/F Values in Implication
+
+For quickly evaluating $p \to q$, remember:
+- **The only case that gives F is T → F.** All other cases give T.
+- If you see the antecedent is False in a given row, immediately write T for the implication (without even checking $q$).
+
+### 11.3 Shortcut: Negation of Implication
+
+$$
+\lnot(p \to q) \equiv p \land \lnot q
+$$
+
+This is extremely useful. The negation of "if $p$ then $q$" is "$p$ and not $q$" — the one case where the implication fails.
+
+### 11.4 Shortcut: Quick DNF/CNF from Inspection
+
+For a formula with 2 variables, if you know the truth values, you can directly write the canonical forms:
+- Count the T rows → write DNF as the OR of corresponding minterms.
+- Count the F rows → write CNF as the AND of corresponding maxterms.
+
+For $n$ variables, if the number of T rows is less than the number of F rows, DNF will be shorter. If F rows are fewer, CNF will be shorter. Use the shorter form for quick computation.
+
+### 11.5 Shortcut: Equivalence Check Without Full Truth Table
+
+To check if $\alpha \equiv \beta$, check if $\alpha \oplus \beta$ (XOR) is a contradiction. Alternatively, find one row where they differ — if such a row exists, they are NOT equivalent.
+
+### 11.6 Shortcut: Handling 4-Variable Truth Tables
+
+With 4 variables, you have 16 rows. To save time in exams:
+
+1. **Evaluate only the critical rows.** If checking for tautology, look for ANY row where the result is F. If you find one, stop — it is NOT a tautology.
+2. **Use known equivalences** to simplify before building the table. For example, convert $p \to q$ to $\lnot p \lor q$ first.
+3. **Group rows by the value of the main connective's antecedent.** If the main connective is $\to$, all rows where the antecedent is F automatically give T.
+
+### 11.7 Quick Reference: Number of Possible Boolean Functions
+
+For $n$ variables, the number of distinct Boolean functions is:
+
+$$
+2^{2^n}
+$$
+
+| $n$ | Rows | Distinct functions |
+|:---:|:---:|:---:|
+| 1 | 2 | 4 |
+| 2 | 4 | 16 |
+| 3 | 8 | 256 |
+| 4 | 16 | 65,536 |
+
+This fact appears in questions about "how many truth tables are possible with $n$ variables."
+
+---
+
+## 12. PYQ Pattern Analysis
+
+### 12.1 Common Question Formats
+
+Based on analysis of previous year papers of UGC NET Computer Science and Bihar STET Paper 2, propositional logic questions typically appear in these formats:
+
+1. **"Which of the following is a tautology?"** — Given 4 options, identify the one that is always true.
+2. **"The negation of $p \to q$ is..."** — Tests knowledge of $\lnot(p \to q) \equiv p \land \lnot q$.
+3. **"$p \to q$ is equivalent to..."** — Tests implication elimination and contrapositive.
+4. **"Find the CNF/DNF of..."** — Conversion problems.
+5. **"Which of the following is satisfiable/unsatisfiable?"** — Classification problems.
+6. **"'$p$ only if $q$' is represented as..."** — English-to-logic translation.
+7. **"Which rule of inference is used?"** — Identify the rule from a given argument.
+
+### 12.2 Practice Questions with Solutions
+
+**Question 1 (UGC NET Style):** Which of the following is a tautology?
+- (a) $p \to q$
+- (b) $p \lor q$
+- (c) $p \to (q \to p)$
+- (d) $p \land q$
+
+**Solution:** Use the "try to make it false" technique on option (c).
+
+Assume $p \to (q \to p)$ is false. Then $p = T$ and $q \to p = F$. For $q \to p = F$: $q = T$ and $p = F$. But we already have $p = T$. **Contradiction!** So it cannot be false.
+
+**Answer: (c)** [CORRECT]
+
+Alternatively, $p \to (q \to p) \equiv \lnot p \lor (\lnot q \lor p) \equiv (\lnot p \lor p) \lor \lnot q \equiv T \lor \lnot q \equiv T$.
+
+---
+
+**Question 2 (Bihar STET Style):** The negation of the statement "If it rains then the road is wet" is:
+- (a) It does not rain and the road is wet
+- (b) It rains and the road is not wet
+- (c) If it does not rain then the road is not wet
+- (d) If the road is not wet then it does not rain
+
+**Solution:** Let $p$ = "It rains", $q$ = "The road is wet". The statement is $p \to q$.
+
+$$
+\lnot(p \to q) \equiv p \land \lnot q
+$$
+
+This means "It rains AND the road is NOT wet."
+
+**Answer: (b)** [CORRECT]
+
+---
+
+**Question 3 (UGC NET Style):** Which of the following is logically equivalent to $p \to q$?
+- (a) $q \to p$
+- (b) $\lnot p \to \lnot q$
+- (c) $\lnot q \to \lnot p$
+- (d) $p \land \lnot q$
+
+**Solution:** The contrapositive of $p \to q$ is $\lnot q \to \lnot p$, which is logically equivalent. Option (a) is the converse, option (b) is the inverse, and option (d) is the negation.
+
+**Answer: (c)** [CORRECT]
+
+---
+
+**Question 4 (UGC NET Style):** The proposition $p \land \lnot p$ is a:
+- (a) Tautology
+- (b) Contradiction
+- (c) Contingency
+- (d) None of these
+
+**Solution:** $p \land \lnot p$ is false for $p = T$ (since $T \land F = F$) and false for $p = F$ (since $F \land T = F$). It is always false.
+
+**Answer: (b)** [CORRECT]
+
+---
+
+**Question 5 (UGC NET Style):** "$p$ only if $q$" is logically equivalent to:
+- (a) $q \to p$
+- (b) $\lnot p \to q$
+- (c) $p \to q$
+- (d) $\lnot q \to p$
+
+**Solution:** "$p$ only if $q$" means "$p$ can be true only when $q$ is true," which translates to $p \to q$. Think of it as: the truth of $p$ requires the truth of $q$.
+
+**Answer: (c)** [CORRECT]
+
+---
+
+**Question 6 (UGC NET December 2019 Style):** The dual of the expression $p \land (q \lor r)$ is:
+- (a) $p \lor (q \land r)$
+- (b) $\lnot p \lor (\lnot q \land \lnot r)$
+- (c) $p \land (q \lor r)$
+- (d) $\lnot p \land (\lnot q \lor \lnot r)$
+
+**Solution:** The **dual** of a proposition is obtained by interchanging $\land$ with $\lor$, $\lor$ with $\land$, $T$ with $F$, and $F$ with $T$ — but leaving variables unchanged.
+
+Dual of $p \land (q \lor r)$: Replace $\land$ with $\lor$ and $\lor$ with $\land$: $p \lor (q \land r)$.
+
+**Answer: (a)** [CORRECT]
+
+---
+
+**Question 7 (Bihar STET Style):** Consider the following argument:
+"If it is sunny, we go to the beach. We did not go to the beach. Therefore, it is not sunny."
+Which rule of inference is used?
+- (a) Modus Ponens
+- (b) Modus Tollens
+- (c) Disjunctive Syllogism
+- (d) Hypothetical Syllogism
+
+**Solution:** Let $p$ = "It is sunny", $q$ = "We go to the beach."
+- Premise 1: $p \to q$
+- Premise 2: $\lnot q$
+- Conclusion: $\lnot p$
+
+This matches the pattern: $p \to q$, $\lnot q$ $\therefore \lnot p$ — **Modus Tollens**.
+
+**Answer: (b)** [CORRECT]
+
+---
+
+**Question 8 (Advanced — UGC NET Style):** The CNF of $p \to (q \land r)$ is:
+- (a) $(\lnot p \lor q) \land (\lnot p \lor r)$
+- (b) $\lnot p \lor (q \land r)$
+- (c) $(\lnot p \land q) \lor (\lnot p \land r)$
+- (d) $p \land q \land r$
+
+**Solution:**
+Step 1: Eliminate implication: $\lnot p \lor (q \land r)$
+Step 2: Distribute $\lor$ over $\land$: $(\lnot p \lor q) \land (\lnot p \lor r)$
+
+This is in CNF (conjunction of disjunctive clauses).
+
+**Answer: (a)** [CORRECT]
+
+---
+
+### 12.3 High-Frequency Exam Facts — Quick Revision
+
+| Fact | Detail |
+|---|---|
+| $p \to q \equiv \lnot p \lor q$ | Implication elimination — most tested equivalence |
+| $\lnot(p \to q) \equiv p \land \lnot q$ | Negation of implication |
+| Contrapositive of $p \to q$ | $\lnot q \to \lnot p$ (equivalent) |
+| Converse of $p \to q$ | $q \to p$ (NOT equivalent) |
+| Inverse of $p \to q$ | $\lnot p \to \lnot q$ (NOT equivalent) |
+| "$p$ only if $q$" | Means $p \to q$ |
+| "$p$ unless $q$" | Means $\lnot q \to p$ or equivalently $p \lor q$ |
+| Tautology $\leftrightarrow$ Negation is contradiction | $\alpha$ is tautology $\iff$ $\lnot\alpha$ is contradiction |
+| Number of rows in truth table | $2^n$ for $n$ variables |
+| Number of Boolean functions | $2^{2^n}$ for $n$ variables |
+| SAT is NP-complete | First NP-complete problem (Cook-Levin, 1971) |
+| 2-SAT | Polynomial time |
+| 3-SAT | NP-complete |
+| De Morgan's: $\lnot(p \land q)$ | $\lnot p \lor \lnot q$ |
+| De Morgan's: $\lnot(p \lor q)$ | $\lnot p \land \lnot q$ |
+| Absorption: $p \lor (p \land q)$ | $p$ |
+| Absorption: $p \land (p \lor q)$ | $p$ |
+
+---
+
+**Summary:** Propositional logic is a foundational pillar of discrete mathematics and computer science. For UGC NET and Bihar STET, focus on: (1) implication and its equivalences, (2) De Morgan's Laws, (3) tautology identification via the "make it false" shortcut, (4) CNF/DNF conversion, and (5) rules of inference — especially Modus Ponens and Modus Tollens. Mastering these topics guarantees marks, as questions from this area are predictable in their pattern and consistently appear across exam sessions.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="What is the truth value of the propositional formula: (P  Q) ∨ (Q  P)?"
+  optionA="Contingency (depends on P and Q)"
+  optionB="Tautology (always True for all truth assignments)"
+  optionC="Contradiction (always False)"
+  optionD="Satisfiable but not valid"
+  correctOption="B"
+  explanation="Rewrite implications: (P  Q) ∨ (Q  P) ≡ (¬P ∨ Q) ∨ (¬Q ∨ P) ≡ (¬P ∨ P) ∨ (¬Q ∨ Q) ≡ True ∨ True ≡ True. Since it evaluates to True under every possible truth assignment, it is a Tautology."
+  examBadge="UGC NET Dec 2019 / Official PYQ"
+/>
+
+<Quiz
+  question="Which inference rule allows deriving conclusion Q from premises (P  Q) and ¬Q?"
+  optionA="Modus Ponens"
+  optionB="Modus Tollens (derives ¬P)"
+  optionC="Hypothetical Syllogism"
+  optionD="Disjunctive Syllogism"
+  correctOption="B"
+  explanation="Modus Tollens (denying the consequent) states: if P implies Q, and Q is false (¬Q), then P must be false (¬P)."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="In Propositional Resolution Refutation, how is a theorem α proven to logically follow from Knowledge Base KB (KB ⊨ α)?"
+  optionA="By converting KB to DNF and verifying satisfiability"
+  optionB="By converting KB ∧ ¬α into Conjunctive Normal Form (CNF) clauses and deriving the Empty Clause (Contradiction □)"
+  optionC="By using backward chaining only"
+  optionD="By constructing truth tables of size 2^n"
+  correctOption="B"
+  explanation="Proof by resolution refutation relies on the fact that KB ⊨ α if and only if KB ∧ ¬α is unsatisfiable. Converting KB ∧ ¬α into CNF clausal form and applying resolution until the empty clause □ is derived proves α."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="Which of the following pairs of propositional logic formulas are logically equivalent?"
+  optionA="¬(P  Q) and P ∧ ¬Q"
+  optionB="P  Q and ¬P  ¬Q"
+  optionC="P ↔ Q and (P ∧ Q)"
+  optionD="¬(P ∧ Q) and ¬P ∧ ¬Q"
+  correctOption="A"
+  explanation="Since P  Q ≡ ¬P ∨ Q, its negation is ¬(¬P ∨ Q) ≡ ¬(¬P) ∧ ¬Q ≡ P ∧ ¬Q (by De Morgan's law). Hence, ¬(P  Q) is logically equivalent to P ∧ ¬Q."
+  examBadge="UGC NET Dec 2020"
+/>
+
+<Quiz
+  question="What is the total number of distinct Boolean truth functions that can be defined over n propositional variables?"
+  optionA="2^n"
+  optionB="2^(2^n)"
+  optionC="n^2"
+  optionD="2^(n^2)"
+  correctOption="B"
+  explanation="A truth table for n propositional variables contains 2^n rows. For each row, the function can evaluate to either True or False (2 choices). Therefore, there are 2^(2^n) distinct Boolean functions."
+  examBadge="Bihar STET Paper 2 2023"
+/>
+

@@ -1,0 +1,366 @@
+---
+title: "Artificial Intelligence: Search Strategies, A* Algorithm, and Alpha-Beta Pruning"
+unit: "Unit 13: Artificial Intelligence"
+examType: "Common"
+priority: "Med"
+readTime: "32 min"
+slug: "artificial-intelligence-search-heuristics"
+description: "Master uninformed search (BFS, DFS, IDDFS), informed search (Greedy, A* admissibility & consistency proofs), and adversarial Minimax with Alpha-Beta pruning for UGC NET and Bihar STET."
+tags: ["Artificial Intelligence", "Search Algorithms", "A* Algorithm", "Alpha-Beta Pruning", "Minimax", "UGC-NET", "STET"]
+---
+
+# Artificial Intelligence: Search Strategies, A* Algorithm, and Alpha-Beta Pruning
+
+State-space search constitutes the core algorithmic foundation of Artificial Intelligence. In both **UGC NET** and **Bihar STET Computer Science**, search problems represent a guaranteed source of numerical and theoretical questions. Examiners frequently target **time and space complexities of uninformed search**, the **mathematical conditions for A\* admissibility and consistency**, and **alpha-beta pruning cutoff evaluations**.
+
+---
+
+## 1. Uninformed (Blind) Search Strategies
+
+Uninformed search algorithms explore the state space using only the problem definition and operator costs, without problem-specific heuristic guidance.
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                  UNINFORMED SEARCH COMPARISON MATRIX                              |
++--------------------------+---------------+--------------+--------------------+--------------------+
+| Algorithm                | Time          | Space        | Complete?          | Optimal?           |
++--------------------------+---------------+--------------+--------------------+--------------------+
+| Breadth-First (BFS)      | $O(b^d)$      | $O(b^d)$     | Yes (if $b<\infty$)| Yes (if unit cost) |
++--------------------------+---------------+--------------+--------------------+--------------------+
+| Depth-First (DFS)        | $O(b^m)$      | $O(b \cdot m)$| No (infinite paths)| No                 |
++--------------------------+---------------+--------------+--------------------+--------------------+
+| Depth-Limited (DLS)      | $O(b^l)$      | $O(b \cdot l)$| No (if $l < d$)    | No                 |
++--------------------------+---------------+--------------+--------------------+--------------------+
+| Iterative Deepening (IDDFS)| $O(b^d)$    | $O(b \cdot d)$| Yes (if $b<\infty$)| Yes (if unit cost) |
++--------------------------+---------------+--------------+--------------------+--------------------+
+| Uniform-Cost Search (UCS)| $O(b^{1+\lfloor C^*/\epsilon \rfloor})$ | $O(b^{1+\lfloor C^*/\epsilon \rfloor})$ | Yes (if step cost $\ge \epsilon > 0$) | Yes (any positive cost) |
++--------------------------+---------------+--------------+--------------------+--------------------+
+```
+*Where $b$ = branching factor, $d$ = depth of the shallowest goal node, $m$ = maximum depth of the state space, $l$ = limit depth, $C^*$ = cost of the optimal solution, and $\epsilon$ = minimum edge cost.*
+
+### Iterative Deepening Search (IDDFS): The Optimal Choice
+IDDFS combines the **completeness and optimality of BFS** with the **modest $O(b \cdot d)$ memory footprint of DFS**:
+- It runs Depth-Limited Search repeatedly with increasing limits: $l = 0, 1, 2, \dots, d$.
+- **Node generation breakdown for IDDFS**:
+$$N(\text{IDDFS}) = (d)b^1 + (d-1)b^2 + \dots + (1)b^d = O(b^d)$$
+- Because top-level nodes are re-expanded, candidates often intuitively assume excessive overhead. However, when $b > 1$, the vast majority of nodes reside at the leaf layer ($b^d$). For $b = 10$ and $d = 5$, BFS generates $111,111$ nodes, while IDDFS generates $123,456$ nodes (only $\approx 11\%$ overhead), while saving gigabytes of RAM.
+
+---
+
+## 2. Informed (Heuristic) Search Strategies
+
+Informed search uses domain-specific knowledge via a **Heuristic Function** $h(n)$:
+$$h(n) = \text{Estimated cost of the cheapest path from node } n \text{ to a goal state}$$
+If $n$ is a goal state, $h(n) = 0$.
+
+### 2.1 Greedy Best-First Search
+- **Evaluation Function**: $f(n) = h(n)$
+- Expands the node that appears closest to the goal.
+- **Flaw**: Neither complete (can get trapped in loops) nor optimal. Time and worst-case space complexity are $O(b^m)$.
+
+---
+
+### 2.2 The A* Search Algorithm
+A* evaluates nodes by combining the path cost so far, $g(n)$, with the estimated cost to reach the goal, $h(n)$:
+
+$$f(n) = g(n) + h(n)$$
+
+- $g(n)$: Exact cost incurred from the start state to node $n$.
+- $h(n)$: Estimated cost from node $n$ to the goal.
+- $f(n)$: Estimated total cost of the cheapest solution passing through $n$.
+
+```
+   Start State [S] ───(g(n): Exact Path Cost)───► Node [n] ───(h(n): Estimated Cost)───► [Goal]
+   └─────────────────────────────── f(n) = g(n) + h(n) ────────────────────────────────┘
+```
+
+---
+
+## 3. Mathematical Foundations of A*: Admissibility & Consistency
+
+### 3.1 Admissibility (Tree Search A*)
+A heuristic $h(n)$ is **admissible** if it never overestimates the true cost to reach the goal:
+
+$$0 \le h(n) \le h^*(n) \quad \forall n$$
+*(where $h^*(n)$ is the true, minimal cost from $n$ to the optimal goal).*
+
+> [!IMPORTANT]
+> **Theorem 1**: If $h(n)$ is admissible, A* using **Tree Search** is guaranteed to return an **optimal** solution.
+
+#### Proof of A* Optimality (Contradiction)
+Let $G_2$ be a sub-optimal goal state ($g(G_2) > g(G^*) = C^*$). Suppose A* terminates by selecting $G_2$ from the priority queue:
+1. For any goal state $G$, $h(G) = 0$, so $f(G_2) = g(G_2) + 0 = g(G_2) > C^*$.
+2. Consider an unexpanded node $n$ on the open list that lies on the optimal path to $G^*$:
+$$f(n) = g(n) + h(n) \le g(n) + h^*(n) = C^*$$
+3. Therefore:
+$$f(n) \le C^* < f(G_2)$$
+4. Since $f(n) < f(G_2)$, the priority queue will always pop node $n$ before $G_2$.
+5. Thus, $G_2$ can never be popped before an optimal path node is explored. A* cannot return a sub-optimal goal.
+
+---
+
+### 3.2 Consistency / Monotonicity (Graph Search A*)
+In **Graph Search**, where repeated states are discarded, admissibility alone is insufficient to prevent re-opening closed nodes. We require **Consistency (Monotonicity)**:
+
+$$h(n) \le c(n, a, n') + h(n') \quad \forall \text{ transitions } n \xrightarrow{a} n'$$
+
+```
+                       n
+                      / \
+        c(n, a, n')  /   \  h(n)
+                    ▼     \
+                   n'      \
+                    \       \
+              h(n')  \       ▼
+                      \---> Goal
+          Triangle Inequality: h(n) <= c(n, a, n') + h(n')
+```
+
+#### Properties of Consistent Heuristics
+1. **Consistency Implies Admissibility**: Every consistent heuristic is admissible. (The converse is **not** true; an admissible heuristic may be inconsistent).
+2. **Monotonically Increasing $f(n)$**:
+$$f(n') = g(n') + h(n') = g(n) + c(n, a, n') + h(n') \ge g(n) + h(n) = f(n)$$
+3. **No Re-opening**: When A* selects a node for expansion under a consistent heuristic, the optimal path to that node has already been found. Nodes once closed never need to be re-opened.
+
+---
+
+### 3.3 Heuristic Dominance
+If $h_1(n)$ and $h_2(n)$ are both admissible heuristics, and:
+$$\forall n, \quad h_2(n) \ge h_1(n)$$
+Then **$h_2$ dominates $h_1$**.
+- $h_2$ is strictly closer to the true cost $h^*$.
+- **Theorem**: A* using $h_2$ will never expand more nodes than A* using $h_1$ (except possibly for ties at the boundary $f(n) = C^*$).
+
+---
+
+## 4. Adversarial Search: Minimax and Alpha-Beta Pruning
+
+In competitive environments (two-player zero-sum deterministic games such as Chess or Tic-Tac-Toe), two agents with opposing utility functions play alternately:
+- **MAX**: Attempts to maximize the game utility score.
+- **MIN**: Attempts to minimize the game utility score.
+
+### 4.1 The Minimax Value Function
+For a game tree of depth $d$ with leaf utilities:
+
+$$\operatorname{Minimax}(s) = \begin{cases}
+\operatorname{Utility}(s) & \text{if Terminal-Test}(s) \\
+\max_{a \in \operatorname{Actions}(s)} \operatorname{Minimax}(\operatorname{Result}(s, a)) & \text{if Player}(s) = \text{MAX} \\
+\min_{a \in \operatorname{Actions}(s)} \operatorname{Minimax}(\operatorname{Result}(s, a)) & \text{if Player}(s) = \text{MIN}
+\end{cases}
+$$
+
+- **Time Complexity**: $O(b^d)$ (full exhaustive tree search)
+- **Space Complexity**: $O(b \cdot d)$ (depth-first traversal)
+
+---
+
+### 4.2 Alpha-Beta ($\alpha$-$\beta$) Pruning
+
+Alpha-Beta pruning computes the exact same minimax decision as standard Minimax while cutting off subtrees that cannot influence the final outcome.
+
+#### Parameter Invariants
+- $\alpha$: The value of the **best (highest-value) choice** found so far at any choice point along the path for **MAX**. (Initialized to $\alpha = -\infty$).
+- $\beta$: The value of the **best (lowest-value) choice** found so far at any choice point along the path for **MIN**. (Initialized to $\beta = +\infty$).
+
+$$\textbf{Pruning Cutoff Rule:} \quad \text{Prune the remaining branches if } \alpha \ge \beta$$
+
+```
+            MAX  [ α = 5, β = +∞ ]
+                 /               \
+                /                 \
+        MIN [ α = 5, β = 3 ]       ...
+            /        \
+          [3]         \  <--- Since child returned 3, β becomes min(+∞, 3) = 3.
+                       \      Now α (5) >= β (3) ==> α-β PRUNING OCCURS!
+                     [PRUNED] (Subtree never evaluated)
+```
+
+---
+
+## 5. Comprehensive Worked Numerical Problem: Alpha-Beta Tree Evaluation
+
+Evaluate the following depth-3 game tree with root at **MAX**. Leaves are visited from left to right:
+
+```
+                          ( Root: MAX )
+                         /             \
+                       /                 \
+                  ( Node B: MIN )     ( Node C: MIN )
+                   /           \       /           \
+                 (D:MAX)     (E:MAX) (F:MAX)     (G:MAX)
+                 /     \     /     \ /     \     /     \
+                3       5   6       9 1       2   0       4
+```
+
+### Step-by-Step Traversal Trace
+
+```
+1. Root (MAX) initializes [α = -∞, β = +∞].
+2. Traverses down to Node B (MIN) -> Node D (MAX).
+   - Node D evaluates left child: 3.
+     Node D is MAX: updates value = max(-∞, 3) = 3.
+   - Node D evaluates right child: 5.
+     Node D updates value = max(3, 5) = 5.
+   - Returns 5 to parent Node B.
+
+3. Node B (MIN):
+   - Updates value = min(+∞, 5) = 5.
+   - Updates β = min(+∞, 5) = 5. Current at B: [α = -∞, β = 5].
+   - Explores second child: Node E (MAX) with [α = -∞, β = 5].
+
+4. Node E (MAX):
+   - Evaluates left child: 6.
+   - Node E updates value = max(-∞, 6) = 6.
+   - Node E updates α = max(-∞, 6) = 6.
+   - **Condition Check at E**: Is α >= β?
+     Here, α = 6 and β = 5.
+     6 >= 5 is TRUE!
+   - ️ **PRUNE**: Right child of E (value 9) is CUT OFF!
+   - Returns 6 to Node B.
+
+5. Node B (MIN):
+   - Value = min(5, 6) = 5.
+   - Returns 5 to Root (MAX).
+
+6. Root (MAX):
+   - Updates value = max(-∞, 5) = 5.
+   - Updates α = max(-∞, 5) = 5. Current at Root: [α = 5, β = +∞].
+   - Explores right child: Node C (MIN) with inherited [α = 5, β = +∞].
+
+7. Node C (MIN) explores Node F (MAX):
+   - Node F evaluates left child: 1. Value = 1.
+   - Node F evaluates right child: 2. Value = max(1, 2) = 2.
+   - Returns 2 to Node C.
+
+8. Node C (MIN):
+   - Updates value = min(+∞, 2) = 2.
+   - Updates β = min(+∞, 2) = 2. Current at C: [α = 5, β = 2].
+   - **Condition Check at C**: Is α >= β?
+     Here, α = 5 and β = 2.
+     5 >= 2 is TRUE!
+   - ️ **PRUNE**: Node G (and all its children: 0 and 4) is COMPLETELY CUT OFF!
+   - Returns 2 to Root.
+
+9. Root (MAX):
+   - Final Value = max(5, 2) = 5.
+```
+
+### Final Result Summary:
+- **Root Minimax Value**: $\mathbf{5}$
+- **Pruned Leaves**: Leaf `9` (under E) and Leaves `0, 4` (under G).
+- **Efficiency**: With optimal move ordering, Alpha-Beta pruning reduces the effective branching factor from $b$ to $\sqrt{b}$, decreasing time complexity to:
+$$\mathbf{O(b^{d/2})}$$
+  This effectively doubles the search horizon for game engines compared to plain Minimax.
+
+---
+
+## 6. UGC NET & Bihar STET PYQ Analysis & Practice
+
+### Question 1 (UGC NET Official PYQ)
+A heuristic function $h(n)$ is said to be admissible if:
+- **A)** $h(n) \ge h^*(n)$ for all nodes $n$
+- **B)** $h(n) \le h^*(n)$ for all nodes $n$
+- **C)** $h(n) = g(n) + h^*(n)$
+- **D)** $h(n)$ is strictly equal to the depth of the tree
+
+**Answer**: **B**
+**Explanation**: By formal definition, an admissible heuristic never overestimates the true minimal cost to the goal, meaning $0 \le h(n) \le h^*(n)$ for every state $n$.
+
+---
+
+### Question 2 (Bihar STET Higher Secondary Exam)
+Which search algorithm is guaranteed to find the shallowest goal state while using linear space $O(b \cdot d)$?
+- **A)** Breadth-First Search (BFS)
+- **B)** Depth-First Search (DFS)
+- **C)** Iterative Deepening Depth-First Search (IDDFS)
+- **D)** Uniform Cost Search (UCS)
+
+**Answer**: **C**
+**Explanation**: IDDFS performs iterative sweeps of DFS, achieving the completeness and optimality of BFS while maintaining the minimal memory footprint ($O(b \cdot d)$) of DFS.
+
+---
+
+### Question 3 (UGC NET Game Playing Analysis)
+In Alpha-Beta pruning, under the ideal scenario where best moves are always examined first (optimal move ordering), the time complexity becomes:
+- **A)** $O(d^b)$
+- **B)** $O(b^{d/2})$
+- **C)** $O(b/2)^d$
+- **D)** $O(\log b \cdot d)$
+
+**Answer**: **B**
+**Explanation**: Perfect move ordering yields the theoretical maximum cutoff efficiency, evaluating $2b^{d/2} - 1$ nodes, which scales as $O(b^{d/2})$.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="In the A* search algorithm, if the heuristic function h(n) satisfies the condition 0 ≤ h(n) ≤ h*(n) for all nodes n (where h*(n) is the true cost to reach the goal), what property is mathematically guaranteed?"
+  optionA="A* will terminate in O(1) time"
+  optionB="A* tree search is Admissible (guaranteed to find an Optimal solution)"
+  optionC="A* requires zero memory"
+  optionD="A* degenerates into Depth-First Search"
+  correctOption="B"
+  explanation="A heuristic is Admissible if it never overestimates the actual cost to reach the goal (h(n) ≤ h*(n)). When h(n) is admissible, the A* algorithm using Tree-Search is provably guaranteed to return the optimal (lowest cost) path."
+  examBadge="UGC NET June 2021 / Official PYQ"
+/>
+
+<Quiz
+  question="During Alpha-Beta Pruning in a Minimax game tree, under what condition is a branch immediately pruned?"
+  optionA="α &lt; β"
+  optionB="α ≥ β"
+  optionC="α = 0"
+  optionD="β = ∞"
+  correctOption="B"
+  explanation="Alpha (α) is the best value Max can guarantee; Beta (β) is the best value Min can guarantee. As soon as α ≥ β, the current player has already found a better option elsewhere, so the opponent would never allow play to reach this subtree. Hence, the branch is pruned."
+  examBadge="UGC NET Dec 2020"
+/>
+
+<Quiz
+  question="What are the time and space complexities of Iterative Deepening Depth-First Search (IDDFS) for a search tree with branching factor b and goal depth d?"
+  optionA="Time: O(b^d), Space: O(b · d)"
+  optionB="Time: O(b^d), Space: O(b^d)"
+  optionC="Time: O(d · b), Space: O(b)"
+  optionD="Time: O(b^2), Space: O(d)"
+  correctOption="A"
+  explanation="IDDFS combines the optimality and completeness of BFS with the memory efficiency of DFS. Because nodes at depth d are generated only once, depth d-1 twice, etc., total time is O(b^d). Its memory footprint stores only the current branch path, requiring only O(b · d) linear space."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="What is the primary operational weakness of the standard greedy Hill-Climbing search algorithm?"
+  optionA="Excessive memory consumption"
+  optionB="It easily gets trapped in Local Maxima, Ridges, and Plateaus"
+  optionC="It cannot handle continuous spaces"
+  optionD="It requires an admissible heuristic"
+  correctOption="B"
+  explanation="Hill-Climbing makes purely local decisions by moving to the neighboring state with higher value. It terminates when no immediate neighbor has a higher value, becoming trapped in Local Maxima (peaks lower than global max), Plateaus (flat areas with no gradient), or Ridges."
+  examBadge="UGC NET Dec 2021"
+/>
+
+<Quiz
+  question="How does Beam Search differ from standard Best-First Search?"
+  optionA="Beam Search uses depth limits"
+  optionB="Beam Search retains only the top 'k' best successor nodes at each level, discarding all others to bound memory"
+  optionC="Beam Search is always complete"
+  optionD="Beam Search operates in reverse from goal to root"
+  correctOption="B"
+  explanation="In Beam Search, the search space is constrained by a predetermined beam width k. At each depth level, all generated successors are sorted by heuristic score and only the top k most promising nodes are retained, reducing memory to O(k · b) at the expense of completeness."
+  examBadge="UGC NET Dec 2022"
+/>
+
+
+---
+
+## 7. High-Yield Revision Matrix
+
+| Topic / Parameter | Key Invariant / Formula | Common Exam Trap |
+|---|---|---|
+| **BFS vs DFS Space** | BFS: $O(b^d)$ (Exponential); DFS: $O(b \cdot m)$ (Linear) | Confusing tree depth $m$ with goal depth $d$ |
+| **A* Evaluation** | $f(n) = g(n) + h(n)$ | Confusing $g(n)$ (cost so far) with $h(n)$ (estimate to goal) |
+| **Admissibility** | $h(n) \le h^*(n)$ (Never overestimates) | Assuming admissible implies consistent (False!) |
+| **Consistency** | $h(n) \le c(n, a, n') + h(n')$ (Triangle inequality) | A consistent heuristic is ALWAYS admissible |
+| **Alpha ($\alpha$)** | Best choice for MAX (starts at $-\infty$) | Initializing $\alpha = +\infty$ (Incorrect!) |
+| **Beta ($\beta$)** | Best choice for MIN (starts at $+\infty$) | Initializing $\beta = -\infty$ (Incorrect!) |
+| **Pruning Condition** | $\alpha \ge \beta$ | Pruning at $\alpha \le \beta$ (Wrong inequality direction) |

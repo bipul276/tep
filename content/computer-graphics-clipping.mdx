@@ -1,0 +1,340 @@
+---
+title: "Computer Graphics Clipping Algorithms: Cohen-Sutherland, Liang-Barsky, and Sutherland-Hodgman"
+unit: "Unit 15: Computer Graphics & Multimedia"
+examType: "UGC-NET"
+priority: "High"
+readTime: "32 min"
+slug: "computer-graphics-clipping"
+description: "Exhaustive guide to 2D clipping algorithms: Cohen-Sutherland 4-bit region outcodes, Liang-Barsky parametric line clipping, Sutherland-Hodgman polygon clipping, and Weiler-Atherton concave clipping for UGC NET."
+tags: ["Computer Graphics", "Clipping", "Cohen-Sutherland", "Liang-Barsky", "Polygon Clipping", "Sutherland-Hodgman", "UGC-NET"]
+---
+
+# Computer Graphics Clipping Algorithms: Cohen-Sutherland, Liang-Barsky, and Sutherland-Hodgman
+
+In computer graphics pipelines, **Clipping** is the algorithmic process that isolates primitives (points, lines, polygons) falling inside a designated viewing window (**Clip Window**) while discarding geometry falling outside. 
+
+In the **UGC NET Computer Science** syllabus (Unit 3: Computer Graphics), clipping algorithms are a consistent source of both theoretical questions and numerical problems:
+1. **Cohen-Sutherland Line Clipping** (4-bit region outcodes, bitwise tests, intersection formulas).
+2. **Liang-Barsky Parametric Line Clipping** (parametric line equations, direction inequalities $p_k, q_k$, efficiency vs Cohen-Sutherland).
+3. **Polygon Clipping Algorithms** (**Sutherland-Hodgman** 4-stage pipeline, the 4 vertex transition cases, and **Weiler-Atherton** concave clipping).
+
+---
+
+## 1. The Clipping Window & Coordinate Boundaries
+
+A standard rectangular 2D clipping window is defined by four orthogonal boundaries:
+
+$$x_{\min} \le x \le x_{\max}, \quad y_{\min} \le y \le y_{\max}$$
+
+```
+                Y
+                │
+                │        y = y_max 
+         ───────┼───────────────────────────
+                │       │           │
+                │       │  CLIPPING │
+                │       │  WINDOW   │
+                │       │           │
+         ───────┼───────────────────────────
+                │        y = y_min
+                │       x = x_min   x = x_max
+         ───────┴───────────────────────────► X
+```
+
+### Point Clipping Trivial Condition
+A point $P(x, y)$ is saved if and only if all four inequalities are satisfied simultaneously:
+$$x_{\min} \le x \le x_{\max} \quad \land \quad y_{\min} \le y \le y_{\max}$$
+
+---
+
+## 2. Cohen-Sutherland Line Clipping Algorithm
+
+The Cohen-Sutherland algorithm divides 2D space into **9 regions** using the four extended edges of the clipping rectangle. Each region is uniquely identified by a **4-bit binary Outcode** denoted as **TBRL**:
+
+```
++-------+--------+-------+------+
+| Bit 1 | Bit 2  | Bit 3 | Bit 4|
+| Top   | Bottom | Right | Left |
++-------+--------+-------+------+
+```
+
+### 2.1 The 9-Region Outcode Matrix
+
+```
+       1001   │   1000   │   1010
+    (Top-Left)│  (Top)   │ (Top-Right)
+   ───────────┼──────────┼─────────── y = y_max
+       0001   │   0000   │   0010
+     (Left)   │ (WINDOW) │  (Right)
+   ───────────┼──────────┼─────────── y = y_min
+       0101   │   0100   │   0110
+  (Bottom-Left)│ (Bottom) │(Bottom-Right)
+              │          │
+           x = x_min   x = x_max
+```
+
+#### Outcode Bit Assignment Rules for Endpoint $(x, y)$:
+- **Bit 1 (Top)**: $1$ if $y > y_{\max}$, else $0$.
+- **Bit 2 (Bottom)**: $1$ if $y < y_{\min}$, else $0$.
+- **Bit 3 (Right)**: $1$ if $x > x_{\max}$, else $0$.
+- **Bit 4 (Left)**: $1$ if $x < x_{\min}$, else $0$.
+
+---
+
+### 2.2 Bitwise Decision Rules
+
+Let $\text{Code}_1 = \text{Outcode}(P_1)$ and $\text{Code}_2 = \text{Outcode}(P_2)$ for line endpoints $P_1$ and $P_2$:
+
+#### 1. Trivial Acceptance (Completely Inside):
+$$\text{Code}_1 \lor \text{Code}_2 = 0000$$
+Both endpoints reside inside the clipping window. The line is accepted completely without computing any intersections.
+
+#### 2. Trivial Rejection (Completely Outside):
+$$\text{Code}_1 \land \text{Code}_2 \ne 0000$$
+Both endpoints lie completely in the same outer half-plane (e.g., both are to the left, or both are above the window). The line is discarded immediately without computing any intersections.
+
+#### 3. Candidate for Clipping (Non-Trivial):
+$$\text{Code}_1 \lor \text{Code}_2 \ne 0000 \quad \land \quad \text{Code}_1 \land \text{Code}_2 = 0000$$
+The line cannot be trivially accepted or rejected. It may cross the boundary once or twice, or miss the window entirely.
+
+---
+
+### 2.3 Intersection Coordinate Formulas
+
+For a line with slope $m = \frac{y_2 - y_1}{x_2 - x_1}$ ($x_1 \ne x_2$):
+
+1. **Intersection with Vertical Edge ($x = x_{\text{edge}}$ where $x_{\text{edge}} \in \{x_{\min}, x_{\max}\}$)**:
+$$y = y_1 + m \cdot (x_{\text{edge}} - x_1)$$
+
+2. **Intersection with Horizontal Edge ($y = y_{\text{edge}}$ where $y_{\text{edge}} \in \{y_{\min}, y_{\max}\}$)**:
+$$x = x_1 + \frac{y_{\text{edge}} - y_1}{m} \quad (m \ne 0)$$
+
+---
+
+## 3. Liang-Barsky Parametric Line Clipping Algorithm
+
+While Cohen-Sutherland repeatedly calculates intersections with extended infinite lines (even for segments that are ultimately rejected), the **Liang-Barsky algorithm** uses a **parametric line representation**, reducing computation to simple comparisons and minimizing expensive division operations.
+
+### 3.1 Parametric Line Equation
+
+$$
+\begin{aligned}
+x &= x_1 + u \cdot \Delta x \\
+y &= y_1 + u \cdot \Delta y
+\end{aligned} \quad \text{for } 0 \le u \le 1
+$$
+
+Where $\Delta x = x_2 - x_1$ and $\Delta y = y_2 - y_1$.
+
+The condition for the point $(x, y)$ to lie inside the clipping rectangle is:
+$$x_{\min} \le x_1 + u \cdot \Delta x \le x_{\max}$$
+$$y_{\min} \le y_1 + u \cdot \Delta y \le y_{\max}$$
+
+These four inequalities can be expressed compactly in the form:
+
+$$u \cdot p_k \le q_k \quad \text{for } k \in \{1, 2, 3, 4\}$$
+
+```
++---+----------------------+-------------------+-----------------------------+
+| k | Boundary Tested      | Direction pk      | Offset qk                   |
++---+----------------------+-------------------+-----------------------------+
+| 1 | Left boundary        | p1 = -Δx          | q1 = x1 - x_min             |
+| 2 | Right boundary       | p2 = +Δx          | q2 = x_max - x1             |
+| 3 | Bottom boundary      | p3 = -Δy          | q3 = y1 - y_min             |
+| 4 | Top boundary         | p4 = +Δy          | q4 = y_max - y1             |
++---+----------------------+-------------------+-----------------------------+
+```
+
+---
+
+### 3.2 Liang-Barsky Decision Rules
+
+1. **Parallel Lines ($p_k = 0$)**:
+   - If $q_k < 0$, the line is parallel to the boundary and completely outside the window $\implies$ **Reject line**.
+   - If $q_k \ge 0$, the line is parallel and inside the parallel boundaries.
+2. **Line Entering from Outside ($p_k < 0$)**:
+   - The line crosses the boundary from outside to inside as parameter $u$ increases.
+   - Update parameter $u_1$:
+$$u_1 = \max\left(0, \; \frac{q_k}{p_k}\right)$$
+3. **Line Leaving to Outside ($p_k > 0$)**:
+   - The line crosses the boundary from inside to outside as parameter $u$ increases.
+   - Update parameter $u_2$:
+$$u_2 = \min\left(1, \; \frac{q_k}{p_k}\right)$$
+4. **Final Acceptance Criterion**:
+   - If at any step $u_1 > u_2$, the line lies completely outside the window $\implies$ **Reject line**.
+   - Otherwise, the clipped line segment corresponds to the parameter interval $[u_1, u_2]$. Compute endpoints only once:
+$$P_{\text{start}} = (x_1 + u_1 \Delta x, \; y_1 + u_1 \Delta y)$$
+$$P_{\text{end}} = (x_1 + u_2 \Delta x, \; y_1 + u_2 \Delta y)$$
+
+---
+
+## 4. Polygon Clipping: Sutherland-Hodgman Algorithm
+
+Clipping a polygon is not merely clipping individual line segments; clipping a polygon must produce a **closed polygonal boundary** (adding new vertices and edges along the window boundaries).
+
+The **Sutherland-Hodgman algorithm** processes the polygon through a pipeline of 4 clipping stages, one for each window boundary:
+
+```
+ Input Polygon ──► [ Left Clipper ] ──► [ Right Clipper ] ──► [ Bottom Clipper ] ──► [ Top Clipper ] ──► Clipped Polygon
+```
+
+---
+
+### 4.1 The Four Vertex Transition Cases
+
+As the algorithm traverses consecutive vertices $V_1 \to V_2$ across a directed clipping boundary line:
+
+```
+  Case 1: Out to In           Case 2: In to In           Case 3: In to Out          Case 4: Out to Out
+        (Out)   (In)                (In)    (In)               (In)   (Out)               (Out)  (Out)
+         V1  ──►  V2                 V1  ──►  V2                V1 ──►  V2                 V1 ──►  V2
+              │                           │                         │                          │
+        ──────┼───────              ──────┼───────             ─────┼───────              ─────┼───────
+              │                           │                         │                          │
+              I                           │                         I                          │
+     Output: [I, V2]                 Output: [V2]              Output: [I]                Output: [None]
+```
+
+```
++--------+------------------+---------------------+-------------------------------------------------+
+| Case   | Transition       | Condition           | Output Vertex List                              |
++--------+------------------+---------------------+-------------------------------------------------+
+| 1      | Outside to Inside| V1 outside, V2 inside| Intersection point **I** and endpoint **V2**     |
+| 2      | Inside to Inside | V1 inside, V2 inside | Endpoint **V2** only                            |
+| 3      | Inside to Outside| V1 inside, V2 outside| Intersection point **I** only                   |
+| 4      | Outside to Outside|V1 outside, V2 outside| **None** (Zero vertices emitted)                |
++--------+------------------+---------------------+-------------------------------------------------+
+```
+
+### 4.2 Limitation: Concave Polygons
+The Sutherland-Hodgman algorithm is guaranteed to be correct for **convex polygons**. When applied to non-convex (**concave**) polygons, it may produce extraneous bridge lines connecting disconnected components.
+
+---
+
+## 5. Weiler-Atherton Polygon Clipping Algorithm
+
+To correctly handle concave polygons and polygons with holes, the **Weiler-Atherton algorithm** maintains two lists of vertices:
+1. The **Subject Polygon** vertex list.
+2. The **Clipping Window** vertex list.
+
+### Traversal Logic:
+1. Compute all intersections and insert them into both lists.
+2. Label each intersection as either an **Entering Intersection** (subject edge enters clip region) or an **Exiting Intersection** (subject edge leaves clip region).
+3. Start at an **Entering Intersection**, follow the Subject Polygon vertices until an Exiting Intersection is encountered.
+4. Switch to the Clipping Window boundary list and follow its vertices until the next Entering Intersection is reached.
+5. Repeat until the path closes back to the start point. This yields disconnected disjoint sub-polygons cleanly.
+
+---
+
+## 6. Worked Numerical Examples & Computations
+
+### Numerical 1: Cohen-Sutherland Bitwise Verification
+**Problem (UGC NET Official Standard)**: A rectangular window has corners at $(10, 10)$ and $(50, 50)$. Determine the outcodes and clipping status for the line segment from $P_1(5, 20)$ to $P_2(60, 40)$.
+
+#### Solution:
+- Window parameters: $x_{\min} = 10, \; x_{\max} = 50, \; y_{\min} = 10, \; y_{\max} = 50$.
+
+1. **Evaluate Outcode for $P_1(5, 20)$ (TBRL)**:
+   - $y = 20 \le 50 \implies \text{Top} = 0$
+   - $y = 20 \ge 10 \implies \text{Bottom} = 0$
+   - $x = 5 \le 50 \implies \text{Right} = 0$
+   - $x = 5 < 10 \implies \text{Left} = 1$
+$$\text{Code}_1 = 0001$$
+
+2. **Evaluate Outcode for $P_2(60, 40)$ (TBRL)**:
+   - $y = 40 \le 50 \implies \text{Top} = 0$
+   - $y = 40 \ge 10 \implies \text{Bottom} = 0$
+   - $x = 60 > 50 \implies \text{Right} = 1$
+   - $x = 60 \ge 10 \implies \text{Left} = 0$
+$$\text{Code}_2 = 0010$$
+
+3. **Bitwise Decision Tests**:
+   - **Trivial Accept**: $\text{Code}_1 \lor \text{Code}_2 = 0001 \lor 0010 = 0011 \ne 0000$ (Not trivial accept).
+   - **Trivial Reject**: $\text{Code}_1 \land \text{Code}_2 = 0001 \land 0010 = 0000$ (Not trivial reject).
+
+> **Conclusion**: The line segment requires clipping. It intersects both the Left ($x = 10$) and Right ($x = 50$) clipping boundaries.
+
+---
+
+### Numerical 2: Intersection Point Calculation
+**Problem**: Calculate the exact coordinates of the intersection point where line $P_1(5, 20) \to P_2(60, 40)$ crosses the left boundary $x = 10$.
+
+#### Solution:
+1. **Slope of the line ($m$)**:
+$$m = \frac{y_2 - y_1}{x_2 - x_1} = \frac{40 - 20}{60 - 5} = \frac{20}{55} = \frac{4}{11} \approx 0.3636$$
+
+2. **Intersection with $x = 10$**:
+$$y = y_1 + m(x_{\text{edge}} - x_1) = 20 + \frac{4}{11}(10 - 5) = 20 + \frac{20}{11} = 20 + 1.818 = 21.82$$
+
+> **Result**: The clipped entry point on the Left boundary is $(10, 21.82)$.
+
+---
+
+## 7. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="In the Cohen-Sutherland line clipping algorithm, what does the condition (Code1 AND Code2 != 0000) signify?"
+  optionA="The line passes completely through the center of the window"
+  optionB="Both endpoints lie completely outside the window in the same half-plane, allowing trivial rejection"
+  optionC="The line is completely inside the clipping window"
+  optionD="The line is strictly perpendicular to the X-axis"
+  correctOption="B"
+  explanation="When the bitwise AND of both endpoint outcodes is non-zero, it proves that both points share at least one common 'outside' region (e.g. both are above the top boundary). Therefore, the entire line segment lies outside the viewing volume and can be trivially rejected without calculating intersections."
+  examBadge="UGC NET December 2022"
+/>
+
+<Quiz
+  question="Why is the Liang-Barsky line clipping algorithm generally more efficient than the Cohen-Sutherland algorithm?"
+  optionA="It uses Bresenham's integer additions exclusively"
+  optionB="It uses a parametric line formulation that computes intersections only once after parameter bounds u1 and u2 are verified"
+  optionC="It only clips lines that have positive slopes"
+  optionD="It eliminates the need for floating-point registers"
+  correctOption="B"
+  explanation="Cohen-Sutherland repeatedly calculates intersections with extended edge lines even for segments that may eventually be discarded. Liang-Barsky tests all four boundaries using simple comparisons on parameters p_k and q_k, calculating actual coordinates only once for accepted segments."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="In the Sutherland-Hodgman polygon clipping algorithm, if a polygon edge moves from Outside to Inside across a clipping boundary, what is emitted to the output vertex list?"
+  optionA="Only the second endpoint (V2)"
+  optionB="Only the first endpoint (V1)"
+  optionC="Both the intersection point (I) and the second endpoint (V2)"
+  optionD="No vertices are emitted"
+  correctOption="C"
+  explanation="When an edge transitions from Outside to Inside, the polygon boundary enters the valid clipping window. Both the newly created intersection point (I) and the target inside vertex (V2) must be appended to preserve the polygon boundary."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="Which polygon clipping algorithm is explicitly designed to handle concave polygons and polygons with interior holes without generating erroneous bridge edges?"
+  optionA="Cohen-Sutherland Algorithm"
+  optionB="Sutherland-Hodgman Algorithm"
+  optionC="Weiler-Atherton Algorithm"
+  optionD="Bresenham Algorithm"
+  correctOption="C"
+  explanation="The Weiler-Atherton algorithm uses subject and clip vertex graph traversals (switching between polygon and window boundaries at entry/exit points) to clip concave polygons and produce separate, correct disjoint polygon contours."
+  examBadge="UGC NET Computer Graphics Standard"
+/>
+
+<Quiz
+  question="In the Liang-Barsky line clipping algorithm, if for a boundary k we calculate p_k = 0 and q_k = -5, what does this mathematically signify about the line segment?"
+  optionA="The line is perpendicular to the boundary"
+  optionB="The line is parallel to the boundary and lies completely outside the clipping window, allowing immediate rejection"
+  optionC="The line enters the window at u = 0"
+  optionD="The line passes through the origin"
+  correctOption="B"
+  explanation="p_k = 0 means Δx = 0 or Δy = 0 (the line is parallel to the clipping boundary). If q_k &lt; 0, the line lies on the exterior side of the boundary line, meaning the entire line segment is completely outside and can be rejected immediately."
+  examBadge="UGC NET Graphics Standard"
+/>
+
+
+---
+
+## 8. High-Yield Revision Matrix
+
+| Algorithm | Domain | Key Mechanism | Computational Complexity | Primary Limitation |
+|---|---|---|---|---|
+| **Cohen-Sutherland** | Line clipping | 4-bit Outcode (TBRL); bitwise AND / OR | $O(1)$ for trivial; multiple divides for non-trivial | Inefficient for complex scenes with many non-trivial lines |
+| **Liang-Barsky** | Line clipping | Parametric $u \cdot p_k \le q_k$ updates | $O(1)$ with single division step | Confined to convex rectangular clipping windows |
+| **Sutherland-Hodgman** | Polygon clipping | 4-stage pipeline; 4 vertex transition cases | $O(V \cdot E)$ where $V$ = vertices, $E$ = edges | Produces spurious bridge lines on concave polygons |
+| **Weiler-Atherton** | Polygon clipping | Entry/Exit intersection tracking & list traversal | $O(V_1 \cdot V_2)$ | More complex pointer bookkeeping and memory overhead |

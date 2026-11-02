@@ -1,0 +1,171 @@
+---
+title: "Web Backend Architecture: PHP, DOM Manipulation, and Node.js Event Loop"
+unit: "Unit 10: Web-Based Application Development"
+examType: "STET"
+priority: "High"
+readTime: "26 min"
+description: "Master PHP server scripting, superglobals, DOM tree traversal and event bubbling, and Node.js asynchronous non-blocking event-loop architecture for Bihar STET Paper II."
+tags: ["PHP", "DOM", "Node.js", "Web Development", "Event Loop", "STET"]
+---
+
+# Web Backend Architecture: PHP, DOM Manipulation, and Node.js Event Loop
+
+Web development is an explicitly tested module in the **Bihar STET Computer Science Paper II** (Unit 10). Questions examine server-side PHP scripting, superglobal arrays, Document Object Model (DOM) event bubbling and capturing, and the asynchronous single-threaded Event Loop architecture of Node.js.
+
+---
+
+## 1. PHP Server-Side Scripting
+
+PHP (Hypertext Preprocessor) is an open-source, interpreted, server-side scripting language embedded within HTML.
+
+### 1.1 Variables and Scope
+- Variables are prefixed with `$` (e.g., `$x = 10;`).
+- Dynamically typed with loose type comparison (`==` compares value; `===` compares value and type).
+- **Scope**: Local, Global (accessed inside functions via `global $var;` or `$GLOBALS['var']`), and Static (retains value across repeated function calls).
+
+### 1.2 PHP Superglobal Arrays
+
+| Superglobal | Purpose | Visibility / Lifetime |
+| :--- | :--- | :--- |
+| **`$_GET`** | Data passed via URL query string parameters (`?key=val`) | Visible in browser URL; max length limited (~2048 chars) |
+| **`$_POST`** | Data passed via HTTP POST request body (form submissions) | Hidden from URL; supports binary file uploads; secure |
+| **`$_SESSION`** | User session state stored on the **server** | Persists across pages until browser closes or session destroyed |
+| **`$_COOKIE`** | Small text data stored on the **client browser** | Sent with every HTTP request header; expires on set timestamp |
+| **`$_FILES`** | Multi-dimensional array holding uploaded file attributes (`name, type, size, tmp_name, error`) | Available during multipart form submission |
+| **`$_SERVER`** | Header, path, and script location information (`REQUEST_METHOD`, `REMOTE_ADDR`) | Server environment metadata |
+
+<Callout type="important">
+**Session vs Cookie Security**:
+- `session_start()` must be called before ANY HTML output is sent.
+- Session IDs are stored in a cookie (typically `PHPSESSID`), but sensitive data remains on the server.
+- Cookies can be modified or disabled by the client; sessions cannot be directly tampered with by the client.
+</Callout>
+
+---
+
+## 2. Document Object Model (DOM) Architecture
+
+The DOM represents an HTML/XML document as a hierarchical tree of nodes (`Document  Element  Text / Attribute`).
+
+### 2.1 DOM Selection and Mutation
+```javascript
+// Selection primitives
+const elem = document.getElementById("header");
+const items = document.querySelectorAll(".item"); // Returns static NodeList
+
+// Mutation primitives
+const newDiv = document.createElement("div");
+newDiv.textContent = "New Node";
+elem.appendChild(newDiv);
+```
+
+### 2.2 Event Propagation: Bubbling vs. Capturing
+When an event occurs on an element nested inside parent elements, it travels in two phases:
+1. **Capturing Phase (Trickling)**: Event travels from the `window` down through parents to the target element (`addEventListener(event, fn, true)`).
+2. **Target Phase**: Event triggers on the target element itself.
+3. **Bubbling Phase**: Event bubbles **upward** from the target element through all its ancestor parent elements up to `window` (default behavior: `addEventListener(event, fn, false)`).
+- **`e.stopPropagation()`**: Halts traversal up or down the DOM tree.
+- **`e.preventDefault()`**: Prevents standard browser default action (e.g. form submission or hyperlink navigation).
+
+---
+
+## 3. Node.js Architecture & Asynchronous Event Loop
+
+Node.js is an open-source, cross-platform runtime environment executing JavaScript outside the browser using Google's **V8 Engine** and **libuv**.
+
+### 3.1 Single-Threaded Non-Blocking I/O
+Node.js runs JavaScript application code on a **single main thread**, delegating heavy file I/O, network sockets, and cryptographic operations to the **libuv thread pool** (default: 4 worker threads).
+
+### 3.2 The Event Loop Phases
+The libuv Event Loop cycles continuously through 6 distinct phases in strict FIFO order:
+
+```
+┌───────────────────────────────────────────┐
+│              1. Timers                    │  setTimeout(), setInterval() callbacks
+└─────────────────────┬─────────────────────┘
+                      ▼
+┌───────────────────────────────────────────┐
+│        2. Pending I/O Callbacks           │  Deferred OS I/O callbacks (e.g. TCP errors)
+└─────────────────────┬─────────────────────┘
+                      ▼
+┌───────────────────────────────────────────┐
+│          3. Idle, Prepare                 │  Used internally by libuv
+└─────────────────────┬─────────────────────┘
+                      ▼
+┌───────────────────────────────────────────┐
+│             4. Poll Phase                 │  Retrieves new I/O events; blocks if waiting
+└─────────────────────┬─────────────────────┘
+                      ▼
+┌───────────────────────────────────────────┐
+│            5. Check Phase                 │  setImmediate() callbacks executed here!
+└─────────────────────┬─────────────────────┘
+                      ▼
+┌───────────────────────────────────────────┐
+│        6. Close Callbacks                 │  e.g., socket.on('close', ...)
+└───────────────────────────────────────────┘
+```
+
+<Callout type="warning">
+**Microtask Priority**:
+- `process.nextTick()` and `Promise.then()` microtasks are NOT phases of the event loop.
+- They execute **immediately after the current synchronous operation completes**, BEFORE the event loop transitions to the next phase!
+</Callout>
+
+---
+
+## 4. Interactive Examination PYQ Practice
+
+<Quiz
+  question="In Node.js, in which phase of the Event Loop are setImmediate() callbacks executed?"
+  optionA="Check Phase"
+  optionB="Timers Phase"
+  optionC="Poll Phase"
+  optionD="Pending Callbacks Phase"
+  correctOption="A"
+  explanation="In the libuv event loop architecture: setTimeout() and setInterval() callbacks run in the Timers phase. I/O callbacks run in the Poll phase. Callbacks scheduled via setImmediate() run strictly in the Check phase, which immediately follows the Poll phase."
+  examBadge="Bihar STET 2024 / Node.js Core"
+/>
+
+<Quiz
+  question="In client-side JavaScript DOM event handling, what is the default event propagation behavior when addEventListener() is called with two arguments (e.g. elem.addEventListener('click', fn))?"
+  optionA="Event Bubbling (propagates upward from target to ancestor elements)"
+  optionB="Event Capturing (propagates downward from root window to target)"
+  optionC="Target Phase Only (no propagation)"
+  optionD="Asynchronous polling"
+  correctOption="A"
+  explanation="By default, the third parameter (useCapture) of addEventListener() defaults to false. This means events use Event Bubbling, where the event triggers on the innermost target element first and bubbles upward through parent containers to document and window."
+  examBadge="Bihar STET Official PYQ"
+/>
+
+<Quiz
+  question="Which PHP superglobal variable array should be used to read binary file upload attributes when a user submits an HTML form with enctype='multipart/form-data'?"
+  optionA="$_FILES"
+  optionB="$_POST"
+  optionC="$_REQUEST"
+  optionD="$_SERVER"
+  correctOption="A"
+  explanation="$_FILES is the dedicated 2D superglobal array containing uploaded file metadata: name, type, size, tmp_name (temporary server storage path), and error codes. $_POST only captures standard textual input fields."
+  examBadge="Bihar STET Paper II"
+/>
+
+<Quiz
+  question="What is the difference between the '==' and '===' comparison operators in PHP and JavaScript?"
+  optionA="'==' performs type coercion before comparison; '===' compares both value and data type without coercion"
+  optionB="'===' performs type casting; '==' does not"
+  optionC="'==' is for string comparison only; '===' is for numbers"
+  optionD="There is no difference in modern versions"
+  correctOption="A"
+  explanation="In PHP and JavaScript: '==' is the loose equality operator that coerces operands into a common type before comparing (e.g., '10' == 10 evaluates to true). '===' is the strict identity operator that returns true ONLY if both operands share identical values and identical types ('10' === 10 evaluates to false)."
+  examBadge="Bihar STET / UGC NET"
+/>
+
+<Quiz
+  question="In a Node.js script, what executes first: a process.nextTick() callback or a setTimeout(..., 0) callback?"
+  optionA="process.nextTick() executes first because microtasks drain before the event loop advances"
+  optionB="setTimeout(..., 0) executes first because Timers is the first event loop phase"
+  optionC="They execute in parallel on separate worker threads"
+  optionD="The execution order is random"
+  correctOption="A"
+  explanation="process.nextTick() is a microtask managed directly by the V8 call stack. The nextTick queue is processed immediately when the current operation completes, before the event loop enters or transitions between any of its phases (including the Timers phase)."
+  examBadge="Bihar STET 2024"
+/>

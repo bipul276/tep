@@ -1,0 +1,334 @@
+---
+title: "Pointers, Memory Architecture, and Storage Classes in C/C++"
+unit: "Unit 3: Programming & Data Structures"
+examType: "Common"
+priority: "Med"
+readTime: "32 min"
+slug: "c-cpp-pointers-memory"
+description: "Master C/C++ pointers, pointer arithmetic, memory layout (Text, Data, BSS, Heap, Stack), dynamic allocation (malloc vs new), storage classes, and parameter passing for UGC NET and Bihar STET."
+tags: ["C++", "C", "Pointers", "Memory Management", "Storage Classes", "Dynamic Allocation", "UGC-NET", "STET"]
+---
+
+# Pointers, Memory Architecture, and Storage Classes in C/C++
+
+Low-level memory management and pointer semantics in C and C++ form a core assessment pillar in **UGC NET** and **Bihar STET Computer Science**. Candidates are tested on **pointer arithmetic scaling**, **the 5 distinct memory segments of a process**, **dangling pointers vs memory leaks**, **the array-pointer identity**, and **storage class lifetimes (auto, register, static, extern)**.
+
+---
+
+## 1. Pointer Fundamentals & Memory Addressing
+
+A **pointer** is a variable whose r-value represents the memory address of another entity in the machine's virtual address space.
+
+```
+       Memory Cell: Address [ 0x7FFE00 ] ──► Value: [ 42 ] (int a)
+                                                   ▲
+       Pointer Variable: [ ptr ] ──────────────────┘
+       Holds Address: 0x7FFE00
+```
+
+### Core Pointer Operators
+- **Address-of Operator (`&`)**: Returns the physical/virtual address of an l-value operand.
+- **Dereference / Indirection Operator (`*`)**: Accesses the value stored at the address pointed to by the operand.
+
+```c
+int a = 25;
+int *p = &a;    // p holds the address of a
+*p = 50;        // Modifies the memory location of a to 50
+```
+
+### Pointer Size Invariant
+$$\text{Regardless of data type pointed to, } \operatorname{sizeof}(\text{type}*) = \begin{cases} 4 \text{ bytes} & \text{on 32-bit architecture} \\ 8 \text{ bytes} & \text{on 64-bit architecture} \end{cases}
+$$
+Whether pointing to a `char` (1 byte) or a massive `struct` (10,000 bytes), the pointer itself only stores a virtual memory address.
+
+---
+
+## 2. Pointer Arithmetic and The Array-Pointer Duality
+
+Pointer arithmetic is **scaled automatically** by the compiler according to the byte size of the underlying data type $T$:
+
+$$\mathbf{ptr + i \iff \text{Address}(ptr) + (i \times \operatorname{sizeof}(T))}$$
+
+```c
+int *p = (int*) 1000;  // Assume sizeof(int) = 4
+p = p + 2;             // Evaluates to: 1000 + (2 * 4) = 1008
+```
+
+### The Fundamental Array-Pointer Equivalence
+In C/C++, an array name decays to a constant pointer to its first element ($A \equiv \&A[0]$). The bracket subscript notation is syntactic sugar for pointer arithmetic:
+
+$$\mathbf{A[i] \equiv *(A + i) \equiv *(i + A) \equiv i[A]}$$
+
+> [!NOTE]
+> The expression `3[arr]` is completely legal C/C++ code and is mathematically identical to `arr[3]` because addition is commutative (`*(arr + 3) == *(3 + arr)`).
+
+### Differences Between Arrays and Pointers
+1. `arr` is an immutable constant address; `arr++` is illegal. A pointer `p` is a mutable variable; `p++` is legal.
+2. `sizeof(arr)` returns the total byte footprint of the entire array ($N \times \text{sizeof}(T)$). `sizeof(p)` returns only the address pointer size ($4$ or $8$ bytes).
+
+---
+
+## 3. Memory Layout of a C/C++ Program
+
+When an operating system loads a binary executable into virtual memory, it maps it into five distinct memory segments:
+
+```
+    High Memory (0xFFFFFFFF)
+    +-------------------------------------------------------+
+    | Command-Line Arguments & Environment Variables        |
+    +-------------------------------------------------------+
+    | STACK (Grows downward: High -> Low addresses)         |
+    | - Local automatic variables, stack frames,            |
+    |   return addresses, function parameters               |
+    |                          │                            |
+    |                          ▼                            |
+    |                                                       |
+    |                          ▲                            |
+    |                          │                            |
+    | HEAP (Grows upward: Low -> High addresses)            |
+    | - Dynamic memory (malloc, calloc, realloc, new)       |
+    +-------------------------------------------------------+
+    | UNINITIALIZED DATA (.bss - Block Started by Symbol)   |
+    | - Global & static variables initialized to ZERO by OS |
+    +-------------------------------------------------------+
+    | INITIALIZED DATA (.data)                              |
+    | - Global & static variables explicitly initialized    |
+    +-------------------------------------------------------+
+    | TEXT SEGMENT (.text)                                  |
+    | - Read-only machine instructions (code)               |
+    +-------------------------------------------------------+
+    Low Memory (0x00000000)
+```
+
+```
++---------------------+-------------------+---------------------+-------------------------+
+| Memory Segment      | Read/Write Access | Lifetime            | Contents                |
++---------------------+-------------------+---------------------+-------------------------+
+| **Text Segment**    | Read-Only         | Entire Program      | Executable instructions |
+| **.data Segment**   | Read / Write      | Entire Program      | `int g = 10;` (Global)  |
+| **.bss Segment**    | Read / Write      | Entire Program      | `int g;` (Uninitialized)|
+| **Heap**            | Read / Write      | Controlled by User  | `malloc()`, `new`       |
+| **Stack**           | Read / Write      | Scope / Auto LIFO   | Local function vars     |
++---------------------+-------------------+---------------------+-------------------------+
+```
+
+---
+
+## 4. Dynamic Memory Allocation: C vs. C++
+
+```
++-----------------------------------------------------------------------------------------+
+|                                    C VS. C++ DYNAMIC MEMORY                             |
++---------------------+-----------------------------------+-------------------------------+
+| Dimension           | C Standard Library                | C++ Operators                 |
++---------------------+-----------------------------------+-------------------------------+
+| Syntax              | `malloc()`, `calloc()`, `free()`  | `new`, `delete`, `delete[]`   |
+| Entity Nature       | Functions (in `<stdlib.h>`)       | Built-in language operators   |
+| Constructor Call    | **No** (Allocates raw bytes)      | **Yes** (Invokes constructor) |
+| Destructor Call     | **No** (Deallocates raw bytes)    | **Yes** (Invokes destructor)  |
+| Return Type         | `void*` (Requires typecast in C++)| Strongly typed pointer        |
+| Initialization      | `malloc` leaves memory uncleaned; | Initialized via constructor   |
+|                     | `calloc` zeroes all bytes         |                               |
+| Failure Handling    | Returns `NULL`                    | Throws `std::bad_alloc`       |
++---------------------+-----------------------------------+-------------------------------+
+```
+
+### `malloc` vs `calloc` vs `realloc`
+1. **`malloc(size_t size)`**: Allocates `size` contiguous bytes. Memory contains arbitrary garbage values.
+2. **`calloc(size_t num, size_t size)`**: Allocates `num * size` bytes and **clears all bits to zero**. Slower than `malloc` due to zero-fill overhead.
+3. **`realloc(void* ptr, size_t new_size)`**: Resizes an existing heap allocation. If insufficient contiguous space exists at the current location, it allocates a new block elsewhere, copies existing data, frees the old block, and returns the new pointer.
+
+---
+
+## 5. Classic Pointer Hazards and Antipatterns
+
+```
++-----------------------------------------------------------------------------------------+
+|                                  POINTER BUG TAXONOMY                                   |
++---------------------+-----------------------------------+-------------------------------+
+| Pointer Hazard      | Cause                               | Consequence                   |
++---------------------+-----------------------------------+-------------------------------+
+| **Dangling Pointer**| Points to memory that has already | Reading/writing leads to data |
+|                     | been freed or gone out of scope.  | corruption / segmentation fault|
++---------------------+-----------------------------------+-------------------------------+
+| **Memory Leak**     | Allocated heap memory loses all   | Memory remains reserved until |
+|                     | references without being freed.   | process termination (OOM).    |
++---------------------+-----------------------------------+-------------------------------+
+| **Wild Pointer**    | Uninitialized pointer holding an  | Dereferencing alters random   |
+|                     | arbitrary random address.         | process memory.               |
++---------------------+-----------------------------------+-------------------------------+
+| **Double Free**     | Calling `free(p)` twice on the    | Memory allocator metadata     |
+|                     | same heap block.                  | corruption (security exploit).|
++---------------------+-----------------------------------+-------------------------------+
+```
+
+```c
+// Dangling pointer example:
+int *p = (int*) malloc(sizeof(int));
+free(p);
+// p is now DANGLING!
+*p = 10; // UNDEFINED BEHAVIOR!
+// FIX: Always reset to NULL after free:
+p = NULL;
+```
+
+---
+
+## 6. Storage Classes in C and C++
+
+A **Storage Class** specifies four attributes of a variable:
+1. **Storage Location** (RAM Stack vs CPU Register vs RAM Data Segment)
+2. **Scope** (Block / Local vs File / Global)
+3. **Default Initial Value** (Garbage vs Zero)
+4. **Lifetime** (Function execution vs Entire Program run)
+
+```
++-----------------------------------------------------------------------------------------+
+|                                  STORAGE CLASSES MATRIX                                 |
++-------------+--------------------+--------------+-------------------+-------------------+
+| Class       | Storage Location   | Default Val  | Scope             | Lifetime          |
++-------------+--------------------+--------------+-------------------+-------------------+
+| `auto`      | Stack              | Garbage      | Local (Block)     | Inside Block      |
+| `register`  | CPU Register       | Garbage      | Local (Block)     | Inside Block      |
+| `static`    | Data Segment (BSS) | **Zero (0)** | Local or File     | Entire Program    |
+| `extern`    | Data Segment       | **Zero (0)** | Global / All files| Entire Program    |
++-------------+--------------------+--------------+-------------------+-------------------+
+```
+
+### Critical Storage Class Invariants
+- **`register`**: A hint to the compiler to store the variable inside a CPU register for high-speed access (e.g., loop counters). **Exam Rule**: You **cannot apply the address-of operator (`&`)** to a `register` variable in C, because CPU registers do not reside at memory addresses!
+- **`static` Local Variables**: Retain their values across multiple function invocations. Initialized **only once** at compile/load time:
+  ```c
+  void counter() {
+      static int count = 0; // Initialized once
+      count++;
+      printf("%d ", count);
+  }
+  // Calling counter() 3 times outputs: 1 2 3
+  ```
+- **`extern`**: Declares a variable or function that is defined in another translation unit (file). Allocates zero memory itself.
+
+---
+
+## 7. Parameter Passing Mechanisms
+
+```
++-----------------------------------------------------------------------------------------+
+|                                PARAMETER PASSING MODES                                  |
++---------------------+-----------------------------------+-------------------------------+
+| Mechanism           | C Support                         | Syntax / Mechanism            |
++---------------------+-----------------------------------+-------------------------------+
+| **Pass by Value**   | Default in C & C++                | `void f(int x)` (Copy made)   |
+| **Pass by Pointer** | Supported in C & C++              | `void f(int *x)` (Address copy|
+| **Pass by Reference**| **Only in C++** (Not in pure C)  | `void f(int &x)` (Alias)      |
++---------------------+-----------------------------------+-------------------------------+
+```
+
+```cpp
+// Pure C swap (Pass by Pointer):
+void swapC(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// C++ swap (Pass by Reference):
+void swapCPP(int &a, int &b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+```
+
+---
+
+## 8. Function Pointers
+
+A **Function Pointer** holds the memory address of the first executable instruction of a function in the text segment:
+
+$$\mathbf{\text{return\_type} \quad (*\text{pointer\_name})(\text{parameter\_types});}$$
+
+```c
+int add(int a, int b) { return a + b; }
+
+int main() {
+    int (*fp)(int, int) = &add; // Function pointer declaration
+    int res = (*fp)(10, 20);    // Invocation (or simply fp(10, 20))
+    return 0;
+}
+```
+Function pointers enable **callback mechanisms**, dynamic dispatch tables, and event-driven architectures (e.g., `qsort` in `<stdlib.h>`).
+
+---
+
+## 9. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="Which of the following actions is ILLEGAL on a variable declared with the 'register' storage class in C?"
+  optionA="Assigning a floating-point value"
+  optionB="Applying the address-of operator (&)"
+  optionC="Passing it as an argument to a function"
+  optionD="Using it in an arithmetic expression"
+  correctOption="B"
+  explanation="In C, applying the address-of operator (&) to a register variable is strictly illegal because registers reside on the CPU chip and do not possess memory bus addresses."
+  examBadge="UGC NET June 2022"
+/>
+
+<Quiz
+  question="In which memory segment of a process are uninitialized global and static variables placed?"
+  optionA="Stack Segment"
+  optionB="Heap Segment"
+  optionC="BSS Segment (Block Started by Symbol)"
+  optionD="Text Segment"
+  correctOption="C"
+  explanation="The BSS segment contains uninitialized global and static variables. The OS loader automatically zeroes out this segment when launching the executable."
+  examBadge="Bihar STET 2023"
+/>
+
+<Quiz
+  question="Given an integer array int arr[5] starting at memory address 2000, where sizeof(int) = 4, what is the address of the expression arr + 3?"
+  optionA="2003"
+  optionB="2006"
+  optionC="2012"
+  optionD="2015"
+  correctOption="C"
+  explanation="Pointer arithmetic scales by sizeof(type): arr + 3 = 2000 + (3 * sizeof(int)) = 2000 + (3 * 4) = 2012."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="In a 2D integer array declared as int A[10][20] stored in row-major order with base address 1000 and sizeof(int) = 4 bytes, what is the memory address of element A[4][7]?"
+  optionA="1348"
+  optionB="1328"
+  optionC="1388"
+  optionD="1288"
+  correctOption="A"
+  explanation="Row-major address formula for A[i][j] in A[M][N]: Address = Base + [(i × N) + j] × sizeof(element). Here Base = 1000, N = 20 columns, i = 4, j = 7, size = 4 bytes. Address = 1000 + [(4 × 20) + 7] × 4 = 1000 + [80 + 7] × 4 = 1000 + 87 × 4 = 1000 + 348 = 1348."
+  examBadge="UGC NET June 2020"
+/>
+
+<Quiz
+  question="Given the C code snippet: int a = 10, *p = &a, **pp = &p; What does the expression **pp + 5 evaluate to?"
+  optionA="The address of a plus 5"
+  optionB="15"
+  optionC="A segmentation fault"
+  optionD="The address of p plus 5"
+  correctOption="B"
+  explanation="pp is a pointer-to-pointer holding the address of pointer p. *pp dereferences pp to yield pointer p. **pp dereferences p to yield the value stored in variable a (10). Therefore, **pp + 5 = 10 + 5 = 15."
+  examBadge="Bihar STET / NET Official"
+/>
+
+
+---
+
+## 10. High-Yield Revision Matrix
+
+| Concept | Key Equation / Invariant | Common Exam Trap |
+|---|---|---|
+| **Pointer Arithmetic** | $ptr + k \iff ptr + k \cdot \operatorname{sizeof}(*ptr)$ | Adding $k$ raw bytes instead of scaled units |
+| **Array-Pointer Duality** | $arr[i] \equiv *(arr + i) \equiv i[arr]$ | Assuming $3[arr]$ is a syntax error |
+| **`malloc` vs `calloc`** | `calloc` zero-initializes; `malloc` leaves garbage | Assuming `malloc` returns zeroed memory |
+| **Dangling Pointer** | Pointer pointing to deallocated memory | Confusing with memory leak (loss of pointer) |
+| **`static` Local** | Retains value across calls; initialized once | Assuming it re-initializes on each function entry |
+| **`register` Storage** | Cannot use `&` address operator | Attempting `&reg_var` |
+| **Process Segments** | Stack (down) $\to$ Heap (up) $\to$ BSS $\to$ Data $\to$ Text | Thinking local variables live in BSS |

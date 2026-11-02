@@ -1,0 +1,140 @@
+---
+title: "Data Link Layer: Framing, Flow Control, and Error Detection"
+unit: "Unit 7: Computer Networks"
+examType: "Common"
+priority: "High"
+readTime: "28 min"
+description: "Master Data Link Layer framing techniques, CRC polynomial division, Hamming distance, and sliding window flow control protocols (Stop-and-Wait, Go-Back-N, Selective Repeat) for UGC NET and Bihar STET."
+tags: ["Computer Networks", "Data Link Layer", "CRC", "Sliding Window", "Framing", "Flow Control"]
+---
+
+# Data Link Layer: Framing, Flow Control, and Error Detection
+
+The Data Link Layer (Layer 2 of the OSI reference model) provides node-to-node reliable frame transmission across physical links. In **UGC NET** and **Bihar STET**, numerical problems consistently feature CRC polynomial division, maximum channel efficiency, sequence number sizing, and framing overhead.
+
+---
+
+## 1. Framing Methods
+
+The Data Link Layer packs raw bitstreams from the Physical Layer into distinct discrete units called **frames**.
+
+1. **Character Count**: First field in frame header indicates total characters in the frame.
+   - *Weakness*: If the count field is corrupted by transmission noise, synchronization is completely lost across all subsequent frames.
+2. **Byte Stuffing (Character-Oriented)**: Frames begin and end with special `FLAG` bytes (e.g., `0x7E`).
+   - If `FLAG` or `ESC` occurs inside the data payload, sender inserts an escape byte (`ESC`).
+   - Receiver strips the escape byte to recover raw data.
+3. **Bit Stuffing (Bit-Oriented, e.g. HDLC)**:
+   - Frame delimiters: Flag byte pattern `01111110` (six consecutive 1s).
+   - **Sender Rule**: Whenever the sender encounters **five consecutive 1s** (`11111`) in data, it automatically injects a `0` bit immediately after.
+   - **Receiver Rule**: Whenever the receiver sees five consecutive 1s followed by a `0`, it strips the `0` bit. If followed by a `1`, it checks for the ending Flag `01111110`.
+
+---
+
+## 2. Error Detection & Correction Mechanisms
+
+### 2.1 Hamming Distance Invariants
+The Hamming distance $d(x, y)$ is the count of bit positions where codewords $x$ and $y$ differ.
+- To **detect** $s$ bit errors: Minimum Hamming distance $d_{\min} \ge s + 1$.
+- To **correct** $t$ bit errors: Minimum Hamming distance $d_{\min} \ge 2t + 1$.
+
+### 2.2 Cyclic Redundancy Check (CRC)
+CRC treats bitstrings as polynomials with binary coefficients modulo 2 (XOR addition/subtraction without carry).
+- **Sender**: Given data polynomial $M(x)$ of length $m$ and generator polynomial $G(x)$ of degree $r$:
+  1. Append $r$ zeros to data: $M(x) \cdot x^r$.
+  2. Divide $M(x) \cdot x^r$ by $G(x)$ using modulo-2 binary division.
+  3. The $r$-bit remainder $R(x)$ is the CRC checksum.
+  4. Transmit Codeword $T(x) = M(x) \cdot x^r + R(x)$.
+- **Receiver**: Divides received bitstream by identical $G(x)$. If remainder is strictly zero, no error detected.
+
+<Callout type="tip">
+**Properties of Generator Polynomial $G(x)$**:
+- Detects all single-bit errors if $G(x)$ contains at least two non-zero terms.
+- Detects all odd numbers of bit errors if $G(x)$ contains $(x + 1)$ as a factor.
+- Detects all burst errors of length $\le r$ (where $r$ is the degree of $G(x)$).
+</Callout>
+
+---
+
+## 3. Sliding Window Flow Control Protocols
+
+Flow control prevents a fast sender from overwhelming a slow receiver buffer.
+
+| Metric | Stop-and-Wait | Go-Back-N (GBN) | Selective Repeat (SR) |
+| :--- | :--- | :--- | :--- |
+| **Sender Window Size ($W_s$)** | $1$ | $2^k - 1$ | $2^{k-1}$ |
+| **Receiver Window Size ($W_r$)** | $1$ | $1$ | $2^{k-1}$ |
+| **Out-of-order buffering** | No | No (discarded) | Yes (buffered) |
+| **Negative ACK (NACK)** | No | No | Yes |
+| **Retransmission Scope** | 1 frame (timeout) | Retransmit window from lost frame | Retransmit **only** lost frame |
+| **Channel Efficiency ($\eta$)** | $\frac{1}{1 + 2a}$ | $\frac{W_s}{1 + 2a} \le 1.0$ | $\frac{W_s}{1 + 2a} \le 1.0$ |
+
+*(where $a = \frac{T_{\text{prop}}}{T_{\text{trans}}} = \frac{d / v}{L / B}$)*
+
+---
+
+## 4. Medium Access Control: CSMA/CD
+
+In Carrier Sense Multiple Access with Collision Detection:
+- Stations sense carrier before transmitting.
+- To detect a collision before transmission concludes, frame transmission duration must satisfy:
+$$T_{\text{trans}} \ge 2 \cdot T_{\text{prop}} = \text{RTT}$$
+$$\frac{L_{\min}}{\text{Bandwidth}} \ge 2 \cdot \left(\frac{\text{Distance}}{v}\right) \implies L_{\min} \ge 2 \cdot T_{\text{prop}} \cdot B$$
+
+---
+
+## 5. Interactive Examination PYQ Practice
+
+<Quiz
+  question="In a bit-stuffing framing protocol, the data payload bit sequence is '01111110111110'. What is the stuffed bit sequence transmitted over the wire?"
+  optionA="0111110101111100"
+  optionB="011111101111100"
+  optionC="01111101111100"
+  optionD="011111010111110"
+  correctOption="A"
+  explanation="Rule of bit stuffing: insert a '0' bit after every five consecutive '1's. In '0 11111 10 11111 0': First 5 ones (11111) -> insert 0 -> '0 11111 0 10'. Next 5 ones (11111) -> insert 0 -> '0 11111 0 0'. Result = 0111110101111100."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="A 1 Gbps network has a cable length of 1 km with signal propagation speed of 2 × 10^8 m/s. What is the minimum frame size required for CSMA/CD to detect collisions reliably?"
+  optionA="10,000 bits (1250 bytes)"
+  optionB="5,000 bits (625 bytes)"
+  optionC="20,000 bits"
+  optionD="1,000 bits"
+  correctOption="A"
+  explanation="Propagation delay T_prop = Distance / Speed = 1000 m / (2 × 10^8 m/s) = 5 × 10^-6 seconds = 5 μs. Round Trip Time (RTT) = 2 × T_prop = 10 μs. Minimum Frame Size L_min = RTT × Bandwidth = 10 × 10^-6 s × 10^9 bps = 10,000 bits = 1250 bytes."
+  examBadge="GATE / UGC NET PYQ"
+/>
+
+<Quiz
+  question="What is the maximum sender window size in the Selective Repeat sliding window protocol if sequence numbers are encoded using 4 bits?"
+  optionA="8"
+  optionB="15"
+  optionC="16"
+  optionD="7"
+  correctOption="A"
+  explanation="In Selective Repeat protocol, to avoid overlap between new and old frames within the sequence number space 2^k: W_s + W_r ≤ 2^k. Since W_s = W_r, 2 · W_s ≤ 2^k, which implies W_s ≤ 2^(k-1). For k = 4 bits: W_s = 2^(4-1) = 2^3 = 8."
+  examBadge="UGC NET Dec 2020"
+/>
+
+<Quiz
+  question="To guarantee detection of up to 4 bit errors in any transmitted codeword, what is the minimum Hamming distance required for the code?"
+  optionA="5"
+  optionB="4"
+  optionC="9"
+  optionD="8"
+  correctOption="A"
+  explanation="To detect s errors, the minimum Hamming distance must satisfy d_min ≥ s + 1. Here s = 4 bit errors to detect. Therefore, d_min ≥ 4 + 1 = 5."
+  examBadge="Bihar STET Paper II"
+/>
+
+<Quiz
+  question="In a Stop-and-Wait protocol, frame transmission time is 1 ms and one-way propagation delay is 49.5 ms. What is the link utilization (channel efficiency)?"
+  optionA="1.0%"
+  optionB="2.0%"
+  optionC="50.0%"
+  optionD="99.0%"
+  correctOption="A"
+  explanation="Efficiency η = 1 / (1 + 2a), where a = T_prop / T_trans = 49.5 ms / 1 ms = 49.5. Then 1 + 2a = 1 + 2(49.5) = 1 + 99 = 100. Efficiency η = 1 / 100 = 0.01 = 1.0%."
+  examBadge="UGC NET June 2021"
+/>

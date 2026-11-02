@@ -1,0 +1,337 @@
+---
+title: "Routing Algorithms, Distance Vector vs Link State & Traffic Shaping"
+unit: "Unit 7: Computer Networks"
+examType: "Common"
+priority: "High"
+readTime: "40 min"
+slug: "routing-algorithms-congestion-cn"
+description: "Comprehensive guide to network layer routing: Distance Vector (Bellman-Ford, Count-to-Infinity, Split Horizon), Link State (Dijkstra, OSPF flooding), Hierarchical routing, and Token vs Leaky Bucket traffic shaping."
+tags: ["Computer Networks", "Routing", "Distance Vector", "Link State", "Dijkstra", "Bellman-Ford", "Count-to-Infinity", "Token Bucket"]
+---
+
+# Routing Algorithms, Distance Vector vs Link State & Traffic Shaping
+
+## 1. Principles of Routing & Classification
+
+Routing is the network layer process of determining the optimal global path across an interconnected network from a source host to a destination host.
+
+```text
+                                Routing Algorithms
+                                        |
+        +-------------------------------+-------------------------------+
+        |                                                               |
+        v                                                               v
+Static (Non-Adaptive)                                           Dynamic (Adaptive)
+- Routes computed offline                                      - Routes adjust to network topology
+- Installed manually by administrator                            changes and real-time traffic loads
+- Inflexible to link failures                                  - Automated exchange of route metrics
+(e.g., Shortest path flooding)                                 (e.g., Distance Vector, Link State)
+```
+
+### 1.1 Autonomous Systems (AS) & Hierarchy
+The global Internet is partitioned into thousands of independently administered domains called **Autonomous Systems (AS)**:
+1. **Intra-AS Routing (Interior Gateway Protocols - IGP)**:
+   - Operates within a single administrative domain.
+   - Optimized for performance and shortest path.
+   - Examples: **RIP** (Distance Vector), **OSPF** (Link State), **IS-IS**.
+2. **Inter-AS Routing (Exterior Gateway Protocols - EGP)**:
+   - Operates between different autonomous systems.
+   - Optimized for political, economic, and security policies rather than raw link speed.
+   - Standard: **BGP-4** (Border Gateway Protocol — Path Vector).
+
+---
+
+## 2. Distance Vector Routing (DVR)
+
+Distance Vector Routing is a decentralized, asynchronous, iterative routing algorithm based on the distributed **Bellman-Ford algorithm**.
+
+### 2.1 The Bellman-Ford Principle
+Each router $x$ maintains a routing vector $D_x = [D_x(y) : y \in V]$ representing its current estimated minimum cost to all destination nodes $y \in V$.
+
+The cost estimate is updated iteratively using information received from adjacent direct neighbors $v$:
+
+$$D_x(y) = \min_{v \in \text{Neighbors}(x)} \{ c(x, v) + D_v(y) \}$$
+
+where:
+- $c(x, v)$: Direct physical cost of the link connecting node $x$ to neighbor $v$.
+- $D_v(y)$: Neighbor $v$'s current estimated shortest distance to destination $y$.
+
+### 2.2 Operational Cycle of Distance Vector Routing
+1. **Periodic Exchange**: Every router periodically sends a copy of its entire routing table to its **immediate neighbors only**.
+2. **Local Recomputation**: Upon receiving a vector from neighbor $v$, router $x$ updates its own vector using the Bellman-Ford equation.
+3. **Convergence**: If no link costs change, the algorithm terminates at the true shortest path for all source-destination pairs.
+
+---
+
+### 2.3 The Count-to-Infinity Problem (Slow Convergence on Link Failure)
+
+A fundamental flaw of Distance Vector Routing is captured by the networking adage:
+> **"Good news travels fast, but bad news travels slowly."**
+
+Consider three linearly connected routers:
+
+```text
+[ A ] ------ (1) ------ [ B ] ------ (1) ------ [ C ]
+```
+
+- Initial state:
+  - $B$ reaches $A$ with distance $1$ (via $A$).
+  - $C$ reaches $A$ with distance $2$ (via $B$).
+
+Now suppose the physical link between **$A$ and $B$ suddenly breaks** ($c(A, B) = \infty$):
+
+```text
+[ A ] --- X (Link Fails) X --- [ B ] ------ (1) ------ [ C ]
+```
+
+| Iteration | Router $B$'s Table for Destination $A$ | Router $C$'s Table for Destination $A$ | Explanation |
+|:---:|:---:|:---:|:---|
+| 0 (Pre-failure) | Cost $= 1$, NextHop $= A$ | Cost $= 2$, NextHop $= B$ | Normal operation |
+| **Link Breaks** | $c(A, B) = \infty$ | Cost $= 2$, NextHop $= B$ | $B$ loses direct link to $A$ |
+| 1 | Cost $= 3$, NextHop $= C$ | Cost $= 2$, NextHop $= B$ | $B$ sees $C$ claims to reach $A$ in 2 hops! $B$ sets cost $= 2 + 1 = 3$ |
+| 2 | Cost $= 3$, NextHop $= C$ | Cost $= 4$, NextHop $= B$ | $C$ updates cost based on $B$'s new metric: $3 + 1 = 4$ |
+| 3 | Cost $= 5$, NextHop $= C$ | Cost $= 4$, NextHop $= B$ | $B$ updates cost: $4 + 1 = 5$ |
+| $\dots$ | $\dots$ | $\dots$ | Cost gradually counts up to $\infty$! |
+
+A two-node routing loop forms between $B$ and $C$. Packets destined for $A$ bounce infinitely between $B$ and $C$ until the metric reaches the protocol's defined maximum.
+
+---
+
+### 2.4 Mitigation Strategies for Count-to-Infinity
+
+1. **Defining Infinity**:
+   - Set a small numerical threshold for $\infty$.
+   - Example: In the Routing Information Protocol (RIP, RFC 1058), $\mathbf{\infty = 16}$. Once a hop count reaches 16, the network is declared unreachable.
+2. **Split Horizon**:
+   - Rule: **"If router $B$ routes traffic to destination $A$ through neighbor $C$, $B$ must NEVER advertise that route to $A$ back to $C$."**
+   - In the above scenario, $B$ would never tell $C$ it can reach $A$, preventing $C$ from attempting to route through $B$.
+3. **Split Horizon with Poison Reverse**:
+   - Rule: Instead of withholding the advertisement, $B$ explicitly advertises the route back to $C$ with a metric of **$\infty$** ($\text{Cost} = 16$).
+   - Immediately breaks two-node loops.
+4. **Limitation of Split Horizon**:
+   - Split Horizon and Poison Reverse **only solve loops between 2 adjacent nodes**.
+   - They fail to prevent routing loops that involve **3 or more nodes** in a cycle ($A \to B \to C \to A$).
+
+---
+
+## 3. Link State Routing (LSR)
+
+Link State Routing is an alternative routing architecture based on global network state knowledge and **Dijkstra's Shortest Path First (SPF)** algorithm.
+
+### 3.1 The Five Operational Steps of Link State Routing
+
+```text
+Step 1: Discover Neighbors (Send HELLO packets)
+        |
+Step 2: Measure Link Latency/Cost to each neighbor (ECHO packets)
+        |
+Step 3: Construct Link State Packet (LSP) containing local link costs
+        |
+Step 4: Reliable Flooding of LSP to EVERY router in the entire AS
+        |
+Step 5: Run Dijkstra's Algorithm locally to compute Shortest Path Tree
+```
+
+1. **Neighbor Discovery**: Send `HELLO` packets on all physical links upon boot up to discover adjacent live routers.
+2. **Cost Measurement**: Periodically measure round-trip delay or assign bandwidth metrics ($c = \frac{10^8}{\text{Bandwidth in bps}}$) to each neighbor using `ECHO` packets.
+3. **LSP Generation**: Create a Link State Packet containing:
+   - Router ID
+   - Sequence Number (monotonically increasing)
+   - Age / Time-to-Live
+   - List of directly connected neighbors and associated link costs
+4. **Reliable Flooding**: Flood the LSP across the entire network. Every router stores incoming LSPs in a synchronized **Link State Database (LSDB)**.
+5. **Dijkstra Computation**: Once all LSPs are collected, every router has an identical map of the entire network topology and runs Dijkstra's algorithm independently.
+
+---
+
+### 3.2 Master Comparison: Distance Vector vs. Link State
+
+| Parameter | Distance Vector (e.g., RIP) | Link State (e.g., OSPF) |
+|---|---|---|
+| **Underlying Algorithm** | Distributed Bellman-Ford | Centralized Dijkstra (SPF) |
+| **Information Shared** | Entire routing table | State of local physical links only |
+| **Recipient of Updates** | **Immediate neighbors only** | **All routers in the AS** (via flooding) |
+| **Convergence Speed** | Slow (vulnerable to Count-to-Infinity) | Fast (no loops during normal state) |
+| **Memory / CPU Overhead** | Low (stores distance vectors only) | High (stores complete network graph) |
+| **Bandwidth Consumption** | High periodic broadcasts | Low (event-triggered updates after convergence) |
+| **Hierarchical Support** | None (flat network) | Two-tier hierarchy (OSPF Backbone Area 0) |
+
+---
+
+## 4. Hierarchical Routing
+
+As networks scale to tens of thousands of routers, storing flat routing tables consumes prohibitive memory and computing power. **Hierarchical Routing** partitions routers into regional clusters called **Areas** or **Autonomous Systems**.
+
+- Routers within an area know how to route to every internal host.
+- Routers outside the area know only how to route to the area's **Border Router**.
+- **Optimal Number of Hierarchical Levels**: For a network of $N$ routers, the theoretically optimal number of hierarchical tiers is:
+$$\text{Optimal Levels} = \ln(N)$$
+  and the minimum table size per router drops from $N$ entries to approximately $e \ln(N)$ entries.
+
+---
+
+## 5. Traffic Shaping & Congestion Management
+
+Traffic shaping is an open-loop congestion prevention mechanism operating at the boundary of a network to smooth out bursty data transmissions into a steady stream.
+
+```text
+                           Traffic Shaping Algorithms
+                                       |
+                   +-------------------+-------------------+
+                   |                                       |
+                   v                                       v
+             Leaky Bucket                             Token Bucket
+     - Constant, rigid output rate            - Variable output rate with burst allowance
+     - Discards data if bucket overflows      - Discards TOKENS if bucket overflows
+     - Ideal for deterministic CBR traffic    - Ideal for bursty VBR data traffic
+```
+
+---
+
+### 5.1 The Leaky Bucket Algorithm
+
+Analogy: A water bucket with a small hole in the bottom.
+- Regardless of the rate at which water is poured into the bucket, water leaks out at a **strictly constant rate** $\rho$.
+- If water enters faster than it leaks and the bucket fills to its capacity $B$, incoming excess packets are **dropped (discarded)**.
+- **Limitation**: Cannot accelerate to send bursts even if the network is completely idle.
+
+---
+
+### 5.2 The Token Bucket Algorithm
+
+The Token Bucket algorithm decouples transmission pacing from byte storage, allowing controlled burst transmission:
+
+1. A token generator produces tokens at a steady rate of **$R$ tokens per second**.
+2. Tokens accumulate in a bucket up to a maximum bucket capacity of **$C$ tokens**.
+3. If the bucket is full, newly arrived tokens are discarded.
+4. To transmit a packet of $k$ bytes, $k$ tokens must be removed from the bucket.
+5. If insufficient tokens exist, the packet waits or is marked with a lower priority.
+6. If the bucket is full of tokens, a burst of packets can be transmitted back-to-back at the **maximum transmission line speed ($M$)**.
+
+---
+
+### 5.3 Mathematical Formula: Maximum Burst Duration ($T_{\text{burst}}$)
+
+During a peak burst transmission:
+- The sender transmits at peak line rate $M$ bytes/sec.
+- The token consumption rate is $M$ tokens/sec.
+- Simultaneously, new tokens continue to arrive at rate $R$ tokens/sec.
+- Net rate of token depletion: $M - R$ tokens/sec.
+- Starting from full bucket capacity $C$:
+
+$$T_{\text{burst}} = \frac{C}{M - R}$$
+
+$$\text{Maximum Burst Volume} = M \times T_{\text{burst}} = C + R \cdot T_{\text{burst}}$$
+
+---
+
+### 5.4 Worked Numerical: Token Bucket Calculation
+
+**Problem (UGC NET Style)**:
+A computer network uses a Token Bucket algorithm for traffic shaping.
+- Token arrival rate $R = 2 \text{ MB/sec}$.
+- Bucket capacity $C = 16 \text{ MB}$.
+- Peak output transmission rate $M = 10 \text{ MB/sec}$.
+Compute:
+1. The maximum burst duration for which the computer can transmit at full speed $M$.
+2. The total amount of data transmitted during this burst.
+
+**Solution**:
+1. **Calculate Maximum Burst Duration**:
+$$T_{\text{burst}} = \frac{C}{M - R} = \frac{16 \text{ MB}}{10 \text{ MB/s} - 2 \text{ MB/s}} = \frac{16}{8} = \mathbf{2 \text{ seconds}}$$
+2. **Calculate Maximum Burst Volume**:
+$$\text{Total Data} = M \times T_{\text{burst}} = 10 \text{ MB/s} \times 2 \text{ s} = \mathbf{20 \text{ MB}}$$
+   *(Verification: $C + R \cdot T = 16 + (2 \times 2) = 20\text{ MB}$).*
+
+---
+
+## 6. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET 2021 — RIP Protocol Metrics)
+What is the maximum number of hops allowed in Routing Information Protocol (RIP) before a destination is declared unreachable?
+
+**Solution**:
+- RIP uses hop count as its cost metric.
+- Maximum valid hop count is 15.
+- A hop count of **16 denotes infinity** ($\infty$) and signifies an unreachable route (used to break Count-to-Infinity loops).
+**Answer**: 15 hops (16 means unreachable).
+
+### Question 2 (UGC NET 2020 — Token Bucket Sizing)
+A token bucket scheme has bucket capacity $C = 1\text{ megabyte}$. The token generation rate is $R = 10\text{ MB/sec}$, and maximum output rate is $M = 20\text{ MB/sec}$. How long can the burst last at the maximum output rate?
+
+**Solution**:
+$$T_{\text{burst}} = \frac{C}{M - R} = \frac{1 \text{ MB}}{20 \text{ MB/s} - 10 \text{ MB/s}} = \frac{1}{10} \text{ s} = \mathbf{0.1 \text{ seconds (100 ms)}}$$
+**Answer**: 0.1 seconds (100 ms).
+
+### Question 3 (UGC NET 2019 — Distance Vector vs Link State)
+Which of the following statements about routing protocols is **TRUE**?
+- (A) OSPF uses the Bellman-Ford algorithm and sends periodic updates to immediate neighbors.
+- (B) RIP uses Dijkstra's algorithm and floods the network with link state packets.
+- (C) OSPF uses Dijkstra's algorithm and floods link state advertisements throughout the autonomous system.
+- (D) BGP is an intra-domain link-state protocol.
+
+**Solution**:
+- OSPF (Open Shortest Path First) is an IGP that uses Dijkstra's algorithm and reliable flooding of Link State Advertisements (LSAs).
+- RIP uses Bellman-Ford. BGP is an inter-domain Path Vector protocol.
+**Answer**: **(C)**.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="The Count-to-Infinity problem is a classical routing convergence anomaly inherent to which routing protocol family?"
+  optionA="Link-State Routing (OSPF)"
+  optionB="Distance Vector Routing (RIP)"
+  optionC="Path Vector Routing (BGP)"
+  optionD="Flooding"
+  correctOption="B"
+  explanation="Distance Vector protocols (based on Bellman-Ford algorithm) suffer from the Count-to-Infinity problem when a link goes down, because neighbors advertise stale routing estimates to each other in feedback loops. Mitigated using Split Horizon and Poison Reverse."
+  examBadge="UGC NET Dec 2020 / Official PYQ"
+/>
+
+<Quiz
+  question="A Leaky Bucket traffic shaper has a capacity of 10 MB and an output leak rate of 2 MB/sec. A burst of traffic arrives at 10 MB/sec for 1 second. What is the maximum burst duration the bucket can sustain without dropping packets?"
+  optionA="1.00 second"
+  optionB="1.25 seconds"
+  optionC="1.50 seconds"
+  optionD="2.00 seconds"
+  correctOption="B"
+  explanation="Formula: Burst time T = Capacity / (Input_Rate - Output_Rate) = 10 MB / (10 MB/s - 2 MB/s) = 10 / 8 = 1.25 seconds."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="What is the asymptotic time complexity of Dijkstra's Single-Source Shortest Path algorithm executed on a network graph with V routers and E links using a Min-Heap (Binary Heap)?"
+  optionA="O(V^2)"
+  optionB="O((V + E) log V)"
+  optionC="O(V · E)"
+  optionD="O(V^3)"
+  correctOption="B"
+  explanation="Extracting min-distance vertex V times from a binary heap takes O(V log V). Updating link weights (decrease-key) for E edges takes O(E log V). Combined running time is O((V + E) log V), which simplifies to O(E log V) in connected networks."
+  examBadge="UGC NET Dec 2021"
+/>
+
+<Quiz
+  question="Which Internet routing protocol uses Border Gateway Protocol (BGP) to route packets across Autonomous Systems (AS) and prevent routing loops using AS-Path lists?"
+  optionA="Interior Gateway Protocol"
+  optionB="Path Vector Protocol"
+  optionC="Link State Protocol"
+  optionD="Distance Vector Protocol"
+  correctOption="B"
+  explanation="BGP is a Path Vector protocol. Instead of advertising scalar distances, BGP advertisements contain the complete list of Autonomous Systems (AS-PATH) traversed, allowing routers to immediately detect and discard routes that contain their own AS number (loop prevention)."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="In Classless Inter-Domain Routing (CIDR), if a router's forwarding table contains entries for 192.168.0.0/16, 192.168.1.0/24, and 192.168.1.128/25, which route is selected for destination 192.168.1.130?"
+  optionA="192.168.0.0/16"
+  optionB="192.168.1.0/24"
+  optionC="192.168.1.128/25 (Longest Prefix Match)"
+  optionD="Default route"
+  correctOption="C"
+  explanation="Routers use the Longest Prefix Match rule. Destination 192.168.1.130 matches all three prefixes, but /25 matches 25 bits (the most specific match), so the /25 route is selected."
+  examBadge="UGC NET Official PYQ"
+/>
+

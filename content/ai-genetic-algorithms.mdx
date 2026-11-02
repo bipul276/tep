@@ -1,0 +1,373 @@
+---
+title: "Evolutionary Computation: Genetic Algorithms, Swarm Intelligence, and Metaheuristics"
+unit: "Unit 13: Artificial Intelligence"
+examType: "UGC-NET"
+priority: "High"
+readTime: "34 min"
+slug: "ai-genetic-algorithms"
+description: "Exhaustive guide to evolutionary algorithms: Holland's Schema Theorem, crossover and mutation operators, selection mechanisms (Roulette Wheel, Tournament), Particle Swarm Optimization (PSO), and Ant Colony Optimization (ACO) for UGC NET."
+tags: ["Artificial Intelligence", "Genetic Algorithms", "Evolutionary Computation", "Swarm Intelligence", "PSO", "ACO", "Schema Theorem", "UGC-NET"]
+---
+
+# Evolutionary Computation: Genetic Algorithms, Swarm Intelligence, and Metaheuristics
+
+In artificial intelligence, complex combinatorial optimization problems (e.g., Traveling Salesperson, VLSI layout, Job-Shop Scheduling) belong to the NP-hard class, rendering exhaustive state-space search computationally intractable. To navigate these vast search spaces, computer scientists employ **Metaheuristic Optimization Algorithms** inspired by biological evolution and social animal behavior.
+
+In the **UGC NET Computer Science** syllabus (Unit 10: Artificial Intelligence segment), **Genetic Algorithms and Swarm Intelligence** represent a core, high-scoring testing area:
+1. **Genetic Algorithm (GA) Lifecycle & Chromosomal Representations** (Binary, Permutation, Real-Valued).
+2. **Selection Mechanisms** (Roulette Wheel / Fitness Proportionate, Tournament, Rank Selection, Elitism).
+3. **Genetic Operators** (Crossover techniques, Inversion, Mutation, Exploration vs. Exploitation).
+4. **Holland's Schema Theorem & Building Block Hypothesis** (Schema order, defining length, mathematical bounds).
+5. **Swarm Intelligence Models** (**Particle Swarm Optimization - PSO** and **Ant Colony Optimization - ACO**).
+
+---
+
+## 1. The Genetic Algorithm Framework
+
+Pioneered by John Holland in 1975, a **Genetic Algorithm (GA)** simulates the process of Darwinian natural selection through iterative population-based stochastic search:
+
+```
+  [ Initialize Random Population P(0) ]
+                   │
+                   ▼
+  [ Evaluate Fitness f(x) of All Individuals ]
+                   │
+       ┌───────────┴──────────────────────────────┐
+       │                                          ▼
+       │                          Termination Condition Met? ──► [ Output Best Solution ]
+       │                                     (No)
+       ▼                                      │
+  [ Selection of Parents ] ◄──────────────────┘
+  (Roulette Wheel / Tournament)
+       │
+       ▼
+  [ Crossover / Recombination ] (Probability pc)
+       │
+       ▼
+  [ Mutation Operator ] (Probability pm)
+       │
+       ▼
+  [ Form New Population P(t+1) ] ──► (Loop back to Evaluation)
+```
+
+### 1.1 Chromosome Representation Schemes
+
+```
++------------------------+----------------------------------+---------------------------------------+
+| Encoding Scheme        | Chromosome Structure             | Ideal Optimization Problem            |
++------------------------+----------------------------------+---------------------------------------+
+| **Binary Encoding**    | Bit string: `1 0 1 1 0 0 1`       | 0/1 Knapsack, Feature selection, SAT  |
++------------------------+----------------------------------+---------------------------------------+
+| **Permutation Encoding**| Ordered list: `(3, 1, 4, 2, 5)` | Traveling Salesperson (TSP), Scheduling|
++------------------------+----------------------------------+---------------------------------------+
+| **Real-Valued Encoding**| Float vector: `(2.71, -0.45, 9.8)`| Neural Network weights, Continuous DSP|
++------------------------+----------------------------------+---------------------------------------+
+| **Tree Encoding**      | Expression parse tree            | Genetic Programming (Evolving code)   |
++------------------------+----------------------------------+---------------------------------------+
+```
+
+---
+
+## 2. Selection Operators
+
+Selection directs the search toward promising regions of the solution space by according higher reproduction chances to individuals with superior fitness.
+
+### 2.1 Roulette Wheel Selection (Fitness Proportionate)
+
+Each individual $i$ is assigned a selection probability $p_i$ directly proportional to its fitness $f_i$:
+
+$$p_i = \frac{f_i}{\sum_{k=1}^N f_k}$$
+
+The cumulative probability distribution $q_i$ is computed as:
+
+$$q_i = \sum_{j=1}^i p_j \quad (q_0 = 0, \; q_N = 1.0)$$
+
+To select an individual, draw a uniform random number $r \in [0, 1)$. The selected individual $i$ satisfies:
+$$q_{i-1} < r \le q_i$$
+
+> **Limitation**: Suffers from **Premature Convergence** if a single "super-fit" individual dominates early generations, or **Stagnation** in late generations when all individuals have nearly identical fitness scores.
+
+---
+
+### 2.2 Tournament Selection
+
+1. Randomly draw $k$ individuals from the population with replacement ($k$ is the **Tournament Size**, typically $k = 2$ or $k = 3$).
+2. The individual with the highest fitness among the $k$ contenders wins and is selected as a parent.
+
+- **Advantage**: Requires no global population summation $\sum f_k$, is computationally fast $O(k)$, and works seamlessly for parallel architectures.
+
+---
+
+### 2.3 Rank Selection & Elitism
+
+- **Rank Selection**: Overcomes the scaling issues of Roulette Wheel selection by sorting individuals from worst (Rank 1) to best (Rank $N$). Selection probability is assigned proportional to rank index rather than raw fitness.
+- **Elitism**: Directly copies the top $E$ best-performing individuals of the current generation into the next generation without undergoing crossover or mutation. **Guarantees that the best solution found never deteriorates across generations**.
+
+---
+
+## 3. Genetic Operators: Crossover & Mutation
+
+### 3.1 Crossover (Recombination)
+
+Crossover combines genetic information from two parent chromosomes to generate offspring, executed with probability $p_c$ (typically $p_c \in [0.6, 0.9]$):
+
+```
+ 1. Single-Point Crossover (Split at k = 3):
+    Parent 1:  1  1  0 │ 1  0  1       Offspring 1:  1  1  0 │ 0  1  0
+    Parent 2:  0  0  1 │ 0  1  0  ──►  Offspring 2:  0  0  1 │ 1  0  1
+
+ 2. Two-Point Crossover (Split at k1 = 2, k2 = 4):
+    Parent 1:  1  1 │ 0  1 │ 0  1     Offspring 1:  1  1 │ 1  0 │ 0  1
+    Parent 2:  0  0 │ 1  0 │ 1  0  ──► Offspring 2:  0  0 │ 0  1 │ 1  0
+
+ 3. Uniform Crossover:
+    Each bit is inherited independently from Parent 1 or Parent 2 according to a random coin-flip mask.
+```
+
+#### Combinatorial Permutation Crossovers (e.g., for TSP)
+Standard single-point crossover produces invalid permutations with duplicate cities. Specialized operators resolve this:
+- **Partially Mapped Crossover (PMX)**: Swaps a middle segment and uses cross-mapping pairs to resolve duplicate values.
+- **Order Crossover (OX)**: Preserves relative city ordering from one parent while filling remaining positions from the second parent.
+- **Cycle Crossover (CX)**: Preserves absolute index positions based on permutation cycles.
+
+---
+
+### 3.2 Mutation Operator
+
+Mutation randomly modifies one or more gene values with a small probability $p_m$ (typically $p_m \in [0.001, 0.05]$):
+
+```
+ Bit-Flip Mutation (Inverts bit at index 4):
+   Original:   1   0   1   [0]   1   1
+   Mutated:    1   0   1   [1]   1   1
+```
+
+- **Fundamental Role**: While Crossover performs **Exploitation** (combining existing good traits), Mutation performs **Exploration** (injecting novel genetic alleles not present in the initial population), preventing the population from getting permanently trapped in local optima.
+
+---
+
+## 4. Holland's Schema Theorem
+
+The **Schema Theorem** (often called the *Fundamental Theorem of Genetic Algorithms*) provides the formal mathematical proof explaining why Genetic Algorithms work.
+
+### 4.1 Schema Terminology
+
+A **Schema** $H$ is a similarity template representing a subset of chromosomes, defined over the alphabet $\{0, 1, *\}$, where $*$ is the wild-card "don't care" symbol:
+
+$$\text{Example Schema: } H = * \; 1 \; 0 \; * \; * \; 1$$
+
+- **Schema Order $o(H)$**: The number of fixed, defined positions ($0$s and $1$s) in the template:
+$$o(* 1 0 * * 1) = 3$$
+- **Defining Length $\delta(H)$**: The physical distance between the first and last specific fixed bits:
+$$\delta(* 1 0 * * 1) = \text{Position of last fixed bit (6)} - \text{Position of first fixed bit (2)} = 6 - 2 = 4$$
+
+---
+
+### 4.2 The Fundamental Theorem Equation
+
+Let:
+- $m(H, t)$ be the expected count of chromosomes matching schema $H$ at generation $t$.
+- $f(H)$ be the average fitness of chromosomes matching schema $H$.
+- $\bar{f}$ be the mean fitness of the entire population.
+- $L$ be the total length of the chromosome.
+- $p_c$ be the crossover probability.
+- $p_m$ be the bit mutation probability.
+
+The expected number of instances of schema $H$ in generation $t + 1$ satisfies:
+
+$$E[m(H, t+1)] \ge m(H, t) \cdot \frac{f(H)}{\bar{f}} \cdot \left[1 - p_c \frac{\delta(H)}{L - 1} - o(H) \cdot p_m\right]$$
+
+### 4.3 The Building Block Hypothesis
+From the Schema Theorem, a schema will grow exponentially across successive generations if:
+1. It has **above-average fitness**: $\frac{f(H)}{\bar{f}} > 1$.
+2. It has a **short defining length**: $\delta(H) \ll L$ (minimizes disruption by crossover).
+3. It has a **low order**: $o(H)$ is small (minimizes disruption by mutation).
+
+> **Building Block Hypothesis**: A genetic algorithm seeks near-optimal performance through the juxtaposition of short, low-order, high-fitness schemata called **Building Blocks**.
+
+---
+
+## 5. Swarm Intelligence
+
+Swarm Intelligence algorithms model the collective, decentralized, self-organized behavior of natural colonies (flocks of birds, ant trails, bee hives).
+
+### 5.1 Particle Swarm Optimization (PSO)
+
+Introduced by James Kennedy and Russell Eberhart in 1995, **PSO** models a flock of candidate solution vectors (**particles**) soaring through a multi-dimensional search space.
+
+```
+                         v_i(t+1) (New Velocity)
+                            ▲
+                           /│
+                          / │ Cognitive Component: c1·r1·(p_best - x_i)
+                         /  │
+      Current x_i(t) ──►*   └──────────────────► Social Component: c2·r2·(g_best - x_i)
+                         \
+                          \
+                           ▼
+                        x_i(t+1) = x_i(t) + v_i(t+1) (New Position)
+```
+
+Each particle $i$ tracks:
+- Current Position: $\mathbf{x}_i(t) \in \mathbb{R}^D$
+- Current Velocity: $\mathbf{v}_i(t) \in \mathbb{R}^D$
+- Personal Best Position: $\mathbf{p}_{\text{best}, i}$ (best position this particle has achieved)
+- Global Swarm Best Position: $\mathbf{g}_{\text{best}}$ (best position any particle in the swarm has achieved)
+
+#### The Particle Update Equations:
+1. **Velocity Update**:
+$$v_{i,d}(t+1) = w \cdot v_{i,d}(t) + c_1 r_1 \left(p_{\text{best}, i, d} - x_{i,d}(t)\right) + c_2 r_2 \left(g_{\text{best}, d} - x_{i,d}(t)\right)$$
+
+2. **Position Update**:
+$$x_{i,d}(t+1) = x_{i,d}(t) + v_{i,d}(t+1)$$
+
+Where:
+- $w$: **Inertia Weight** (controls exploration vs exploitation; typically $0.4 \le w \le 0.9$).
+- $c_1$: **Cognitive (Self) Acceleration Parameter** (pull toward individual memory).
+- $c_2$: **Social (Group) Acceleration Parameter** (pull toward swarm knowledge).
+- $r_1, r_2$: Independent random numbers drawn uniformly from $U(0, 1)$.
+
+---
+
+### 5.2 Ant Colony Optimization (ACO)
+
+Pioneered by Marco Dorigo in 1992, **ACO** models the foraging behavior of real ants that discover the shortest path between their nest and a food source by depositing and sensing chemical markers called **Pheromones**.
+
+1. **State Transition Probability**:
+   An ant $k$ located at node $i$ chooses to move to unvisited node $j$ with probability:
+$$p_{ij}^k(t) = \frac{\left[\tau_{ij}(t)\right]^\alpha \cdot \left[\eta_{ij}\right]^\beta}{\sum_{l \in \text{Allowed}_k} \left[\tau_{il}(t)\right]^\alpha \cdot \left[\eta_{il}\right]^\beta}$$
+   Where:
+   - $\tau_{ij}(t)$: Pheromone trail intensity on edge $(i, j)$.
+   - $\eta_{ij} = \frac{1}{d_{ij}}$: Heuristic visibility (inverse of edge distance).
+   - $\alpha$: Weight of pheromone history.
+   - $\beta$: Weight of heuristic distance.
+
+2. **Pheromone Evaporation & Update**:
+   To prevent the algorithm from permanently stagnating at early sub-optimal paths, pheromones evaporate over time at rate $\rho \in (0, 1]$:
+$$\tau_{ij}(t+1) = (1 - \rho)\tau_{ij}(t) + \sum_{k=1}^m \Delta \tau_{ij}^k(t)$$
+   Where $\Delta \tau_{ij}^k(t) = \frac{Q}{L_k}$ if ant $k$ traversed edge $(i, j)$ with total tour length $L_k$.
+
+---
+
+## 6. Worked Numerical Examples & Computations
+
+### Numerical 1: Schema Order and Defining Length
+**Problem (UGC NET June 2020)**:
+Calculate the Schema Order $o(H)$ and Defining Length $\delta(H)$ for the following schemata defined over 8-bit strings:
+1. $H_1 = * \; * \; 1 \; * \; 0 \; * \; * \; *$
+2. $H_2 = 1 \; * \; * \; * \; * \; * \; * \; 0$
+3. $H_3 = * \; * \; * \; 1 \; 1 \; 0 \; * \; *$
+
+#### Solution:
+1. **For $H_1 = * * 1 * 0 * * *$**:
+   - Fixed bits at positions 3 and 5.
+   - **Order**: $o(H_1) = 2$.
+   - **Defining Length**: $\delta(H_1) = 5 - 3 = 2$.
+
+2. **For $H_2 = 1 * * * * * * 0$**:
+   - Fixed bits at positions 1 and 8.
+   - **Order**: $o(H_2) = 2$.
+   - **Defining Length**: $\delta(H_2) = 8 - 1 = 7$.
+
+3. **For $H_3 = * * * 1 1 0 * *$**:
+   - Fixed bits at positions 4, 5, and 6.
+   - **Order**: $o(H_3) = 3$.
+   - **Defining Length**: $\delta(H_3) = 6 - 4 = 2$.
+
+> **Insight**: Even though $H_1$ and $H_2$ have the exact same order ($2$), $H_1$ has a much shorter defining length ($2$ vs $7$) and is therefore dramatically less likely to be disrupted by single-point crossover!
+
+---
+
+### Numerical 2: Roulette Wheel Selection Probabilities
+**Problem**: A population comprises 4 chromosomes with fitness values:
+$f_1 = 15, \; f_2 = 35, \; f_3 = 20, \; f_4 = 30$.
+Calculate the selection probabilities $p_i$ and the cumulative probability intervals $q_i$.
+
+#### Solution:
+1. **Total Population Fitness**:
+$$\sum_{k=1}^4 f_k = 15 + 35 + 20 + 30 = 100$$
+
+2. **Individual Selection Probabilities ($p_i = f_i / 100$)**:
+   - $p_1 = 15/100 = 0.15$ ($15\%$)
+   - $p_2 = 35/100 = 0.35$ ($35\%$)
+   - $p_3 = 20/100 = 0.20$ ($20\%$)
+   - $p_4 = 30/100 = 0.30$ ($30\%$)
+
+3. **Cumulative Probability Intervals ($q_i$)**:
+   - $q_1 = 0.15 \implies [0.00, 0.15)$
+   - $q_2 = 0.15 + 0.35 = 0.50 \implies [0.15, 0.50)$
+   - $q_3 = 0.50 + 0.20 = 0.70 \implies [0.50, 0.70)$
+   - $q_4 = 0.70 + 0.30 = 1.00 \implies [0.70, 1.00]$
+
+*(If random number $r = 0.42$ is generated, Individual 2 is selected since $0.15 < 0.42 \le 0.50$).*
+
+---
+
+## 7. Interactive PYQ Knowledge Checks
+
+<Quiz
+  question="According to Holland's Schema Theorem, which type of schemata receive an exponentially increasing number of trials in subsequent generations of a Genetic Algorithm?"
+  optionA="High-order, long defining length, and low-fitness schemata"
+  optionB="Low-order, short defining length, and above-average fitness schemata"
+  optionC="High-order, short defining length, and below-average fitness schemata"
+  optionD="Only schemata containing zero wildcards"
+  correctOption="B"
+  explanation="Holland's Schema Theorem proves that short defining length protects against crossover destruction, low order protects against mutation destruction, and above-average fitness ensures exponential reproductive scaling."
+  examBadge="UGC NET December 2022"
+/>
+
+<Quiz
+  question="What is the primary role of the Mutation operator in a Genetic Algorithm?"
+  optionA="To evaluate the objective function faster"
+  optionB="To inject new genetic diversity and prevent the population from becoming permanently trapped in local optima"
+  optionC="To sort the chromosomes in ascending order"
+  optionD="To combine two parent chromosomes into one"
+  correctOption="B"
+  explanation="Crossover exploits existing alleles in the population by recombining them. Mutation introduces entirely new genetic alleles with a low probability, maintaining genetic diversity and allowing the search to escape local optima."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="In Particle Swarm Optimization (PSO), what physical concept does the parameter 'c1' in the velocity update equation represent?"
+  optionA="The inertia weight of the fluid medium"
+  optionB="The cognitive (personal memory) acceleration coefficient pulling the particle toward its individual historical best position"
+  optionC="The social acceleration coefficient pulling the particle toward the global swarm best position"
+  optionD="The maximum velocity clamp"
+  correctOption="B"
+  explanation="In PSO velocity update: v(t+1) = w·v(t) + c1·r1·(p_best - x) + c2·r2·(g_best - x). The parameter c1 represents the cognitive component (memory of personal best), while c2 represents the social component (knowledge of swarm best)."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="Why is Pheromone Evaporation (1 - ρ) an indispensable mechanism in Ant Colony Optimization (ACO)?"
+  optionA="It cools down the CPU temperature during execution"
+  optionB="It prevents premature convergence and stagnation by decaying sub-optimal pheromone trails, encouraging exploration of alternative paths"
+  optionC="It guarantees that all ants travel at constant velocity"
+  optionD="It converts graph edges from directed to undirected"
+  correctOption="B"
+  explanation="Without pheromone evaporation, the initial paths discovered by early ants would accumulate unbounded pheromone concentrations, causing all subsequent ants to follow the first found path regardless of its optimality. Evaporation allows sub-optimal paths to be forgotten."
+  examBadge="UGC NET Swarm Intelligence Standard"
+/>
+
+<Quiz
+  question="In a Genetic Algorithm with tournament selection of size k = 2 and population size N = 100, what is the probability that the absolute fittest individual in the population is selected in a single tournament round?"
+  optionA="0.01"
+  optionB="0.0199 (approx 1.99%)"
+  optionC="0.50"
+  optionD="0.04"
+  correctOption="B"
+  explanation="The fittest individual wins the tournament if it is picked at least once among the k = 2 randomly sampled contenders. Probability of NOT picking the fittest individual in 1 pick = 99/100 = 0.99. In 2 picks = (0.99)^2 = 0.9801. Probability of picking the fittest individual = 1 - 0.9801 = 0.0199 or 1.99%."
+  examBadge="UGC NET AI Standard"
+/>
+
+
+---
+
+## 8. High-Yield Revision Matrix
+
+| Algorithm | Paradigm | Core Operator / Equation | Key Hyperparameter | Primary Strength |
+|---|---|---|---|---|
+| **Genetic Algorithm** | Darwinian Evolution | Crossover ($p_c$) + Mutation ($p_m$) | Selection pressure, $p_c \approx 0.8$, $p_m \approx 0.01$ | Robust global search across discrete combinatorial spaces |
+| **Schema Theorem** | Mathematical Proof | $E[m] \ge m \frac{f(H)}{\bar{f}} [1 - p_c \frac{\delta}{L-1} - o \cdot p_m]$ | $\delta(H)$ = defining length; $o(H)$ = order | Explains exponential growth of optimal building blocks |
+| **PSO** | Swarm Intelligence | $v \leftarrow w v + c_1 r_1(p_{\text{best}} - x) + c_2 r_2(g_{\text{best}} - x)$ | Inertia $w$, acceleration $c_1, c_2$ | Extremely fast convergence on continuous optimization problems |
+| **ACO** | Foraging Pheromones | $p_{ij} \propto [\tau_{ij}]^\alpha [\eta_{ij}]^\beta$; Evaporation $(1 - \rho)$ | Evaporation rate $\rho$, history weights $\alpha, \beta$ | Superior performance on graph routing & TSP problems |

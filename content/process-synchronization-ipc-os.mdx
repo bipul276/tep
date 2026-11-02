@@ -1,0 +1,492 @@
+---
+title: "Process Synchronization, Critical Section Problem & Semaphores"
+unit: "Unit 5: Operating System"
+examType: "Common"
+priority: "High"
+readTime: "40 min"
+slug: "process-synchronization-ipc-os"
+description: "Comprehensive guide to process synchronization, race conditions, Peterson's algorithm, hardware atomic primitives (Test-and-Set, CAS), semaphores, Producer-Consumer, Readers-Writers, and Dining Philosophers problems."
+tags: ["Operating Systems", "Process Synchronization", "Critical Section", "Peterson's Algorithm", "Semaphores", "Mutex", "Dining Philosophers"]
+---
+
+# Process Synchronization, Critical Section Problem & Semaphores
+
+## 1. Race Conditions & The Critical Section Problem
+
+In a multiprogramming or multi-threaded operating system, concurrent processes often share common resources such as memory buffers, global variables, or files. When multiple processes access and manipulate the same data concurrently, and the outcome of the execution depends on the particular order in which access takes place, a **race condition** occurs.
+
+### 1.1 Assembly Trace of a Race Condition
+
+Consider a shared variable `count` initialized to `5`. Two concurrent processes execute:
+- Process A: `count++`
+- Process B: `count--`
+
+At the machine-instruction level, high-level statements compile into sequences of register operations:
+
+```text
+Process A (count++)             Process B (count--)
+-------------------             -------------------
+R1 = count                      R2 = count
+R1 = R1 + 1                     R2 = R2 - 1
+count = R1                      count = R2
+```
+
+If an interrupt or preemption occurs midway through execution:
+
+| Time | Running Process | Executed Instruction | Register / Variable State |
+|:---:|:---:|:---|:---|
+| $T_0$ | Process A | `R1 = count` | $R_1 = 5$, `count` $= 5$ |
+| $T_1$ | Process A | `R1 = R1 + 1` | $R_1 = 6$, `count` $= 5$ |
+| $T_2$ | **Context Switch** $\implies$ Process B | `R2 = count` | $R_2 = 5$, `count` $= 5$ |
+| $T_3$ | Process B | `R2 = R2 - 1` | $R_2 = 4$, `count` $= 5$ |
+| $T_4$ | Process B | `count = R2` | $R_2 = 4$, `count` $= \mathbf{4}$ |
+| $T_5$ | **Context Switch** $\implies$ Process A | `count = R1` | $R_1 = 6$, `count` $= \mathbf{6}$ |
+
+*Result*: The final value of `count` is **6** (or **4** depending on interleaving) instead of the logically correct value **5**!
+
+---
+
+## 2. The Critical Section Structure & Criteria
+
+A **Critical Section (CS)** is a code segment in which shared resources are accessed. To prevent race conditions, process execution must be structured with entry and exit gates:
+
+```c
+do {
+    // 1. Entry Section: Request permission to enter CS
+    entry_section();
+
+    // 2. Critical Section: Manipulate shared memory/files
+    /* CRITICAL SECTION */
+
+    // 3. Exit Section: Notify other waiting processes
+    exit_section();
+
+    // 4. Remainder Section: Non-critical private computation
+    /* REMAINDER SECTION */
+} while (true);
+```
+
+### 2.1 The Three Mandatory Requirements for a Valid Solution
+
+Any valid software or hardware solution to the critical-section problem must satisfy **all three** properties:
+
+1. **Mutual Exclusion**: If process $P_i$ is executing in its critical section, then no other processes can be executing in their critical sections simultaneously.
+2. **Progress (Absence of Deadlock / Livelock)**: If no process is executing in its critical section and some processes wish to enter, then only those processes that are **not executing in their remainder sections** can participate in deciding which process will enter next, and this selection **cannot be postponed indefinitely**.
+3. **Bounded Waiting (Absence of Starvation)**: There must exist a bound (limit) on the number of times that other processes are allowed to enter their critical sections after a process has made a request to enter its critical section and before that request is granted.
+
+---
+
+## 3. Classic Software Solutions (Two-Process Algorithms)
+
+### 3.1 Attempt 1: Strict Alternation (`turn` Variable)
+
+```c
+// Shared variable: int turn = 0;
+// Process P0:
+do {
+    while (turn != 0); // Busy wait
+    /* Critical Section */
+    turn = 1;
+    /* Remainder Section */
+} while (true);
+
+// Process P1:
+do {
+    while (turn != 1); // Busy wait
+    /* Critical Section */
+    turn = 0;
+    /* Remainder Section */
+} while (true);
+```
+
+- **Mutual Exclusion**: **Satisfied**. $P_0$ and $P_1$ cannot enter CS simultaneously because `turn` cannot be both 0 and 1.
+- **Progress**: **FAILED!** If $P_0$ finishes its CS, sets `turn = 1`, and then enters a long remainder section, $P_1$ enters and exits CS, setting `turn = 0`. Now, if $P_1$ wants to re-enter CS immediately, it is blocked because `turn == 0`! $P_1$ is prevented from entering CS by $P_0$, which is sitting in its remainder section.
+
+---
+
+### 3.2 Attempt 2: Intention Flags (`flag` Array)
+
+```c
+// Shared variable: boolean flag[2] = {false, false};
+// Process Pi (where j is the other process):
+do {
+    flag[i] = true;   // Express intent to enter
+    while (flag[j]);  // Wait if other process wants to enter
+    /* Critical Section */
+    flag[i] = false;
+    /* Remainder Section */
+} while (true);
+```
+
+- **Mutual Exclusion**: **Satisfied**.
+- **Progress**: **FAILED!** If $P_0$ and $P_1$ set `flag[0] = true` and `flag[1] = true` simultaneously, both enter the `while` loop together. Both discover the other's flag is true and spin forever:
+$$\text{Mutual deadlock! Neither process ever enters the Critical Section.}$$
+
+---
+
+## 4. Peterson's Algorithm (The Classical Software Solution)
+
+Published by Gary L. Peterson in 1981, this algorithm combines the intention flag with a turn variable to provide a provably correct 2-process solution.
+
+```c
+// Shared variables:
+boolean flag[2] = {false, false};
+int turn;
+
+// Structure of Process Pi (where j is the other process):
+do {
+    flag[i] = true;              // "I want to enter"
+    turn = j;                    // "You go first if you are ready"
+    while (flag[j] && turn == j); // Busy wait condition
+
+    /* CRITICAL SECTION */
+
+    flag[i] = false;             // "I am finished"
+
+    /* REMAINDER SECTION */
+} while (true);
+```
+
+### 4.1 Mathematical Proof of Peterson's Algorithm
+
+#### Proof of Mutual Exclusion:
+Assume for contradiction that both $P_0$ and $P_1$ are in their Critical Section simultaneously.
+- For $P_0$ to enter CS: either `flag[1] == false` or `turn == 0`.
+- For $P_1$ to enter CS: either `flag[0] == false` or `turn == 1`.
+- Since both are in CS, both must have set `flag[0] = true` and `flag[1] = true`.
+- Therefore, we must have had `turn == 0` for $P_0$ and `turn == 1` for $P_1$.
+- But `turn` is a simple memory cell; it can hold only **one scalar value** (either 0 or 1, whichever was written last).
+- Whichever process wrote `turn` last overwrote the other's value. The process that wrote `turn` last would be blocked in the `while` loop!
+- **Contradiction!** Hence, **Mutual Exclusion is strictly guaranteed**.
+
+#### Proof of Progress & Bounded Waiting:
+- A process $P_i$ can be kept waiting only if `flag[j] == true` and `turn == j`.
+- If $P_j$ is in its remainder section, `flag[j] == false` $\implies P_i$ enters immediately.
+- If $P_j$ also wants to enter, it sets `turn = i`. As soon as $P_j$ does so, $P_i$ can enter.
+- A process waits at most **one entry** of the competing process. Hence, **Bounded Waiting is guaranteed**.
+
+---
+
+## 5. Hardware-Assisted Synchronization Primitives
+
+Modern multi-core processors provide atomic hardware instructions that execute as an uninterruptible memory cycle.
+
+### 5.1 Test-and-Set Instruction
+
+The `test_and_set` instruction atomically reads a memory location and sets it to `true`:
+
+```c
+// Conceptual hardware definition (executes atomically in hardware):
+boolean test_and_set(boolean *target) {
+    boolean rv = *target;
+    *target = true;
+    return rv;
+}
+
+// Mutual Exclusion Implementation:
+boolean lock = false; // Shared lock variable
+
+do {
+    while (test_and_set(&lock)); // Busy wait until lock is false
+    
+    /* CRITICAL SECTION */
+    
+    lock = false; // Release lock
+    
+    /* REMAINDER SECTION */
+} while (true);
+```
+
+### 5.2 Compare-and-Swap (CAS) Instruction
+
+Modern CPUs (Intel x86 `CMPXCHG`, ARM `LDREX/STREX`) rely on CAS:
+
+```c
+// Conceptual hardware definition (executes atomically):
+int compare_and_swap(int *value, int expected, int new_value) {
+    int temp = *value;
+    if (*value == expected)
+        *value = new_value;
+    return temp;
+}
+
+// Mutual Exclusion Implementation:
+int lock = 0; // 0 = free, 1 = locked
+
+do {
+    while (compare_and_swap(&lock, 0, 1) != 0); // Busy wait
+    
+    /* CRITICAL SECTION */
+    
+    lock = 0; // Release lock
+    
+    /* REMAINDER SECTION */
+} while (true);
+```
+
+---
+
+## 6. Semaphores (Dijkstra's Synchronization Tool)
+
+Introduced by Edsger Dijkstra in 1965, a **semaphore** $S$ is an integer variable that, apart from initialization, is accessed only through two standard atomic operations: `wait()` (traditionally called $P$) and `signal()` (traditionally called $V$).
+
+### 6.1 Classical Operations
+
+$$
+\begin{aligned}
+\text{wait}(S) &: \quad \text{while}(S \le 0); \quad S = S - 1; \\
+\text{signal}(S) &: \quad S = S + 1;
+\end{aligned}
+$$
+
+### 6.2 Types of Semaphores
+1. **Binary Semaphore (Mutex)**: Integer value can range only between $0$ and $1$. Used to guarantee mutual exclusion.
+2. **Counting Semaphore**: Integer value can span an unrestricted domain. Used to manage access to a finite pool of identical resources ($S$ initialized to resource count $N$).
+
+### 6.3 Block / Wakeup Implementation (Eliminating Busy Waiting)
+
+To avoid CPU waste caused by spinning in a while loop:
+
+```c
+typedef struct {
+    int value;
+    struct process_node *list; // Queue of waiting processes (PCB pointers)
+} semaphore;
+
+void wait(semaphore *S) {
+    S->value--;
+    if (S->value < 0) {
+        // Add this process to S->list;
+        block(); // Transition state to WAITING/BLOCKED
+    }
+}
+
+void signal(semaphore *S) {
+    S->value++;
+    if (S->value <= 0) {
+        // Remove a process P from S->list;
+        wakeup(P); // Transition P to READY queue
+    }
+}
+```
+
+> **Critical Exam Rule on Semaphore Values**:
+> - If $S.\text{value} \ge 0$: The value represents the **number of available resources**.
+> - If $S.\text{value} < 0$: The absolute value $|S.\text{value}|$ represents the **number of processes currently blocked in the waiting queue**.
+
+---
+
+## 7. Classic Synchronization Problems
+
+### 7.1 The Bounded-Buffer (Producer-Consumer) Problem
+
+A producer process produces data and inserts it into a circular buffer of capacity $N$. A consumer process removes data from the buffer.
+
+```c
+// Shared Semaphores & Mutex:
+semaphore mutex = 1; // Controls mutual exclusion for buffer access
+semaphore empty = N; // Counts number of empty slots (initially N)
+semaphore full  = 0; // Counts number of filled slots (initially 0)
+
+// PRODUCER:
+do {
+    // ... produce an item in next_produced ...
+
+    wait(&empty); // Decrement empty slots (blocks if buffer is full)
+    wait(&mutex); // Lock buffer
+
+    // Add next_produced to buffer
+
+    signal(&mutex); // Unlock buffer
+    signal(&full);  // Increment filled slots (wakes up waiting consumer)
+} while (true);
+
+// CONSUMER:
+do {
+    wait(&full);  // Decrement filled slots (blocks if buffer is empty)
+    wait(&mutex); // Lock buffer
+
+    // Remove an item from buffer to next_consumed
+
+    signal(&mutex); // Unlock buffer
+    signal(&empty); // Increment empty slots (wakes up waiting producer)
+
+    // ... consume item ...
+} while (true);
+```
+
+> **Deadlock Pitfall (High-Frequency Exam Trap)**:
+> If the producer swaps the order of waits:
+> ```c
+> wait(&mutex);
+> wait(&empty);
+> ```
+> If the buffer is completely full, the producer grabs the mutex, then blocks on `wait(&empty)`. The consumer tries to consume to free a slot, but is blocked by `wait(&mutex)`. **Permanent Deadlock occurs!**
+
+---
+
+### 7.2 The Readers-Writers Problem
+
+Multiple concurrent readers may read the shared database simultaneously, but an exclusive lock is required for any writer.
+
+```c
+// Shared Variables & Semaphores:
+semaphore mutex = 1; // Protects read_count
+semaphore wrt   = 1; // Mutual exclusion for writers
+int read_count  = 0;
+
+// WRITER:
+do {
+    wait(&wrt);
+
+    /* WRITING IS PERFORMED */
+
+    signal(&wrt);
+} while (true);
+
+// READER:
+do {
+    wait(&mutex);
+    read_count++;
+    if (read_count == 1) {
+        wait(&wrt); // First reader locks out writers
+    }
+    signal(&mutex);
+
+    /* READING IS PERFORMED */
+
+    wait(&mutex);
+    read_count--;
+    if (read_count == 0) {
+        signal(&wrt); // Last reader releases lockout on writers
+    }
+    signal(&mutex);
+} while (true);
+```
+
+- **Problem Characteristic**: Reader preference. If readers arrive continuously, writers suffer **infinite starvation**.
+
+---
+
+### 7.3 The Dining Philosophers Problem
+
+Five philosophers sit around a circular table. Between each pair of philosophers is a single chopstick ($5$ total). A philosopher needs **both adjacent chopsticks** to eat.
+
+```text
+               Philosopher 0
+            [C0]           [C1]
+      Philosopher 4     Philosopher 1
+            [C4]           [C2]
+         Philosopher 3   Philosopher 2
+                   [C3]
+```
+
+```c
+semaphore chopstick[5] = {1, 1, 1, 1, 1};
+
+// Naive Philosopher i:
+do {
+    wait(&chopstick[i]);                 // Grab left chopstick
+    wait(&chopstick[(i + 1) % 5]);       // Grab right chopstick
+
+    /* EAT */
+
+    signal(&chopstick[i]);
+    signal(&chopstick[(i + 1) % 5]);
+
+    /* THINK */
+} while (true);
+```
+
+- **Deadlock Condition**: If all 5 philosophers become hungry simultaneously and each grabs their left chopstick, all 5 chopsticks become unavailable. Each philosopher blocks on the second `wait()`. **System deadlocks!**
+
+#### Three Standard Deadlock Solutions:
+1. **Limit Occupancy**: Allow at most 4 philosophers to sit at the table simultaneously.
+2. **Asymmetric Philosopher Rule**: Odd philosophers pick up left chopstick first, then right. Even philosophers pick up right chopstick first, then left.
+3. **Atomic Two-Chopstick Allocation**: Use state variables (`THINKING`, `HUNGRY`, `EATING`) and conditional monitors so a philosopher takes chopsticks only if both are currently free.
+
+---
+
+## 8. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET 2021 — Semaphore Value Meaning)
+A counting semaphore was initialized to $10$. Then $6 \text{ P}$ (wait) operations and $4 \text{ V}$ (signal) operations were performed on this semaphore. What is the final value of the semaphore?
+
+**Solution**:
+- Initial value: $S = 10$.
+- Each $\text{P}$ operation decrements: $-6$.
+- Each $\text{V}$ operation increments: $+4$.
+- Final value: $10 - 6 + 4 = \mathbf{8}$.
+**Answer**: 8.
+
+### Question 2 (UGC NET 2019 — Semaphore Queue Counting)
+A shared resource is protected by a counting semaphore $S$ initialized to $7$. If $20$ processes execute $\text{P}(S)$ operations, how many processes will successfully acquire the resource, and how many will be placed in the waiting queue?
+
+**Solution**:
+- Semaphore capacity $= 7$.
+- First 7 processes execute $\text{wait}(S)$ successfully: $S$ decreases from $7 \to 0$.
+- Remaining $20 - 7 = 13$ processes will block on $\text{wait}(S)$.
+- The internal semaphore counter will be $7 - 20 = -13$.
+- Absolute value $|-13| = 13$ processes are in the waiting queue.
+**Answer**: 7 acquire resource, 13 waiting in queue.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="A counting semaphore S is initialized to 10. Then 12 wait (P) operations and 5 signal (V) operations are executed on S in arbitrary order. What is the final value of S?"
+  optionA="3"
+  optionB="5"
+  optionC="-2"
+  optionD="7"
+  correctOption="A"
+  explanation="Initial value = 10. Each wait(P) decrements the semaphore by 1: 12 wait operations subtract 12. Each signal(V) increments the semaphore by 1: 5 signal operations add 5. Final S = 10 - 12 + 5 = 3."
+  examBadge="UGC NET Dec 2020 / Official PYQ"
+/>
+
+<Quiz
+  question="In Peterson's solution for 2-process mutual exclusion, what purpose does the shared variable 'turn' serve alongside the boolean array 'flag[2]'?"
+  optionA="To allocate dynamic memory"
+  optionB="To prevent Deadlock and resolve race conditions when both processes attempt to enter the critical section simultaneously"
+  optionC="To enforce priority scheduling"
+  optionD="To count the number of loop iterations"
+  correctOption="B"
+  explanation="flag[i] indicates that process Pi is interested in entering the critical section. The turn variable decides which process gets precedence if both set their flags simultaneously, guaranteeing Mutual Exclusion, Progress, and Bounded Waiting without deadlock."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="Which of the following is NOT one of the three mandatory criteria that any valid solution to the Critical Section Problem must satisfy?"
+  optionA="Mutual Exclusion"
+  optionB="Progress"
+  optionC="Bounded Waiting"
+  optionD="Aging Compensation"
+  correctOption="D"
+  explanation="The three mandatory classical criteria for critical section solutions are: 1. Mutual Exclusion (only one process at a time), 2. Progress (selection cannot be postponed indefinitely), and 3. Bounded Waiting (limit on times other processes enter before a waiting process). Aging Compensation is a scheduling concept."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="In the Producer-Consumer problem with a bounded buffer of size N, what initial values must be assigned to the counting semaphores 'empty' and 'full' respectively?"
+  optionA="empty = 0, full = N"
+  optionB="empty = N, full = 0"
+  optionC="empty = 1, full = 1"
+  optionD="empty = N, full = N"
+  correctOption="B"
+  explanation="Initially, all N buffer slots are empty and zero slots are occupied with items. Therefore, the semaphore tracking empty slots starts at N (empty = N), and the semaphore tracking full/occupied slots starts at 0 (full = 0)."
+  examBadge="UGC NET Dec 2021"
+/>
+
+<Quiz
+  question="How does a Monitor fundamentally differ from a Counting Semaphore in process synchronization?"
+  optionA="Monitors are faster than semaphores"
+  optionB="A Monitor is a high-level programming language construct that enforces mutual exclusion automatically by allowing only one process to be active inside the monitor at any time"
+  optionC="Monitors cannot handle condition variables"
+  optionD="Semaphores cannot cause deadlocks"
+  correctOption="B"
+  explanation="Monitors encapsulate shared data, condition variables, and procedures into an abstract data type where the compiler/runtime automatically enforces mutual exclusion. Semaphores require manual wait/signal calls, making them error-prone to programmer omissions."
+  examBadge="Bihar STET Paper 2 2023"
+/>
+

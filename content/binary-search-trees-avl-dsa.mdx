@@ -1,0 +1,365 @@
+---
+title: "Binary Search Trees, AVL Trees, Rotations & Height Bounds"
+unit: "Unit 3: Programming & Data Structures"
+examType: "Common"
+priority: "Med"
+readTime: "45 min"
+slug: "binary-search-trees-avl-dsa"
+description: "Comprehensive guide to Binary Search Trees and self-balancing AVL trees: BST operations and 3-case deletion, AVL Balance Factor, all 4 rotation types (LL, RR, LR, RL), minimum nodes recurrence N(h), and height proofs."
+tags: ["Data Structures", "Algorithms", "Binary Search Tree", "BST", "AVL Tree", "Rotations", "Tree Balancing", "Height Bounds"]
+---
+
+# Binary Search Trees, AVL Trees, Rotations & Height Bounds
+
+## 1. Binary Search Trees (BST): Properties and Invariants
+
+A **Binary Search Tree (BST)** is a binary tree data structure where each node contains a key, and keys satisfy the **Binary Search Property**:
+
+Let $x$ be a node in a binary search tree:
+- If $y$ is a node in the **left subtree** of $x$, then $\text{key}(y) < \text{key}(x)$.
+- If $z$ is a node in the **right subtree** of $x$, then $\text{key}(z) > \text{key}(x)$.
+*(Assuming all keys are distinct).*
+
+```text
+               ( 50 )
+              /      \
+          ( 30 )    ( 70 )
+          /    \    /    \
+       ( 20 ) ( 40)( 60 )( 80 )
+```
+
+### 1.1 In-Order Traversal Theorem
+> **Theorem**: The in-order traversal (Left $\to$ Root $\to$ Right) of any valid Binary Search Tree processes keys in **strictly ascending sorted order**.
+
+- In-Order of above BST: $20, 30, 40, 50, 60, 70, 80$.
+- Pre-Order: Root $\to$ Left $\to$ Right ($50, 30, 20, 40, 70, 60, 80$).
+- Post-Order: Left $\to$ Right $\to$ Root ($20, 40, 30, 60, 80, 70, 50$).
+
+---
+
+## 2. Deletion in a Binary Search Tree (The Three Cases)
+
+Deleting a node $Z$ from a BST requires careful handling to preserve the BST invariant across all descendants.
+
+### Case 1: $Z$ is a Leaf Node (0 Children)
+- Simply nullify the corresponding child pointer of $Z$'s parent.
+- Free node $Z$.
+```text
+Delete 20:       ( 30 )                  ( 30 )
+                /      \     ===>             \
+             ( 20 )   ( 40 )                 ( 40 )
+```
+
+### Case 2: $Z$ has Exactly One Child
+- Bypass node $Z$: link $Z$'s parent directly to $Z$'s single child.
+- Free node $Z$.
+```text
+Delete 30:       ( 50 )                  ( 50 )
+                /                       /
+             ( 30 )          ===>    ( 40 )
+                 \
+                ( 40 )
+```
+
+### Case 3: $Z$ has Two Children (Crucial Exam Concept)
+When $Z$ has both left and right subtrees, it cannot be simply removed.
+1. Find $Z$'s **In-Order Successor** $Y$ (the node with the smallest key in $Z$'s **right subtree**):
+$$Y = \text{Tree-Minimum}(Z.\text{right})$$
+   *(Alternatively, use $Z$'s In-Order Predecessor = $\text{Tree-Maximum}(Z.\text{left})$).*
+2. Copy the key and data of $Y$ into node $Z$.
+3. Recursively delete node $Y$ from the right subtree.
+   *(Since $Y$ is the minimum in the right subtree, $Y$ can have **at most ONE child** (a right child), reducing step 3 to Case 1 or Case 2!).*
+
+---
+
+## 3. The Degeneracy Problem of Unbalanced BSTs
+
+The time complexity of Search, Insertion, and Deletion in a BST is directly proportional to the tree height:
+
+$$T(n) = O(h)$$
+
+- **Best-Case (Balanced)**: $h = \lfloor \log_2 n \rfloor \implies O(\log n)$.
+- **Worst-Case (Skewed)**: When keys are inserted in strictly sorted order (e.g., $10, 20, 30, 40, 50$), the BST degenerates into a **linear linked list**:
+$$h = n - 1 \implies T(n) = O(n)$$
+
+To guarantee $O(\log n)$ performance under all insertion and deletion sequences, self-balancing trees are required.
+
+---
+
+## 4. AVL Trees: Definitions & Balance Factor
+
+Invented in 1962 by Soviet mathematicians **Georgy Adelson-Velsky and Evgenii Landis**, an **AVL tree** is a self-balancing binary search tree.
+
+### 4.1 Balance Factor ($BF$)
+For every node $x$ in an AVL tree, the **Balance Factor** is defined as the difference between the height of its left subtree and the height of its right subtree:
+
+$$BF(x) = \text{Height}(\text{LeftSubtree}(x)) - \text{Height}(\text{RightSubtree}(x))$$
+
+> **AVL Invariant**:
+> A binary search tree is an AVL tree if and only if for **EVERY node $x$** in the tree:
+> $$BF(x) \in \{-1, \quad 0, \quad +1\}$$
+
+```text
+       ( 0 )                 ( +1 )                ( -1 )
+      /     \               /      \              /      \
+    h         h           h+1        h           h        h+1
+   BALANCED                BALANCED               BALANCED
+```
+
+If at any point $BF(x) \in \{+2, -2\}$, the tree is **unbalanced**, and balance must be restored immediately via **rotations**.
+
+---
+
+## 5. The Four Canonical AVL Rotations
+
+When an insertion causes an imbalance ($|BF| = 2$) at some ancestor node $A$, we locate the **lowest unbalanced ancestor** and apply one of four rotation types:
+
+```text
+Imbalance Cause:
+1. Inserted into Left child's Left subtree   -> LL Rotation (Single Right)
+2. Inserted into Right child's Right subtree -> RR Rotation (Single Left)
+3. Inserted into Left child's Right subtree  -> LR Rotation (Left then Right)
+4. Inserted into Right child's Left subtree  -> RL Rotation (Right then Left)
+```
+
+---
+
+### 5.1 LL Rotation (Single Right Rotation)
+- **Occurs when**: Node $A$ has $BF = +2$ and its left child $B$ has $BF = +1$.
+
+```text
+       (A) [+2]                              (B) [0]
+      /   \                                 /       \
+    (B)    T3       -- Right Rotate -->   (C)        (A)
+   /   \               around (A)         / \        / \
+ (C)    T2                               T0 T1      T2 T3
+ / \
+T0 T1
+```
+
+---
+
+### 5.2 RR Rotation (Single Left Rotation)
+- **Occurs when**: Node $A$ has $BF = -2$ and its right child $B$ has $BF = -1$.
+
+```text
+     (A) [-2]                                (B) [0]
+    /   \                                   /       \
+   T0   (B)          -- Left Rotate -->   (A)        (C)
+       /   \            around (A)        / \        / \
+      T1   (C)                           T0 T1      T2 T3
+           / \
+          T2 T3
+```
+
+---
+
+### 5.3 LR Rotation (Double Rotation: Left then Right)
+- **Occurs when**: Node $A$ has $BF = +2$ and its left child $B$ has $BF = -1$.
+1. Perform **Left Rotation** on left child $B$.
+2. Perform **Right Rotation** on root $A$.
+
+```text
+      (A) [+2]                (A) [+2]
+     /   \                   /   \                     (C) [0]
+   (B)    T3   -- Left --> (C)    T3   -- Right -->   /       \
+  /   \        on (B)     /   \         on (A)      (B)        (A)
+ T0   (C)               (B)    T2                   / \        / \
+      / \              /   \                       T0 T1      T2 T3
+     T1 T2            T0   T1
+```
+
+---
+
+### 5.4 RL Rotation (Double Rotation: Right then Left)
+- **Occurs when**: Node $A$ has $BF = -2$ and its right child $B$ has $BF = +1$.
+1. Perform **Right Rotation** on right child $B$.
+2. Perform **Left Rotation** on root $A$.
+
+---
+
+## 6. Comprehensive Insertion Trace into an AVL Tree
+
+**Sequence of keys**: $10, 20, 30, 40, 50, 25$
+
+### Step 1: Insert 10, then 20
+```text
+(10) ->  (10) [-1]
+           \
+           (20) [0]
+```
+
+### Step 2: Insert 30 (Causes RR Imbalance at Node 10)
+```text
+   (10) [-2]
+     \                    -- RR Rotation -->       (20) [0]
+     (20) [-1]               around 10             /      \
+       \                                        (10)      (30)
+       (30)
+```
+
+### Step 3: Insert 40, then 50 (Causes RR Imbalance at Node 30)
+```text
+       (20)                                         (20)
+      /    \                                       /    \
+    (10)   (30) [-2]       -- RR Rotation -->    (10)   (40)
+             \                around 30                 /   \
+             (40) [-1]                                (30)  (50)
+               \
+               (50)
+```
+
+### Step 4: Insert 25 (Causes RL Imbalance at Root 20)
+Path from root: $20 \to 40 \to 30 \to 25$.
+- Node 20 has $BF = 1 - 3 = \mathbf{-2}$.
+- Right child 40 has $BF = 2 - 1 = \mathbf{+1}$.
+- This is an **RL Imbalance**: Rotate right around 40, then left around 20.
+```text
+Final Balanced AVL Tree:
+               (30)
+              /    \
+          (20)      (40)
+          /  \         \
+       (10)  (25)      (50)
+```
+
+---
+
+## 7. Mathematical Analysis & Height Bounds
+
+### 7.1 Minimum Number of Nodes in an AVL Tree of Height $h$ ($N(h)$)
+
+To build the worst-case (thinnest/tallest) AVL tree of height $h$, one subtree must have height $h - 1$ and the other must have height $h - 2$:
+
+$$N(h) = N(h - 1) + N(h - 2) + 1$$
+
+with base cases:
+- Height 0: $N(0) = 1$
+- Height 1: $N(1) = 2$
+- Height 2: $N(2) = 4$
+- Height 3: $N(3) = 4 + 2 + 1 = 7$
+- Height 4: $N(4) = 7 + 4 + 1 = 12$
+- Height 5: $N(5) = 12 + 7 + 1 = 20$
+- Height 6: $N(6) = 20 + 12 + 1 = 33$
+
+#### Connection to Fibonacci Numbers:
+$$N(h) = F_{h+2} - 1$$
+where $F_1 = 1, F_2 = 1, F_3 = 2, F_4 = 3, F_5 = 5, F_6 = 8 \dots$
+
+---
+
+### 7.2 Maximum Height of an AVL Tree with $n$ Nodes
+
+From the Fibonacci closed-form formula ($F_k \approx \frac{1}{\sqrt{5}} \phi^k$ where $\phi = \frac{1 + \sqrt{5}}{2} \approx 1.618$):
+
+$$n \ge F_{h+2} - 1 \approx \frac{\phi^{h+2}}{\sqrt{5}} - 1$$
+
+Taking $\log_2$ on both sides:
+
+$$h \le \frac{1}{\log_2 \phi} \log_2(n) \approx \frac{1}{0.694} \log_2 n \approx \mathbf{1.44 \log_2 n}$$
+
+> **Theorem**:
+> The maximum height of an AVL tree containing $n$ nodes is strictly bounded by:
+> $$h < 1.4404 \log_2(n + 2) - 0.3277 = \mathbf{O(\log n)}$$
+> Consequently, Search, Insertion, and Deletion in an AVL tree are strictly guaranteed to run in **$O(\log n)$ worst-case time**.
+
+---
+
+## 8. Master Comparison: Balanced Search Trees
+
+| Parameter | Binary Search Tree (BST) | AVL Tree | Red-Black Tree | B-Tree (Order $m$) |
+|---|:---:|:---:|:---:|:---:|
+| **Balance Criteria** | None (Unbalanced) | Strict: $|BF| \le 1$ | Color invariants | Node keys between $\lceil m/2 \rceil - 1$ and $m - 1$ |
+| **Max Height** | $O(n)$ | $\approx 1.44 \log_2 n$ | $\le 2 \log_2(n + 1)$ | $\le \log_{\lceil m/2 \rceil} n$ |
+| **Search Time** | $O(n)$ worst | $O(\log n)$ (Fastest lookup) | $O(\log n)$ | $O(\log n)$ |
+| **Insert / Delete** | $O(n)$ worst | $O(\log n)$ | $O(\log n)$ (Faster write) | $O(\log n)$ |
+| **Rotations on Insert** | None | At most **1 rotation** | At most **2 rotations** | None (Node splitting) |
+| **Rotations on Delete** | None | Up to **$O(\log n)$ rotations** | At most **3 rotations** | None (Merging/Borrowing) |
+
+---
+
+## 9. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET 2021 — Minimum Nodes in AVL Tree)
+What is the minimum number of nodes in an AVL tree of height 5? (Assume height of a single-node tree is 0).
+
+**Solution**:
+Using recurrence $N(h) = N(h-1) + N(h-2) + 1$:
+- $N(0) = 1$
+- $N(1) = 2$
+- $N(2) = 2 + 1 + 1 = 4$
+- $N(3) = 4 + 2 + 1 = 7$
+- $N(4) = 7 + 4 + 1 = 12$
+- $N(5) = 12 + 7 + 1 = \mathbf{20}$
+**Answer**: 20 nodes.
+
+### Question 2 (UGC NET 2019 — Rotation Identification)
+An AVL tree has root 50. Key 60 is inserted, followed by 70. What rotation is performed to balance the tree?
+
+**Solution**:
+- Inserting 60 makes it the right child of 50.
+- Inserting 70 makes it the right child of 60.
+- Imbalance at 50 is caused by insertion into Right subtree of Right child.
+- This requires an **RR Rotation (Single Left Rotation)** around 50.
+**Answer**: RR Rotation (Single Left Rotation).
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="What is the minimum number of nodes in an AVL tree of height h = 5 (assuming height of an empty tree is -1, and single-node tree has height 0)?"
+  optionA="12"
+  optionB="20"
+  optionC="31"
+  optionD="63"
+  correctOption="B"
+  explanation="The recurrence for minimum nodes in an AVL tree of height h is N(h) = N(h - 1) + N(h - 2) + 1. Base cases: N(0) = 1, N(1) = 2. Then: N(2) = 2 + 1 + 1 = 4. N(3) = 4 + 2 + 1 = 7. N(4) = 7 + 4 + 1 = 12. N(5) = 12 + 7 + 1 = 20 nodes."
+  examBadge="UGC NET June 2021"
+/>
+
+<Quiz
+  question="The keys 10, 20, 30, 40, 50 are inserted sequentially into an initially empty AVL tree. What rotation is performed upon inserting key 30?"
+  optionA="Right-Left (RL) Double Rotation"
+  optionB="Left-Left (LL) Single Rotation (Right rotation)"
+  optionC="Right-Right (RR) Single Rotation (Left rotation at root 10)"
+  optionD="Left-Right (LR) Double Rotation"
+  correctOption="C"
+  explanation="After inserting 10 then 20, balance at 10 is -1. Inserting 30 makes the right subtree taller (balance at 10 becomes -2). Since 30 was inserted into the right subtree of the right child 20 (RR case), an RR rotation (single Left Rotation at 10) restores balance with 20 becoming the new root."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="How many structurally distinct Binary Search Trees (BSTs) can be formed using 4 distinct keys?"
+  optionA="14"
+  optionB="24"
+  optionC="42"
+  optionD="120"
+  correctOption="A"
+  explanation="The number of distinct BSTs with n keys is given by the n-th Catalan number C_n = (2n)! / ((n + 1)! · n!). For n = 4: C_4 = (8)! / (5! · 4!) = 40320 / (120 × 24) = 40320 / 2880 = 14 distinct BSTs."
+  examBadge="UGC NET Dec 2019"
+/>
+
+<Quiz
+  question="In a Binary Search Tree, what is the In-order Successor of a node X that has a non-empty right subtree?"
+  optionA="The maximum element in the left subtree of X"
+  optionB="The minimum element in the right subtree of X"
+  optionC="The parent of node X"
+  optionD="The leftmost leaf of the entire tree"
+  correctOption="B"
+  explanation="In in-order traversal (Left, Root, Right), the next node after X must come from X's right subtree. Within the right subtree, in-order visits the leftmost node first, which corresponds to the minimum element in X's right subtree."
+  examBadge="Bihar STET Standard"
+/>
+
+<Quiz
+  question="What is the worst-case time complexity of searching an element in an unbalanced Binary Search Tree versus an AVL tree containing n nodes?"
+  optionA="O(log n) in BST, O(n) in AVL"
+  optionB="O(n) in BST (skewed tree), O(log n) in AVL"
+  optionC="O(log n) in both"
+  optionD="O(1) in both"
+  correctOption="B"
+  explanation="An unbalanced BST can degenerate into a linear linked list (skewed tree) with worst-case search complexity of O(n). An AVL tree strictly enforces height balance (|h_L - h_R| ≤ 1), guaranteeing height h ≤ 1.44 log2 n and O(log n) worst-case search time."
+  examBadge="UGC NET Dec 2022"
+/>
+

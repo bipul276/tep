@@ -1,0 +1,148 @@
+---
+title: "Application Layer Protocols: DNS, HTTP, Email, and Sockets"
+unit: "Unit 7: Computer Networks"
+examType: "Common"
+priority: "Med"
+readTime: "24 min"
+description: "Comprehensive coverage of DNS resolution, HTTP evolution (1.1, 2, 3), email protocols (SMTP, POP3, IMAP), and Berkeley socket primitives for UGC NET and Bihar STET."
+tags: ["Application Layer", "DNS", "HTTP", "SMTP", "IMAP", "Socket Programming"]
+---
+
+# Application Layer Protocols: DNS, HTTP, Email, and Sockets
+
+The Application Layer (Layer 7) provides direct network services to user applications and processes. In **UGC NET** and **Bihar STET**, questions test protocol port numbers, transport layer binding (TCP vs UDP), message exchange sequences, and socket system calls.
+
+---
+
+## 1. Domain Name System (DNS)
+
+DNS is a distributed hierarchical database mapping human-readable hostnames (e.g., `www.ugcnet.in`) to IP addresses. Operates primarily over **UDP port 53** (uses TCP port 53 for zone transfers between servers).
+
+### 1.1 DNS Query Types
+1. **Recursive Query**: Resolver puts full burden of name resolution on the queried Local DNS server. Local DNS queries other servers until IP is returned.
+2. **Iterative Query**: Queried server responds with the referral address of the next authoritative nameserver down the tree (`Root -> TLD -> Authoritative`).
+
+### 1.2 Common DNS Resource Records (RR)
+- **A Record**: Maps hostname to 32-bit IPv4 address.
+- **AAAA Record**: Maps hostname to 128-bit IPv6 address.
+- **CNAME (Canonical Name)**: Maps alias hostname to canonical (real) hostname.
+- **MX (Mail Exchange)**: Specifies mail servers responsible for domain.
+- **PTR (Pointer)**: Reverse DNS resolution (maps IP address back to hostname).
+
+---
+
+## 2. Hypertext Transfer Protocol (HTTP)
+
+HTTP is a stateless application-level request-response protocol running over **TCP port 80** (HTTPS over **TCP port 443** with TLS).
+
+### 2.1 HTTP Version Evolution
+
+| Version | Transport | Key Characteristics | Handshake Latency |
+| :--- | :--- | :--- | :--- |
+| **HTTP/1.0** | TCP (Non-persistent) | New TCP connection per object | 2 RTT per object + transfer |
+| **HTTP/1.1** | TCP (Persistent) | Keep-Alive connection reuse; Pipelining | 1 RTT per subsequent object |
+| **HTTP/2** | TCP (Single connection) | Binary framing; Multiplexing streams; Header compression (HPACK); Server Push | Suffers from TCP Head-of-Line blocking |
+| **HTTP/3** | **QUIC (over UDP)** | Solves HoL blocking; Zero-RTT reconnection (0-RTT); built-in TLS 1.3 | **0 to 1 RTT** total setup |
+
+### 2.2 HTTP Status Code Classes
+- **1xx (Informational)**: `100 Continue`.
+- **2xx (Success)**: `200 OK`, `201 Created`, `204 No Content`.
+- **3xx (Redirection)**: `301 Moved Permanently`, `302 Found`, `304 Not Modified`.
+- **4xx (Client Error)**: `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`.
+- **5xx (Server Error)**: `500 Internal Server Error`, `502 Bad Gateway`, `503 Service Unavailable`.
+
+---
+
+## 3. Electronic Mail Architecture (SMTP, POP3, IMAP)
+
+E-mail relies on separate protocols for sending and receiving messages.
+
+```
+[MUA Sender] ──SMTP──► [MSA/MTA Origin] ──SMTP──► [MTA Destination] ──POP3/IMAP──► [MUA Receiver]
+```
+
+| Protocol | Default Port | Transport | Purpose | Storage Model |
+| :--- | :---: | :---: | :--- | :--- |
+| **SMTP** | 25 (or 587 with STARTTLS) | TCP | **Push protocol**: transmits outgoing email from client to server and server to server | Outgoing queue |
+| **POP3** | 110 (995 with SSL) | TCP | **Pull protocol**: downloads mail to local client | Download & Delete (stateless) |
+| **IMAP4** | 143 (993 with SSL) | TCP | **Pull protocol**: manages mail directly on server across multiple devices | Server-synchronized folders |
+
+<Callout type="note">
+**MIME (Multipurpose Internet Mail Extensions)**: Extends 7-bit ASCII SMTP to support binary attachments, images, and international character sets using Base64 encoding.
+</Callout>
+
+---
+
+## 4. Socket Programming Interface
+
+A **Socket** is an endpoint for communication defined by an IP address and Port number tuple `(IP, Port)`.
+
+### 4.1 TCP Client-Server Socket Lifecycle
+```
+Server: socket()  bind()  listen()  accept()  read()  write()  close()
+Client: socket() ──────────────────────► connect()  write()  read()  close()
+```
+
+- **`socket()`**: Creates an endpoint for communication (returns file descriptor).
+- **`bind()`**: Assigns a local IP address and port number to the socket.
+- **`listen()`**: Puts TCP socket into passive listening mode; sets maximum pending connection backlog queue.
+- **`accept()`**: Blocks until an incoming connection arrives; returns a **new socket descriptor** for client data transfer!
+
+---
+
+## 5. Interactive Examination PYQ Practice
+
+<Quiz
+  question="Which of the following application layer protocols uses UDP as its primary transport layer protocol?"
+  optionA="DNS"
+  optionB="HTTP"
+  optionC="SMTP"
+  optionD="FTP"
+  correctOption="A"
+  explanation="DNS uses UDP port 53 for standard client query-response resolution because UDP is lightweight and connectionless, avoiding the three-way handshake overhead. HTTP, SMTP, and FTP strictly require reliable byte streams and use TCP."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="In socket programming, what does the 'accept()' system call on the server side return upon receiving a connection?"
+  optionA="A new socket descriptor dedicated to communication with the connected client"
+  optionB="The client's MAC address"
+  optionC="The server's original listening socket descriptor"
+  optionD="A boolean flag indicating success or failure"
+  correctOption="A"
+  explanation="When a client connects to a server's listening socket, 'accept()' extracts the first connection request from the queue and returns a brand-new socket file descriptor. The server communicates with this specific client over the new socket, leaving the original listening socket free to accept subsequent incoming connections."
+  examBadge="UGC NET June 2020"
+/>
+
+<Quiz
+  question="Which HTTP status code indicates that the requested resource has been permanently moved to a new URI?"
+  optionA="301 Moved Permanently"
+  optionB="302 Found"
+  optionC="404 Not Found"
+  optionD="503 Service Unavailable"
+  correctOption="A"
+  explanation="301 status code indicates 'Moved Permanently'. Search engine crawlers and web browsers automatically update their stored links and bookmarks to the new Location URI supplied in the response header."
+  examBadge="Bihar STET 2024"
+/>
+
+<Quiz
+  question="Why is IMAP preferred over POP3 for users who access email from multiple devices (e.g. laptop and smartphone)?"
+  optionA="IMAP keeps messages synchronized on the remote server across all devices"
+  optionB="IMAP is a push protocol while POP3 is a pull protocol"
+  optionC="IMAP uses UDP instead of TCP for faster speeds"
+  optionD="POP3 cannot handle email attachments"
+  correctOption="A"
+  explanation="POP3 defaults to downloading mail to the local client and deleting it from the server, causing messages to disappear from other devices. IMAP maintains the master mailbox and folders on the server, ensuring read status, sent items, and folders remain synchronized across all connected devices."
+  examBadge="UGC NET Dec 2019"
+/>
+
+<Quiz
+  question="What major architectural change in HTTP/3 eliminates TCP Head-of-Line (HoL) blocking?"
+  optionA="Replacing TCP with the QUIC protocol built on top of UDP"
+  optionB="Using multiple parallel TCP connections per host"
+  optionC="Increasing the TCP window scale option"
+  optionD="Removing TLS encryption headers"
+  correctOption="A"
+  explanation="In HTTP/2 over TCP, if a single packet in any multiplexed stream is lost, all streams are blocked while TCP retransmits the lost packet (Head-of-Line blocking). HTTP/3 replaces TCP with QUIC running over UDP, allowing individual streams to recover from packet loss independently without stalling other streams."
+  examBadge="UGC NET June 2022"
+/>

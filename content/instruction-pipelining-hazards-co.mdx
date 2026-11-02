@@ -1,0 +1,313 @@
+---
+title: "Instruction Pipelining, Hazards, Speedup & Branch Prediction"
+unit: "Unit 2: Computer Organization & Architecture"
+examType: "Common"
+priority: "High"
+readTime: "40 min"
+slug: "instruction-pipelining-hazards-co"
+description: "Comprehensive guide to instruction pipelining, RISC 5-stage pipeline, speedup and throughput formulas, structural, data (RAW, WAR, WAW), and control hazards, operand forwarding, and branch penalties."
+tags: ["Computer Architecture", "COA", "Pipelining", "Pipeline Hazards", "RAW Dependency", "Operand Forwarding", "Speedup", "Branch Prediction"]
+---
+
+# Instruction Pipelining, Hazards, Speedup & Branch Prediction
+
+## 1. Architectural Foundations of Instruction Pipelining
+
+Instruction pipelining is an implementation technique whereby multiple instructions are overlapped in execution. It exploits **instruction-level parallelism (ILP)** on a single processor core by dividing instruction execution into a sequence of discrete hardware stages.
+
+### 1.1 The Classic 5-Stage RISC Pipeline
+
+```text
+Clock Cycle:   1      2      3      4      5      6      7
+Instr 1:    [ IF ] [ ID ] [ EX ] [MEM ] [ WB ]
+Instr 2:           [ IF ] [ ID ] [ EX ] [MEM ] [ WB ]
+Instr 3:                  [ IF ] [ ID ] [ EX ] [MEM ] [ WB ]
+Instr 4:                         [ IF ] [ ID ] [ EX ] [MEM ] [ WB ]
+```
+
+1. **IF (Instruction Fetch)**: Fetch the instruction from instruction memory (cache) using the Program Counter (PC); increment $PC \gets PC + 4$.
+2. **ID / RF (Instruction Decode & Register Fetch)**: Decode the opcode, generate control signals, and read operands from the register file.
+3. **EX (Execute / Address Calculation)**:
+   - Memory Reference: ALU adds base register and offset to compute effective memory address.
+   - Register-Register Arithmetic/Logical: ALU performs the operation.
+   - Branch: ALU determines branch condition and computes target address.
+4. **MEM (Memory Access)**: Read from or write to data cache for `LOAD` or `STORE` instructions.
+5. **WB (Write Back)**: Write the result (from ALU or load from memory) back into the destination register in the register file.
+
+### 1.2 Pipeline Registers (Latches)
+Between each pair of adjacent stages, a **pipeline register (latch)** isolates the stages:
+$$IF/ID \implies ID/EX \implies EX/MEM \implies MEM/WB$$
+- These latches hold the intermediate results and control signals of the instruction.
+- **Clock Cycle Time ($\tau$)**:
+$$\tau = \max(\tau_1, \tau_2, \dots, \tau_k) + d$$
+  where $\tau_i$ is the propagation delay of stage $i$, and $d$ is the pipeline latch delay.
+  The slowest stage (bottleneck stage) dictates the maximum clock frequency:
+$$f_{\text{clock}} = \frac{1}{\tau}$$
+
+---
+
+## 2. Quantitative Performance Formulas
+
+Let:
+- $k$: Number of pipeline stages.
+- $n$: Number of instructions to execute.
+- $\tau$: Clock cycle time.
+
+### 2.1 Total Execution Time
+- **In an ideal $k$-stage pipeline without hazards**:
+  - The first instruction takes $k$ clock cycles to complete.
+  - Each of the remaining $n - 1$ instructions completes at the rate of **1 instruction per clock cycle**.
+$$T_{\text{pipelined}} = (k + n - 1) \cdot \tau$$
+
+- **In a non-pipelined processor**:
+  - Each instruction requires $k$ cycles sequentially:
+$$T_{\text{non-pipelined}} = n \cdot k \cdot \tau_{\text{non-pipe}}$$
+
+---
+
+### 2.2 Speedup Ratio ($S$)
+
+$$S = \frac{\text{Time}_{\text{non-pipelined}}}{\text{Time}_{\text{pipelined}}} = \frac{n \cdot k \cdot \tau_{\text{non-pipe}}}{(k + n - 1) \cdot \tau_{\text{pipe}}}$$
+
+Assuming stage delays are uniform and latch delay $d \approx 0$ ($\tau_{\text{non-pipe}} = \tau_{\text{pipe}}$):
+
+$$S = \frac{n \cdot k}{k + n - 1}$$
+
+As the number of instructions grows very large ($n \to \infty$):
+
+$$\lim_{n \to \infty} S = \lim_{n \to \infty} \frac{n \cdot k}{n \left(1 + \frac{k-1}{n}\right)} = \mathbf{k}$$
+
+> **Fundamental Speedup Theorem**:
+> The maximum theoretical speedup achievable by a $k$-stage pipeline over a non-pipelined processor is equal to the **number of stages $k$**.
+
+---
+
+### 2.3 Throughput ($TP$) and Efficiency ($\eta$)
+
+- **Throughput ($TP$)**: The number of instructions completed per unit time:
+$$TP = \frac{n}{(k + n - 1) \cdot \tau}$$
+$$\lim_{n \to \infty} TP = \frac{1}{\tau} \quad (\text{One instruction per clock cycle})$$
+
+- **Efficiency ($\eta$)**: Ratio of actual speedup to maximum possible speedup:
+$$\eta = \frac{S}{k} = \frac{n}{k + n - 1}$$
+$$\lim_{n \to \infty} \eta = 1 \quad (100\%)$$
+
+---
+
+## 3. Pipeline Hazards & Degradation
+
+A **hazard** is any condition that prevents the next instruction in the instruction stream from executing in its designated clock cycle. Hazards induce **pipeline stalls (bubbles)**, driving the average Cycles Per Instruction ($\text{CPI}$) above the ideal $\text{CPI} = 1$.
+
+```text
+                                Pipeline Hazards
+                                        |
+        +-------------------------------+-------------------------------+
+        |                               |                               |
+        v                               v                               v
+Structural Hazards               Data Hazards                    Control Hazards
+(Hardware Resource              (Operand Value                  (Branch Target
+ Conflict)                       Dependencies)                   Uncertainty)
+```
+
+---
+
+### 3.1 Structural Hazards (Resource Conflicts)
+
+Occur when two or more instructions in different stages attempt to access the **same hardware component simultaneously**.
+
+#### Classic Example: Single Memory Port
+If the processor has a single unified memory for both code and data:
+- Instruction 1 in stage **MEM** (reading data).
+- Instruction 4 in stage **IF** (fetching instruction code).
+- Both require the memory bus in the same clock cycle!
+
+#### Solutions:
+1. **Pipeline Stall (Bubble)**: Delay Instruction 4's fetch by 1 cycle.
+2. **Harvard Architecture**: Structurally separate the caches into **L1 Instruction Cache** and **L1 Data Cache**. Both can be accessed concurrently without conflict.
+
+---
+
+### 3.2 Data Hazards (Data Dependencies)
+
+Occur when the execution of an instruction depends on the result of a previous instruction that is still in flight in the pipeline.
+
+#### Classification:
+
+1. **RAW (Read-After-Write / True Dependency)**:
+   - Instruction $J$ tries to read source register $R$ before Instruction $I$ writes back to $R$.
+   - **Most common and critical hazard**.
+   ```text
+   I1: ADD R1, R2, R3    (Writes R1 in WB stage)
+   I2: SUB R4, R1, R5    (Reads R1 in ID stage) -> HAZARD!
+   ```
+2. **WAR (Write-After-Read / Anti-Dependency)**:
+   - Instruction $J$ tries to overwrite register $R$ before Instruction $I$ reads its old value.
+   - Impossible in simple in-order pipelines; occurs only in out-of-order execution pipelines.
+3. **WAW (Write-After-Write / Output Dependency)**:
+   - Instruction $J$ tries to write register $R$ before Instruction $I$ writes $R$, leaving wrong value in $R$.
+   - Occurs only when instructions complete out of order or have differing pipeline depths.
+
+---
+
+### 3.3 Resolving RAW Hazards: Operand Forwarding (Bypassing)
+
+Without hardware support, a RAW hazard requires **2 to 3 stall cycles** until the first instruction reaches the WB stage.
+
+```text
+Without Forwarding:
+Cycle:    1     2     3     4     5     6     7     8
+I1:      [IF]  [ID]  [EX]  [MEM] [WB]
+I2:            [IF] [Stall][Stall][ID] [EX]  [MEM] [WB]
+```
+
+**Operand Forwarding** routes the computed result directly from the output of the execution stage ($EX/MEM$ or $MEM/WB$ latch) back to the ALU input for the next cycle, **bypassing the register file write-back**:
+
+```text
+With Forwarding:
+Cycle:    1     2     3     4     5     6
+I1:      [IF]  [ID]  [EX]  [MEM] [WB]
+                      |
+                      +-------+ (Forwarded from EX to EX)
+                              v
+I2:            [IF]  [ID]    [EX]  [MEM] [WB]
+```
+
+#### The Load-Use Data Hazard Exception:
+Even with full forwarding, a `LOAD` instruction does not produce its data until the end of the **MEM** stage. If the very next instruction immediately uses that loaded register, **1 stall cycle (bubble)** is physically unavoidable!
+
+```text
+I1: LOAD R1, 0(R2)     [IF]  [ID]  [EX]  [MEM]  [WB]
+                                            | (Forwarded from MEM to EX)
+I2: ADD  R3, R1, R4          [IF]  [ID]  [Stall] [EX]   [MEM]  [WB]
+```
+
+---
+
+### 3.4 Control Hazards (Branch Hazards)
+
+Occur when the processor encounters a conditional or unconditional branch instruction. The next instruction to fetch depends on the evaluation of the branch condition and target address, which are typically computed in the **ID** or **EX** stage.
+
+If the branch is taken, the instructions speculatively fetched in between must be discarded (**flushed / squashed**), wasting clock cycles known as the **branch penalty**.
+
+#### Solutions to Control Hazards:
+1. **Branch Prediction**:
+   - **Static Prediction**: Always predict taken or always predict not-taken (compile-time heuristics).
+   - **Dynamic Prediction**: Uses runtime history tables:
+     - **2-Bit Saturating Counter Predictor**: Requires two consecutive mispredictions to change prediction (Strongly Taken, Weakly Taken, Weakly Not Taken, Strongly Not Taken). Prevents loops from mispredicting twice.
+2. **Delayed Branching**:
+   - The instruction immediately following the branch (the **branch delay slot**) is always executed regardless of whether the branch is taken.
+   - The compiler fills the delay slot with a safe, independent instruction.
+3. **Branch Target Buffer (BTB)**:
+   - A fast cache that stores the target PC of previously executed branch instructions, allowing zero-cycle branch target lookups during the IF stage.
+
+---
+
+## 4. Performance Calculations with Hazards
+
+$$\text{Effective CPI} = \text{CPI}_{\text{ideal}} + \text{Stalls per Instruction}$$
+
+$$\text{Speedup with Hazards} = \frac{k}{1 + \text{Average Stalls per Instruction}} \times \frac{\tau_{\text{non-pipe}}}{\tau_{\text{pipe}}}$$
+
+---
+
+## 5. UGC NET & Bihar STET PYQ Practice Patterns
+
+### Question 1 (UGC NET June 2019 — Speedup Calculation)
+Consider a 6-stage instruction pipeline where each stage takes 5 ns. A non-pipelined processor takes 30 ns to execute each instruction. What is the speedup achieved by the pipeline for 100 instructions?
+
+**Solution**:
+1. Non-pipelined time:
+$$T_{\text{non-pipe}} = n \times 30\text{ ns} = 100 \times 30 = 3000\text{ ns}$$
+2. Pipelined time:
+$$T_{\text{pipe}} = (k + n - 1) \times \tau = (6 + 100 - 1) \times 5\text{ ns} = 105 \times 5 = 525\text{ ns}$$
+3. Speedup $S$:
+$$S = \frac{T_{\text{non-pipe}}}{T_{\text{pipe}}} = \frac{3000}{525} \approx \mathbf{5.71}$$
+**Answer**: 5.71 (Close to theoretical maximum of $k = 6$).
+
+### Question 2 (UGC NET Dec 2020 — Branch Stalls and Effective CPI)
+An instruction pipeline has an ideal CPI of 1. On average:
+- 20% of instructions are conditional branches.
+- 60% of branches are taken.
+- Each taken branch incurs a penalty of 3 stall cycles.
+What is the average CPI of the pipeline?
+
+**Solution**:
+1. Ideal CPI $= 1.0$.
+2. Frequency of branch instructions $= 0.20$.
+3. Probability of a branch being taken $= 0.60$.
+4. Average branch stalls per instruction:
+$$\text{Stalls} = 0.20 \times 0.60 \times 3 = 0.36 \text{ stalls/instruction}$$
+5. Effective CPI:
+$$\text{CPI}_{\text{effective}} = 1.0 + 0.36 = \mathbf{1.36}$$
+**Answer**: 1.36.
+
+### Question 3 (UGC NET 2021 — Non-Uniform Stage Bottleneck)
+A 4-stage pipeline has stage delays of 150 ps, 120 ps, 180 ps, and 160 ps. The pipeline register delay is 20 ps. What is the clock cycle time and the maximum clock frequency?
+
+**Solution**:
+1. Maximum stage delay $= \max(150, 120, 180, 160) = 180\text{ ps}$.
+2. Clock cycle time $\tau = \text{Max Delay} + \text{Latch Delay} = 180 + 20 = \mathbf{200 \text{ ps}}$.
+3. Maximum clock frequency:
+$$f_{\text{clock}} = \frac{1}{\tau} = \frac{1}{200 \times 10^{-12} \text{ s}} = 5 \times 10^9 \text{ Hz} = \mathbf{5 \text{ GHz}}$$
+**Answer**: Cycle time = 200 ps; Frequency = 5 GHz.
+
+
+---
+
+## Interactive Exam Practice & PYQ Knowledge Checks
+
+<Quiz
+  question="A 5-stage non-pipelined processor executes instructions in 10 ns. A 5-stage pipeline has stage delays of 1.8 ns, 2.2 ns, 2.0 ns, 1.9 ns, and 2.1 ns, with a pipeline latch delay of 0.3 ns. What is the clock cycle duration and maximum theoretical speedup for large instruction sequences?"
+  optionA="Clock = 2.5 ns, Speedup = 4.0×"
+  optionB="Clock = 2.2 ns, Speedup = 4.54×"
+  optionC="Clock = 2.5 ns, Speedup = 5.0×"
+  optionD="Clock = 2.1 ns, Speedup = 4.76×"
+  correctOption="A"
+  explanation="Clock cycle τ = max(stage delays) + latch delay = max(1.8, 2.2, 2.0, 1.9, 2.1) + 0.3 = 2.2 + 0.3 = 2.5 ns. Maximum speedup S_max = T_nonpiped / τ = 10 ns / 2.5 ns = 4.0×."
+  examBadge="UGC NET Dec 2021"
+/>
+
+<Quiz
+  question="Consider a 5-stage pipeline where branch instructions constitute 20% of all executed instructions. If conditional branches incur a 3-cycle stall penalty without branch prediction, what is the effective CPI of this processor (assuming ideal CPI = 1)?"
+  optionA="1.2"
+  optionB="1.6"
+  optionC="1.8"
+  optionD="2.0"
+  correctOption="B"
+  explanation="CPI_eff = CPI_ideal + (Branch Frequency × Branch Penalty) = 1 + (0.20 × 3) = 1 + 0.60 = 1.6 cycles per instruction."
+  examBadge="UGC NET June 2022"
+/>
+
+<Quiz
+  question="Which of the following techniques directly resolves Read-After-Write (RAW) data dependencies in a pipelined CPU without stalling the pipeline?"
+  optionA="Branch Target Buffer (BTB)"
+  optionB="Operand Forwarding (Bypassing)"
+  optionC="Instruction Cache Pre-fetching"
+  optionD="Delayed Branching"
+  correctOption="B"
+  explanation="Operand Forwarding (data forwarding/bypassing) routes the computed result directly from the ALU/MEM pipeline registers back to the EX stage input of the dependent instruction before it is formally written back into the register file."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="An enhancement accelerates a program's floating-point computations by 4×. If floating-point operations account for 60% of the program's total execution time, what is the overall speedup achieved according to Amdahl's Law?"
+  optionA="1.45×"
+  optionB="1.82×"
+  optionC="2.25×"
+  optionD="2.50×"
+  correctOption="B"
+  explanation="By Amdahl's Law: S = 1 / [(1 - f) + (f / s)]. Here f = 0.60 and s = 4. S = 1 / [(1 - 0.60) + (0.60 / 4)] = 1 / [0.40 + 0.15] = 1 / 0.55 ≈ 1.818×."
+  examBadge="UGC NET Dec 2019"
+/>
+
+<Quiz
+  question="How many clock cycles are required to execute 100 independent instructions in a 4-stage linear pipeline operating with ideal single-cycle stages?"
+  optionA="400 cycles"
+  optionB="103 cycles"
+  optionC="104 cycles"
+  optionD="100 cycles"
+  correctOption="B"
+  explanation="For k stages and n instructions: Total Clock Cycles = k + (n - 1). Here k = 4 and n = 100. Cycles = 4 + (100 - 1) = 4 + 99 = 103 clock cycles."
+  examBadge="Bihar STET Official Model"
+/>
+

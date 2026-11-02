@@ -1,0 +1,134 @@
+---
+title: "Memory Interleaving, Secondary Storage, and RAID Levels"
+unit: "Unit 2: Computer Organization & Architecture"
+examType: "Common"
+priority: "Med"
+readTime: "24 min"
+description: "High-order vs low-order memory interleaving, magnetic disk latency calculations (Seek, Rotational, Transfer), and RAID configurations (0, 1, 5, 6, 10) for UGC NET and Bihar STET."
+tags: ["Memory Interleaving", "RAID", "Secondary Storage", "Disk Scheduling", "Computer Architecture"]
+---
+
+# Memory Interleaving, Secondary Storage, and RAID Levels
+
+Memory and secondary storage bandwidth represent the most significant performance bottlenecks in modern Von Neumann computer architectures. This topic covers the mathematical principles of memory interleaving, magnetic disk latency computations, and Redundant Arrays of Independent Disks (RAID).
+
+---
+
+## 1. Memory Interleaving
+
+Main memory access time is much slower than CPU processor cycle time. Memory interleaving partitions physical memory into independent memory banks/modules that can be accessed concurrently.
+
+### 1.1 High-Order vs. Low-Order Interleaving
+
+| Feature | High-Order Interleaving | Low-Order Interleaving |
+| :--- | :--- | :--- |
+| **Module Selection** | Selected by **Most Significant Bits (MSBs)** | Selected by **Least Significant Bits (LSBs)** |
+| **Address Layout** | Consecutive memory addresses fall inside the **same bank** | Consecutive memory addresses fall in **consecutive banks** |
+| **Parallel Access** | Poor for sequential memory references | **Optimal** for pipelined/vector sequential access |
+| **Advantage** | Fault isolation (failure in one bank only affects one range) | High throughput; hides memory cycle latency |
+
+### 1.2 Low-Order Interleaving Formula
+For an $m$-bank low-order interleaved memory with memory cycle time $T_c$ and CPU bus clock period $\tau$:
+- If $T_c \le m \cdot \tau$, consecutive memory words can be fetched at the rate of **one word per clock cycle $\tau$**!
+- Effective Memory Access Time:
+$$T_{\text{eff}} = T_c + (n - 1) \cdot \tau \quad (\text{for } n \text{ consecutive words})$$
+
+---
+
+## 2. Magnetic Disk Latency Calculations
+
+A magnetic disk consists of rotating platters divided into concentric **tracks**, which are subdivided into **sectors** (typically 512 bytes or 4096 bytes).
+
+### 2.1 Disk Access Time Components
+$$\text{Total Disk Access Time} = T_{\text{seek}} + T_{\text{rotational}} + T_{\text{transfer}} + T_{\text{controller}}$$
+
+1. **Seek Time ($T_{\text{seek}}$)**: Time required for the read/write actuator arm to position the head over the desired track/cylinder.
+2. **Rotational Latency ($T_{\text{rotational}}$)**: Time spent waiting for the target sector to rotate underneath the read/write head.
+   - For a disk rotating at $R$ RPM (Revolutions Per Minute):
+$$\text{Time for 1 Revolution } T_{\text{rev}} = \frac{60}{R} \text{ seconds}$$
+$$\text{Average Rotational Latency} = \frac{1}{2} \cdot T_{\text{rev}} = \frac{60}{2 \cdot R} \text{ seconds}$$
+3. **Transfer Time ($T_{\text{transfer}}$)**: Time to read or write the actual data payload bits:
+$$T_{\text{transfer}} = \frac{\text{Data to Transfer}}{\text{Track Capacity}} \times T_{\text{rev}} = \frac{B}{R \times N}$$
+
+---
+
+## 3. RAID Levels (Redundant Array of Independent Disks)
+
+RAID combines multiple physical disk drives into a single logical storage unit to achieve performance, redundancy, or both.
+
+| RAID Level | Primary Technique | Redundancy | Storage Efficiency | Min Disks | Fault Tolerance |
+| :--- | :--- | :--- | :--- | :---: | :--- |
+| **RAID 0** | Block Striping | None | $100\%$ ($N$) | 2 | **0 disks** (any disk failure loses all data) |
+| **RAID 1** | Mirroring (Shadowing) | Duplication | $50\%$ ($N/2$) | 2 | 1 disk (up to $N-1$ non-paired disks) |
+| **RAID 2** | Bit-level striping + Hamming code | Hamming ECC | $\approx 1 - \frac{\log_2 N}{N}$ | 3 | Single-bit error correction |
+| **RAID 3** | Byte striping + Dedicated Parity | Dedicated Parity disk | $\frac{N-1}{N}$ | 3 | 1 disk failure |
+| **RAID 4** | Block striping + Dedicated Parity | Dedicated Parity disk | $\frac{N-1}{N}$ | 3 | 1 disk failure (parity disk bottleneck) |
+| **RAID 5** | Block striping + **Distributed Parity** | Parity rotated over all disks | $\frac{N-1}{N}$ | 3 | **1 disk failure** (no parity bottleneck) |
+| **RAID 6** | Block striping + **Dual Distributed Parity** | Reed-Solomon / P+Q | $\frac{N-2}{N}$ | 4 | **2 simultaneous disk failures** |
+| **RAID 10 (1+0)** | Striped Mirrors | Mirroring + Striping | $50\%$ ($N/2$) | 4 | Up to 1 disk per mirrored pair |
+
+<Callout type="important">
+**RAID 5 Parity Calculation**:
+Parity block $P = D_1 \oplus D_2 \oplus D_3$.
+If disk $D_2$ fails, it is reconstructed on the fly by XORing the surviving disks:
+$$D_2 = D_1 \oplus D_3 \oplus P$$
+</Callout>
+
+---
+
+## 4. Interactive Examination PYQ Practice
+
+<Quiz
+  question="A magnetic hard disk rotates at 7200 RPM. What is the average rotational latency of this disk?"
+  optionA="4.17 ms"
+  optionB="8.33 ms"
+  optionC="2.08 ms"
+  optionD="6.00 ms"
+  correctOption="A"
+  explanation="Time for one complete revolution = 60 / 7200 seconds = 1 / 120 s ≈ 0.00833 seconds = 8.33 ms. On average, the target sector is half a revolution away from the head. Average rotational latency = 1/2 × 8.33 ms = 4.17 ms."
+  examBadge="UGC NET Official PYQ"
+/>
+
+<Quiz
+  question="A system requires a RAID array constructed from 5 identical hard drives of 2 TB capacity each. If RAID 5 is used, what is the usable data storage capacity of the array?"
+  optionA="8 TB"
+  optionB="10 TB"
+  optionC="6 TB"
+  optionD="4 TB"
+  correctOption="A"
+  explanation="In RAID 5 with N disks of capacity C each, the equivalent capacity of exactly 1 disk is dedicated to distributed parity. Usable capacity = (N - 1) × C = (5 - 1) × 2 TB = 4 × 2 TB = 8 TB."
+  examBadge="Bihar STET / GATE PYQ"
+/>
+
+<Quiz
+  question="Which memory interleaving scheme uses the least significant bits (LSBs) of the memory address to select the memory module bank?"
+  optionA="Low-Order Interleaving"
+  optionB="High-Order Interleaving"
+  optionC="Direct Memory Access"
+  optionD="Associative Interleaving"
+  correctOption="A"
+  explanation="Low-order interleaving uses the least significant address bits to select the memory module. This places consecutive memory addresses into consecutive physical banks, allowing pipelined access to consecutive words at the rate of one word per bus cycle."
+  examBadge="UGC NET Computer Science"
+/>
+
+<Quiz
+  question="Which RAID level provides fault tolerance against TWO simultaneous physical disk failures?"
+  optionA="RAID 6"
+  optionB="RAID 5"
+  optionC="RAID 1"
+  optionD="RAID 0"
+  correctOption="A"
+  explanation="RAID 6 uses dual distributed parity (two different parity schemes, typically P+Q or Reed-Solomon codes) across all drives. Because two parity blocks are stored for each stripe, it can tolerate the simultaneous failure of any 2 disks without data loss."
+  examBadge="UGC NET Dec 2021"
+/>
+
+<Quiz
+  question="In low-order interleaved memory with 8 banks, if memory cycle time is 80 ns and the memory bus clock is 10 ns, how much time is required to fetch 8 consecutive 32-bit words?"
+  optionA="150 ns"
+  optionB="640 ns"
+  optionC="80 ns"
+  optionD="70 ns"
+  correctOption="A"
+  explanation="The first word requires the full memory cycle time of 80 ns. Because the 8 consecutive words reside in 8 separate banks, each subsequent word arrives every bus cycle (10 ns) through pipelining. Total Time = T_cycle + (n - 1) × T_bus = 80 ns + (8 - 1) × 10 ns = 80 + 70 = 150 ns."
+  examBadge="GATE / UGC NET PYQ"
+/>
