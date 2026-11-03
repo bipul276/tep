@@ -18,7 +18,7 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [userAnswers, setUserAnswers] = useState<AnswerMap>({});
   const [markedForReview, setMarkedForReview] = useState<ReviewSet>({});
-  const [showExplanation, setShowExplanation] = useState<boolean>(initialMode === "practice");
+  const [showExplanation, setShowExplanation] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [showSubmitModal, setShowSubmitModal] = useState<boolean>(false);
   const [selectedSection, setSelectedSection] = useState<string>("ALL");
@@ -95,6 +95,7 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
       delete copy[currentQuestion.id];
       return copy;
     });
+    setShowExplanation(false);
   };
 
   const handleToggleReview = () => {
@@ -218,7 +219,7 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
               <button
                 onClick={() => {
                   setMode("practice");
-                  setShowExplanation(true);
+                  setShowExplanation(!!userAnswers[currentQuestion.id]);
                   setIsTimerActive(false);
                 }}
                 className={`px-2.5 py-1 rounded-md transition-all ${
@@ -285,6 +286,7 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
                   setMarkedForReview({});
                   setSecondsRemaining(exam.durationMinutes * 60);
                   setCurrentIndex(0);
+                  setShowExplanation(false);
                 }}
                 className="px-3 py-1 rounded-lg bg-[#2F3437] text-white text-xs font-bold hover:bg-[#1E2224] transition-all"
               >
@@ -374,7 +376,7 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
                     <button
                       key={option.id}
                       onClick={() => handleSelectOption(option.id)}
-                      className={`w-full text-left p-3.5 sm:p-4 rounded-xl border transition-all flex items-start gap-3 ${optionStyle}`}
+                      className={`w-full text-left p-3.5 sm:p-4 rounded-xl border transition-all flex items-start gap-3 cursor-pointer ${optionStyle}`}
                     >
                       <span
                         className={`w-6 h-6 rounded-md border flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ${badgeStyle}`}
@@ -387,6 +389,11 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
                       {mode === "practice" && showExplanation && isCorrect && (
                         <span className="text-xs font-bold text-[#2D6A4F] shrink-0 self-center">
                           [CORRECT] Correct
+                        </span>
+                      )}
+                      {mode === "practice" && showExplanation && isSelected && !isCorrect && (
+                        <span className="text-xs font-bold text-[#8F3B2C] shrink-0 self-center">
+                          [INCORRECT] Your Choice
                         </span>
                       )}
                     </button>
@@ -409,7 +416,7 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
                     </div>
                   </div>
                   <Link
-                    href={`/${currentQuestion.topicSlug}`}
+                    href={`/dashboard/${currentQuestion.topicSlug}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-3 py-1.5 rounded-lg bg-white border border-[#8F6A1E] text-[#8F6A1E] text-xs font-bold hover:bg-[#8F6A1E] hover:text-white transition-all shrink-0 flex items-center gap-1 shadow-xs"
@@ -430,17 +437,25 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
                           <span>[CONCEPT]</span>
                           <span>Step-by-Step Solution & Derivation</span>
                         </span>
-                        <span className="px-2.5 py-0.5 rounded text-[11px] font-bold bg-[#EBF3EC] text-[#2D6A4F] border border-[#C3DCC8]">
-                          Official Answer: Option {currentQuestion.correctOption}
-                          {currentQuestion.options.find(
-                            (o) => o.id.toUpperCase() === currentQuestion.correctOption.toUpperCase()
-                          ) &&
-                            ` (${
-                              currentQuestion.options.find(
-                                (o) => o.id.toUpperCase() === currentQuestion.correctOption.toUpperCase()
-                              )?.text
-                            })`}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2.5 py-0.5 rounded text-[11px] font-bold bg-[#EBF3EC] text-[#2D6A4F] border border-[#C3DCC8]">
+                            Official Answer: Option {currentQuestion.correctOption}
+                            {currentQuestion.options.find(
+                              (o) => o.id.toUpperCase() === currentQuestion.correctOption.toUpperCase()
+                            ) &&
+                              ` (${
+                                currentQuestion.options.find(
+                                  (o) => o.id.toUpperCase() === currentQuestion.correctOption.toUpperCase()
+                                )?.text
+                              })`}
+                          </span>
+                          <button
+                            onClick={() => setShowExplanation(false)}
+                            className="text-xs text-[#787774] hover:text-[#2F3437] underline cursor-pointer"
+                          >
+                            Hide Solution
+                          </button>
+                        </div>
                       </div>
                       <div className="mt-2">
                         <FormattedExplanation explanation={currentQuestion.explanation} />
@@ -449,7 +464,7 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
                   ) : (
                     <button
                       onClick={() => setShowExplanation(true)}
-                      className="text-xs font-semibold text-[#8F3B2C] hover:underline flex items-center gap-1"
+                      className="text-xs font-semibold text-[#8F3B2C] hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <span>Show Detailed Solution & Answer Key →</span>
                     </button>
@@ -463,26 +478,27 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
                   <button
                     onClick={handlePrev}
                     disabled={currentIndex === 0}
-                    className="px-3.5 py-2 rounded-lg bg-white border border-[#E6E4DF] text-[#2F3437] text-xs font-bold hover:border-[#2F3437] disabled:opacity-40 disabled:hover:border-[#E6E4DF] transition-all"
+                    className="px-3.5 py-2 rounded-lg bg-white border border-[#E6E4DF] text-[#2F3437] text-xs font-bold hover:border-[#2F3437] disabled:opacity-40 disabled:hover:border-[#E6E4DF] transition-all cursor-pointer"
                   >
                     ← Previous
                   </button>
                   <button
                     onClick={handleNext}
                     disabled={currentIndex === exam.questions.length - 1}
-                    className="px-4 py-2 rounded-lg bg-[#2F3437] text-white text-xs font-bold hover:bg-[#1E2224] disabled:opacity-40 transition-all shadow-xs"
+                    className="px-4 py-2 rounded-lg bg-[#2F3437] text-white text-xs font-bold hover:bg-[#1E2224] disabled:opacity-40 transition-all shadow-xs cursor-pointer"
                   >
                     Next Question →
                   </button>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {userAnswers[currentQuestion.id] && (
+                  {(userAnswers[currentQuestion.id] || (mode === "practice" && showExplanation)) && (
                     <button
                       onClick={handleClearResponse}
-                      className="px-3 py-2 rounded-lg bg-white border border-[#E6E4DF] text-[#787774] text-xs font-medium hover:text-[#2F3437] hover:border-[#2F3437] transition-all"
+                      className="px-3.5 py-2 rounded-lg bg-white border border-[#E6E4DF] text-[#787774] text-xs font-semibold hover:text-[#8F3B2C] hover:border-[#8F3B2C] transition-all cursor-pointer flex items-center gap-1.5"
+                      title="Clear answer and reset question"
                     >
-                      Clear Choice
+                      <span>Clear Response</span>
                     </button>
                   )}
 
