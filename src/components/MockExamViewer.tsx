@@ -586,7 +586,7 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
               </button>
               <button
                 onClick={() => setStatusFilter("ANSWERED")}
-                className={`py-1 rounded ${statusFilter === "ANSWERED" ? "bg-[#2D6A4F] text-white" : "text-[#787774]"}`}
+                className={`py-1 rounded ${statusFilter === "ANSWERED" ? "bg-[#151515] text-white" : "text-[#787774]"}`}
               >
                 Ans
               </button>
@@ -622,26 +622,28 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
                   if (statusFilter === "UNANSWERED" && isAnswered) return null;
                   if (statusFilter === "REVIEW" && !isMarked) return null;
 
-                  let btnStyle = "bg-[#F9F9F8] text-[#57564F] border-[#E6E4DF] hover:border-[#2F3437]";
+                  let btnStyle = "";
 
-                  if (isCurrent) {
-                    btnStyle = "ring-2 ring-[#2F3437] font-bold";
-                  }
-
-                  if (isAnswered && isMarked) {
-                    btnStyle += " bg-[#DFD1F7] text-[#5E3587] border-[#BFA7EB] font-bold";
+                  if (isCurrent && isAnswered) {
+                    btnStyle = "bg-[#151515] text-white border-2 border-[#151515] ring-2 ring-[#FF6A35] ring-offset-1 font-black shadow-xs cursor-pointer";
+                  } else if (isCurrent) {
+                    btnStyle = "bg-white text-[#151515] border-2 border-[#151515] ring-2 ring-[#151515]/30 font-black shadow-xs cursor-pointer";
+                  } else if (isAnswered && isMarked) {
+                    btnStyle = "bg-[#5E3587] text-white border border-[#5E3587] font-bold shadow-xs cursor-pointer";
                   } else if (isAnswered) {
-                    btnStyle += " bg-[#2D6A4F] text-white border-[#2D6A4F] font-bold";
+                    btnStyle = "bg-[#151515] text-white border border-[#151515] font-bold shadow-xs cursor-pointer";
                   } else if (isMarked) {
-                    btnStyle += " bg-[#FAF4E5] text-[#8F6A1E] border-[#F2DEB5] font-bold";
+                    btnStyle = "bg-[#FAF4E5] text-[#8F6A1E] border border-[#F2DEB5] font-bold cursor-pointer";
+                  } else {
+                    btnStyle = "bg-white text-[#2F3437] border border-[#E6E4DF] hover:border-[#151515] hover:bg-[#FAF8F5] font-semibold cursor-pointer";
                   }
 
                   return (
                     <button
                       key={q.id}
                       onClick={() => goToQuestion(idx)}
-                      className={`h-9 rounded-lg border text-xs flex items-center justify-center transition-all ${btnStyle}`}
-                      title={`Question ${idx + 1}`}
+                      className={`h-9 rounded-lg text-xs flex items-center justify-center transition-all ${btnStyle}`}
+                      title={`Question ${idx + 1}${isAnswered ? " (Answered)" : " (Unanswered)"}`}
                     >
                       {idx + 1}
                     </button>
@@ -653,16 +655,22 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
             {/* Legend */}
             <div className="pt-3 border-t border-[#E6E4DF] mt-3 space-y-1.5 text-[11px] text-[#787774]">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded bg-[#2D6A4F] inline-block" />
-                <span>Answered</span>
+                <span className="w-3.5 h-3.5 rounded bg-[#151515] border border-[#151515] inline-flex items-center justify-center text-[9px] text-white font-bold">
+                  ✓
+                </span>
+                <span className="text-[#151515] font-semibold">Answered (Dark)</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded bg-[#F9F9F8] border border-[#E6E4DF] inline-block" />
+                <span className="w-3.5 h-3.5 rounded bg-white border border-[#E6E4DF] inline-block" />
                 <span>Not Answered</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded bg-[#FAF4E5] border border-[#F2DEB5] inline-block" />
+                <span className="w-3.5 h-3.5 rounded bg-[#FAF4E5] border border-[#F2DEB5] inline-block" />
                 <span>Marked for Review</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-3.5 h-3.5 rounded bg-white border-2 border-[#151515] inline-block" />
+                <span>Current Question</span>
               </div>
             </div>
           </div>
