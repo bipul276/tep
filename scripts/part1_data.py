@@ -17,7 +17,7 @@ part1_questions = [
         "correctOption": "A",
         "explanation": "According to the opening lines of the passage: 'Kerala is just the place for you if you love variety. There is something here to please everyone.'",
         "unit": "Part I: Language (English)",
-        "category": "Language (Qualifying)",
+        "category": "English Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -35,7 +35,7 @@ part1_questions = [
         "correctOption": "C",
         "explanation": "The passage explicitly advises: 'Better still, take a trip to the spice gardens in the hills, to inhale the fragrance of fresh cardamoms...'",
         "unit": "Part I: Language (English)",
-        "category": "Language (Qualifying)",
+        "category": "English Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -53,7 +53,7 @@ part1_questions = [
         "correctOption": "C",
         "explanation": "The text states: 'Kerala\\'s cuisine is known for its spicy hot flavours.'",
         "unit": "Part I: Language (English)",
-        "category": "Language (Qualifying)",
+        "category": "English Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -71,7 +71,7 @@ part1_questions = [
         "correctOption": "B",
         "explanation": "The passage states: 'The coconut and the spices give the food - especially the seafood a pungency that is enhanced by tamarind.'",
         "unit": "Part I: Language (English)",
-        "category": "Language (Qualifying)",
+        "category": "English Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -89,7 +89,7 @@ part1_questions = [
         "correctOption": "C",
         "explanation": "The passage confirms: 'Bargain-hunters will never have a problem since English is spoken and understood everywhere in Kerala.'",
         "unit": "Part I: Language (English)",
-        "category": "Language (Qualifying)",
+        "category": "English Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -107,7 +107,7 @@ part1_questions = [
         "correctOption": "C",
         "explanation": "The definite article 'the' is required because a specific airport from which the flight departs is being referred to in the context of catching the flight.",
         "unit": "Part I: Language (English)",
-        "category": "Language (Qualifying)",
+        "category": "English Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -125,7 +125,7 @@ part1_questions = [
         "correctOption": "C",
         "explanation": "The adjective 'early' begins with an initial vowel sound (/ɜːr/), so the indefinite article 'an' must precede it.",
         "unit": "Part I: Language (English)",
-        "category": "Language (Qualifying)",
+        "category": "English Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -143,7 +143,7 @@ part1_questions = [
         "correctOption": "E",
         "explanation": "April has 30 days. If 30th April is Tuesday: 1st May is Wednesday; 8th May is Wednesday (7 days later); 9th May is Thursday; 10th May is Friday. Since Friday is not among options (A) Monday, (B) Thursday, or (C) Saturday, the correct answer is (E) None of the above.",
         "unit": "Part I: Language (English)",
-        "category": "Language (Qualifying)",
+        "category": "English Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -161,7 +161,7 @@ part1_questions = [
         "correctOption": "C",
         "explanation": "गद्यांश में स्पष्ट उल्लेख है: 'एक बार रतन से नाराज होकर अजय भाग रहा था। रतन ने दौड़कर अजय को रोकना चाहा।'",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -179,7 +179,7 @@ part1_questions = [
         "correctOption": "A",
         "explanation": "गद्यांश के अनुसार: 'रतन और अजय दिली दोस्त थे। इसलिए रतन अजय को अच्छा छात्र बनने के लिए सलाह देता था।'",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -197,7 +197,7 @@ part1_questions = [
         "correctOption": "D",
         "explanation": "गद्यांश के अनुसार: 'रतन गरीब था...' और 'रतन गरीब होकर भी पढ़ने में तेज था।' चूंकि A (गरीब) और B (पढ़ने में तेज) दोनों सत्य हैं, अतः उत्तर (D) उपर्युक्त में से एक से अधिक है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -215,7 +215,7 @@ part1_questions = [
         "correctOption": "D",
         "explanation": "गद्यांश में दोनों को 'दोस्त' तथा विशेष रूप से 'दिली दोस्त' कहा गया है। दोनों विकल्प सही होने के कारण उत्तर (D) उपर्युक्त में से एक से अधिक है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -233,7 +233,7 @@ part1_questions = [
         "correctOption": "C",
         "explanation": "गद्यांश के अनुसार: 'सभी शिक्षक उसके व्यवहार से प्रसन्न रहते थे।'",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -251,7 +251,7 @@ part1_questions = [
         "correctOption": "E",
         "explanation": "गद्यांश में उल्लिखित है कि अजय 'पढ़ने के बदले खेलने-कूदने और बदमाशी में अधिक ध्यान लगाता था'। खेलने-कूदने व बदमाशी विकल्पों में नहीं दिया गया है, अतः सही उत्तर (E) उपर्युक्त में से कोई नहीं है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -269,7 +269,7 @@ part1_questions = [
         "correctOption": "A",
         "explanation": "गद्यांश के अनुसार: 'वे केवल वीर ही नहीं, बल्कि एक अच्छे राजनीतिज्ञ भी थे।'",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -287,7 +287,7 @@ part1_questions = [
         "correctOption": "B",
         "explanation": "गद्यांश के अनुसार: 'उन्होंने लोगों में एक राष्ट्र की भावना भर दी और मराठा राज्य की स्थापना की।'",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -305,7 +305,7 @@ part1_questions = [
         "correctOption": "B",
         "explanation": "गद्यांश की प्रथम पंक्ति है: 'शिवाजी भारत के महान् वीरों में से एक थे।'",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -323,7 +323,7 @@ part1_questions = [
         "correctOption": "C",
         "explanation": "गद्यांश में लिखा है: 'उनके अच्छे गुणों के कारण सभी लोग उनका आदर करते थे।'",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -341,7 +341,7 @@ part1_questions = [
         "correctOption": "E",
         "explanation": "'राजनीतिज्ञ' का अर्थ राजनीति का ज्ञाता अथवा कूटनीतिज्ञ/राजनेता (व्यक्ति) होता है। विकल्पों में दी गई परिभाषाएं 'राजनीति' (नीति) की हैं, राजनीतिज्ञ (व्यक्ति) की नहीं। अतः (E) उपर्युक्त में से कोई नहीं सही उत्तर है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -359,7 +359,7 @@ part1_questions = [
         "correctOption": "B",
         "explanation": "गद्यांश छत्रपति शिवाजी के जीवन, चरित्र, शासन-कौशल और आदर्शों का समग्र निरूपण करता है ('हम लोगों को उनके जीवन से शिक्षा लेनी चाहिए'), अतः 'शिवाजी का जीवन' सर्वाधिक उपयुक्त शीर्षक है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -377,7 +377,7 @@ part1_questions = [
         "correctOption": "D",
         "explanation": "'गंगा' और 'ब्रह्मपुत्र' दोनों विशिष्ट नदियों के नाम होने के कारण व्यक्तिवाचक संज्ञाएँ हैं, जबकि 'नदी' जातिवाचक संज्ञा है। अतः (D) उपर्युक्त में से एक से अधिक सही है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -395,7 +395,7 @@ part1_questions = [
         "correctOption": "A",
         "explanation": "पुरुषवाचक सर्वनाम में वक्ता अपने लिए उत्तम पुरुष सर्वनाम ('मैं', 'हम') का प्रयोग करता है। 'तू' मध्यम पुरुष है तथा 'वह' अन्य पुरुष है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -413,7 +413,7 @@ part1_questions = [
         "correctOption": "C",
         "explanation": "संज्ञा या सर्वनाम के जिस रूप से क्रिया के आधार (स्थान/समय) का बोध हो, उसे अधिकरण कारक कहते हैं। इसके परसर्ग 'में' और 'पर' हैं। अतः 'दुकान पर' में अधिकरण कारक है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -431,7 +431,7 @@ part1_questions = [
         "correctOption": "B",
         "explanation": "'पुष्प' संस्कृत का तत्सम शब्द है (तद्भव 'फूल' होता है)। 'बच्चा' (तत्सम: वत्स) तथा 'चौदह' (तत्सम: चतुर्दश) तद्भव शब्द हैं।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -449,7 +449,7 @@ part1_questions = [
         "correctOption": "E",
         "explanation": "'निरपराधी' अशुद्ध है (शुद्ध रूप 'निरपराध' होता है); 'महत्व' अशुद्ध है (शुद्ध रूप 'महत्त्व' द्वित्व त् के साथ); 'प्राणिक' अशुद्ध है (शुद्ध रूप 'प्राणि'/'प्राणी')। अतः तीनों अशुद्ध हैं, सही विकल्प (E) उपर्युक्त में से कोई नहीं है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -467,7 +467,7 @@ part1_questions = [
         "correctOption": "A",
         "explanation": "'उत्कृष्ट' का विलोम शब्द 'निकृष्ट' होता है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -485,7 +485,7 @@ part1_questions = [
         "correctOption": "C",
         "explanation": "'यह कविता अनेक भाव प्रकट करती है' व्याकरण एवं अर्थ की दृष्टि से सर्वथा शुद्ध वाक्य है। विकल्प A में 'भी' का अनावश्यक प्रयोग है तथा B में 'तो' व 'अवश्य' का दोहराव त्रुटिपूर्ण है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -503,7 +503,7 @@ part1_questions = [
         "correctOption": "D",
         "explanation": "हिंदी में 'पानी', 'जीवन' (जल ही जीवन है/जल का अनेकार्थी पर्यायवाची) तथा 'अमृत' (पीयूष/जल) सभी संदर्भानुसार जल के पर्यायवाची माने जाते हैं। अतः (D) उपर्युक्त में से एक से अधिक सही है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -521,7 +521,7 @@ part1_questions = [
         "correctOption": "B",
         "explanation": "जहाँ लोगों का औपचारिक या वैचारिक मिलन/एकत्रीकरण हो, उस सभा या मिलन को 'सम्मेलन' कहते हैं।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -539,7 +539,7 @@ part1_questions = [
         "correctOption": "D",
         "explanation": "'खटाई में पड़ना' मुहावरे का अर्थ कार्य में अड़चन या विघ्न आना तथा किसी मामले का झमेले/अनिश्चय में लटक जाना होता है। A और C दोनों अर्थ सटीक होने के कारण सही उत्तर (D) उपर्युक्त में से एक से अधिक है।",
         "unit": "Part I: Language (Hindi)",
-        "category": "Language (Qualifying)",
+        "category": "Hindi Language",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     }

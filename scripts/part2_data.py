@@ -16,7 +16,7 @@ part2_questions = [
         "correctOption": "E",
         "explanation": "Using the algebraic identity (a + b)^2 = a^2 + 2ab + b^2 with a = x and b = 1/x, we get (x + 1/x)^2 = x^2 + 2(x)(1/x) + 1/x^2 = x^2 + 1/x^2 + 2. None of options A, B, or C contains '+ 2', so the correct answer is (E) None of the above.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Elementary Mathematics",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -34,7 +34,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "Let CP = 100. Marked Price (MP) = 100 + 10 = 110. A discount of 10% on MP = 10% of 110 = 11. Selling Price (SP) = 110 - 11 = 99. Loss = CP - SP = 100 - 99 = 1, which represents a 1% loss.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Elementary Mathematics",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -52,7 +52,7 @@ part2_questions = [
         "correctOption": "A",
         "explanation": "Prime factorizing 81 gives 81 = 3 * 3 * 3 * 3 = 3^4. A perfect cube requires powers of prime factors to be multiples of 3. Dividing 81 by 3 yields 81 / 3 = 27 = 3^3, which is a perfect cube.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Elementary Mathematics",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -70,7 +70,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "Let the numbers be 2x and 5x. Their difference is 5x - 2x = 3x = 66 => x = 22. Thus, the smaller number is 2(22) = 44, and the larger number is 5(22) = 110.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Elementary Mathematics",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -88,7 +88,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "In any parallelogram, adjacent angles are supplementary: ∠A + ∠B = 180°. Given ∠A:∠B = 1:2, let ∠A = x and ∠B = 2x. Then x + 2x = 3x = 180° => x = 60°. Therefore, ∠A = 60°.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Elementary Mathematics",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -106,7 +106,7 @@ part2_questions = [
         "correctOption": "A",
         "explanation": "Total surface area of a cylinder = 2πr(h + r). Substituting r = 7 cm and π = 22/7: 2 * (22/7) * 7 * (h + 7) = 968 => 44 * (h + 7) = 968 => h + 7 = 968 / 44 = 22 => h = 22 - 7 = 15 cm.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Elementary Mathematics",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -124,7 +124,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "Using exponent product rule a^p × a^q = a^(p+q), (-3)^((m+1)+5) = (-3)^7 => (-3)^(m+6) = (-3)^7. Equating powers: m + 6 = 7 => m = 1.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Elementary Mathematics",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -142,7 +142,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "By definition of inverse variation, y ∝ 1/x, which directly implies x × y = k (where k is a non-zero constant).",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Elementary Mathematics",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -160,7 +160,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "Each of the 5 pieces has resistance r = R/5. When 5 identical resistors of value R/5 are connected in parallel, the equivalent resistance is R' = r / 5 = (R/5) / 5 = R / 25. Therefore, R / R' = R / (R/25) = 25.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "General Science",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -178,7 +178,7 @@ part2_questions = [
         "correctOption": "E",
         "explanation": "The rate at which heat is developed is power P = I^2 × R. With I = 15 A and R = 8 Ω: P = 15^2 × 8 = 225 × 8 = 1800 W (Joules/sec). Since 1800 W is not among the options (A: 220 W, B: 120 W, C: 210 W), the correct answer is (E) None of the above.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "General Science",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -196,7 +196,7 @@ part2_questions = [
         "correctOption": "E",
         "explanation": "For reading small print with high magnification, a convex (converging) lens of short focal length (e.g. 5 cm) is required (Magnification m ≈ 1 + D/f). The options only list a convex lens of 50 cm (very low magnification) and concave lenses (which produce diminished images). A convex lens of 5 cm is not listed, so (E) None of the above is the correct official answer.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "General Science",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -214,7 +214,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "The light entering the eye is refracted by the cornea and lens to converge and form a real, inverted image on the light-sensitive retina.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "General Science",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -232,7 +232,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "The vas deferens is a duct that transports sperm from the epididymis to the ejaculatory ducts, forming a key part of the male reproductive system.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "General Science",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -250,7 +250,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "The stamen is the male reproductive part of a plant consisting of a filament and an anther. The anther produces and stores pollen grains (microspores).",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "General Science",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -268,7 +268,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "Budding is a form of asexual reproduction characteristic of Yeast and Hydra, where a new organism develops from an outgrowth or bud due to cell division at one particular site. Amoeba reproduces by binary fission and Plasmodium by multiple fission.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "General Science",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -286,7 +286,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "Antacids (such as magnesium hydroxide/milk of magnesia and aluminium hydroxide) are basic compounds that neutralize excess hydrochloric acid in the stomach.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "General Science",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -304,7 +304,7 @@ part2_questions = [
         "correctOption": "A",
         "explanation": "Under the CAA 2024 implementation framework, the Department of Posts (Postal Department / post offices) acts as the physical nodal verification center for document submission and biometric verification.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Current Affairs & Tech",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -322,7 +322,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "India officially launched UPI and RuPay card services in Mauritius and Sri Lanka via video conferencing on February 12, 2024.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Current Affairs & Tech",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -340,7 +340,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "Gaganyaan ('Celestial Vehicle') is India\\'s maiden human spaceflight programme by ISRO aiming to demonstrate human spaceflight capability to Low Earth Orbit (LEO).",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Current Affairs & Tech",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -358,7 +358,7 @@ part2_questions = [
         "correctOption": "A",
         "explanation": "The G7 consists of the US, UK, Canada, France, Germany, Italy, and Japan. Russia was suspended indefinitely in 2014 following its annexation of Crimea, returning the forum to the G7.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Current Affairs & Tech",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -376,7 +376,7 @@ part2_questions = [
         "correctOption": "A",
         "explanation": "Green hydrogen is produced by water electrolysis—splitting water molecules into hydrogen and oxygen (2H2O -> 2H2 + O2) using renewable electricity (solar or wind) with zero carbon emissions.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Current Affairs & Tech",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -394,7 +394,7 @@ part2_questions = [
         "correctOption": "D",
         "explanation": "Both Artificial Intelligence (generative neural models), Deepfake voice/video synthesis, and AI conversational chatbots can be used together to recreate deceased personalities (digital resurrection / grief tech). Thus (D) More than one of the above is correct.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Current Affairs & Tech",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -412,7 +412,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "In global cost-of-living indices (such as Numbeo 2024), Pakistan is ranked with a lower cost-of-living index than India, reflecting cheaper consumer price indices in local currency equivalents.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Current Affairs & Tech",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -430,7 +430,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "Dr. Rajendra Prasad, along with Acharya J.B. Kripalani, Mazharul Haque, Anugrah Narayan Sinha, and Brajkishore Prasad, accompanied and strongly assisted Mahatma Gandhi during the historic Champaran Satyagraha in 1917 against the Tinkathia system.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Geography & Bihar GK",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -448,7 +448,7 @@ part2_questions = [
         "correctOption": "A",
         "explanation": "Mercury has a heavily cratered, geologically inactive surface that closely resembles Earth\\'s Moon, with no significant atmosphere to retain heat or weather craters.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Geography & Bihar GK",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -466,7 +466,7 @@ part2_questions = [
         "correctOption": "A",
         "explanation": "The East African Great Rift Valley (including Olduvai Gorge in Tanzania, Hadar and Omo in Ethiopia) has yielded the oldest hominid fossil remains, establishing it as the cradle of humankind.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Geography & Bihar GK",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -484,7 +484,7 @@ part2_questions = [
         "correctOption": "A",
         "explanation": "Dry point settlements are rural settlements situated on higher, dry ground within low-lying or flood-prone regions to escape recurrent inundation while staying near fertile water basins.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Geography & Bihar GK",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -502,7 +502,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "Rohtas district is renowned as the 'Rice Bowl of Bihar' due to its extensive canal irrigation network from the Sone River and highest paddy production in the state.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Geography & Bihar GK",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -520,7 +520,7 @@ part2_questions = [
         "correctOption": "A",
         "explanation": "Tehran is located in northern Iran, nestled at the southern foot of the majestic Alborz (Alburz) mountain range.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Geography & Bihar GK",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -538,7 +538,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "Mahendragiri (1,501 m) in Odisha is prominently identified in Indian school geography textbooks as a major peak of the Eastern Ghats. (Anamudi is in Western Ghats, Kanchenjunga in the Himalayas).",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Geography & Bihar GK",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -556,7 +556,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "According to environmental geography studies, traditional lopping for fuelwood and local grazing do not typically cause complete destruction of forest canopies, unlike commercial agricultural expansion and large river valley/mining projects.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Geography & Bihar GK",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -574,7 +574,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "Bhagalpur is universally renowned as the 'Silk City' (Resham Nagari) of Bihar, globally celebrated for its Bhagalpuri Tussar silk weaving.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Geography & Bihar GK",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -592,7 +592,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "Lord Chelmsford served as Viceroy of India from 1916 to 1921, during which the Rowlatt Act and Jallianwala Bagh massacre took place under his administration.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Indian National Movement",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -610,7 +610,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "Womesh Chandra Bonnerjee presided over the first session of the Indian National Congress held at Gokuldas Tejpal Sanskrit College, Bombay, attended by 72 delegates in December 1885.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Indian National Movement",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -628,7 +628,7 @@ part2_questions = [
         "correctOption": "B",
         "explanation": "Dadabhai Naoroji—pioneering economist, author of 'Poverty and Un-British Rule in India', and thrice INC president—is honored as the 'Grand Old Man of India'.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Indian National Movement",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -646,7 +646,7 @@ part2_questions = [
         "correctOption": "D",
         "explanation": "Both the Non-Cooperation Movement (1920) and the Quit India Movement (1942) were launched under Mahatma Gandhi\\'s direct leadership. (Swadeshi movement was launched in 1905). Since both A and B are correct, the answer is (D) More than one of the above.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Indian National Movement",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -664,7 +664,7 @@ part2_questions = [
         "correctOption": "A",
         "explanation": "Vallabhbhai Patel led the successful non-violent peasant resistance in Bardoli, Gujarat against excessive tax increments in 1928, after which he was honored with the title 'Sardar'.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Indian National Movement",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -682,7 +682,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "The Home Rule Movement was pioneered by Bal Gangadhar Tilak (Indian Home Rule League at Belgaum) and Annie Besant (All India Home Rule League at Madras) in 1916. Sarojini Naidu was not a founder or leader of the Home Rule Leagues.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Indian National Movement",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -700,7 +700,7 @@ part2_questions = [
         "correctOption": "E",
         "explanation": "The Bihar Provincial Congress Committee was formed in 1908 at Patna with Nawab Sarfaraz Hussain Khan as President and Syed Hasan Imam as key leader. Dr. Rajendra Prasad and JP Narayan were not the founders/first presidents, so (E) None of the above is correct.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Indian National Movement",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     },
@@ -718,7 +718,7 @@ part2_questions = [
         "correctOption": "C",
         "explanation": "The All India Kisan Sabha was founded at the Lucknow session of the Indian National Congress in April 1936 with Swami Sahajanand Saraswati as its first President and N. G. Ranga as General Secretary.",
         "unit": "Part II: General Studies",
-        "category": "General Studies",
+        "category": "Indian National Movement",
         "isGeneralPaper": True,
         "examType": "BPSC-TRE"
     }

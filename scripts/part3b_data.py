@@ -16,7 +16,7 @@ part3b_questions = [
         "correctOption": "A",
         "explanation": "In paging, the process logical (virtual) address space is divided into fixed-size contiguous units called 'pages'. Physical memory is divided into fixed-size units of identical size called 'frames'.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "memory-management-virtual-memory-os",
         "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
         "examType": "BPSC-TRE"
@@ -35,7 +35,7 @@ part3b_questions = [
         "correctOption": "B",
         "explanation": "Page offset bits (d) are determined solely by the page size: Page Size = 4 KB = 4 × 1024 bytes = 4096 bytes = 2^12 bytes. Therefore, d = log2(4096) = 12 bits.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "memory-management-virtual-memory-os",
         "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
         "examType": "BPSC-TRE"
@@ -54,7 +54,7 @@ part3b_questions = [
         "correctOption": "A",
         "explanation": "In segmentation hardware, each segment table entry holds a segment base (the starting physical memory address where the segment resides in RAM) and a segment limit (the length of the segment).",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "memory-management-virtual-memory-os",
         "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
         "examType": "BPSC-TRE"
@@ -73,7 +73,7 @@ part3b_questions = [
         "correctOption": "A",
         "explanation": "Thrashing occurs when a computer spends more time servicing page faults and swapping pages between disk and RAM than executing actual application instructions, caused by an excessively high degree of multiprogramming and insufficient allocated frames.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "memory-management-virtual-memory-os",
         "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
         "examType": "BPSC-TRE"
@@ -92,7 +92,7 @@ part3b_questions = [
         "correctOption": "B",
         "explanation": "The total active virtual memory used by processes is 10 GB. Of this, 6 GB is resident in physical RAM. The remaining portion resident on secondary backing store (swap space) is 10 GB - 6 GB = 4 GB.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "memory-management-virtual-memory-os",
         "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
         "examType": "BPSC-TRE"
@@ -111,7 +111,7 @@ part3b_questions = [
         "correctOption": "D",
         "explanation": "A Translation Lookaside Buffer (TLB) is constructed using associative content-addressable memory (CAM) where all tags are compared simultaneously. Modern microarchitectures implement TLBs as fully associative or set-associative caches. Since both B (associative cache) and C (set-associative cache) are valid TLB organizations, (D) More than one of the above is the official answer.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "memory-management-virtual-memory-os",
         "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
         "examType": "BPSC-TRE"
@@ -130,7 +130,7 @@ part3b_questions = [
         "correctOption": "D",
         "explanation": "Operating systems support standard file operations including Create, Open, Read, Write, Delete, Rename, and Reposition (Seek). Because Create, Delete, and Rename are all common file operations, the answer is (D) More than one of the above.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "memory-interleaving-secondary-storage-raid",
         "topicTitle": "Memory Interleaving, Secondary Storage, and RAID Architecture",
         "examType": "BPSC-TRE"
@@ -149,7 +149,7 @@ part3b_questions = [
         "correctOption": "A",
         "explanation": "Calculating cumulative head movements in FCFS order:\n|53 - 98| = 45\n|98 - 183| = 85\n|183 - 37| = 146\n|37 - 122| = 85\n|122 - 14| = 108\n|14 - 124| = 110\n|124 - 65| = 59\n|65 - 67| = 2\nTotal movements = 45 + 85 + 146 + 85 + 108 + 110 + 59 + 2 = 640 cylinders.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "memory-interleaving-secondary-storage-raid",
         "topicTitle": "Memory Interleaving, Secondary Storage, and RAID Architecture",
         "examType": "BPSC-TRE"
@@ -168,7 +168,7 @@ part3b_questions = [
         "correctOption": "C",
         "explanation": "Threads in the same process share code (text section), data section (global variables), and operating system resources (open files, signals). Each thread retains its own private Thread ID, Program Counter, register set, and stack.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "process-synchronization-ipc-os",
         "topicTitle": "Process Synchronization, Critical Section, Mutexes & Semaphores",
         "examType": "BPSC-TRE"
@@ -187,7 +187,7 @@ part3b_questions = [
         "correctOption": "C",
         "explanation": "Recognized data models for DBMS include Hierarchical, Network, Relational (RDBMS), Object-Oriented (OODBMS), and NoSQL/Document stores. 'Sequential DBMS' is not a recognized category of database management systems.",
         "unit": "Unit 6: Database Management System",
-        "category": "Computer Science & Applications",
+        "category": "Database Systems",
         "topicSlug": "relational-algebra-calculus-dbms",
         "topicTitle": "Relational Algebra, Tuple & Domain Calculus with DBMS Mapping",
         "examType": "BPSC-TRE"
@@ -206,7 +206,7 @@ part3b_questions = [
         "correctOption": "A",
         "explanation": "A Primary Key is an attribute or combination of attributes that uniquely identifies each tuple in a relation, enforcing entity integrity (values must be unique and cannot contain NULL). (Foreign keys establish relationships).",
         "unit": "Unit 6: Database Management System",
-        "category": "Computer Science & Applications",
+        "category": "Database Systems",
         "topicSlug": "relational-algebra-calculus-dbms",
         "topicTitle": "Relational Algebra, Tuple & Domain Calculus with DBMS Mapping",
         "examType": "BPSC-TRE"
@@ -225,7 +225,7 @@ part3b_questions = [
         "correctOption": "B",
         "explanation": "A relation is in Second Normal Form (2NF) if and only if it is in 1NF and no non-prime attribute is dependent on any proper subset of any candidate key (eliminating partial functional dependency).",
         "unit": "Unit 6: Database Management System",
-        "category": "Computer Science & Applications",
+        "category": "Database Systems",
         "topicSlug": "normalization-dbms",
         "topicTitle": "Database Normalization: Functional Dependencies, 1NF to BCNF & Lossless Decomposition",
         "examType": "BPSC-TRE"
@@ -244,7 +244,7 @@ part3b_questions = [
         "correctOption": "C",
         "explanation": "The standard SQL syntax `INSERT INTO table_name (columns) VALUES (values);` inserts new record tuples into a relation.",
         "unit": "Unit 6: Database Management System",
-        "category": "Computer Science & Applications",
+        "category": "Database Systems",
         "topicSlug": "sql-queries-views-triggers-dbms",
         "topicTitle": "Advanced SQL Queries, Subqueries, Views, Triggers, and Constraints",
         "examType": "BPSC-TRE"
@@ -263,7 +263,7 @@ part3b_questions = [
         "correctOption": "C",
         "explanation": "Distributed databases face significant challenges in distributed concurrency control, two-phase commits, replication synchronization lag, and maintaining global consistency across networked nodes.",
         "unit": "Unit 6: Database Management System",
-        "category": "Computer Science & Applications",
+        "category": "Database Systems",
         "topicSlug": "data-warehousing-data-mining-dbms",
         "topicTitle": "Data Warehousing Architecture, OLAP, Data Mining & Association Rules",
         "examType": "BPSC-TRE"
@@ -282,7 +282,7 @@ part3b_questions = [
         "correctOption": "B",
         "explanation": "A router operates at the Network Layer (Layer 3) to interconnect multiple distinct logical networks (LANs/WANs) and forward IP packets across intermediate networks toward their destination using routing tables.",
         "unit": "Unit 7: Computer Networks",
-        "category": "Computer Science & Applications",
+        "category": "Computer Networks",
         "topicSlug": "routing-algorithms-congestion-cn",
         "topicTitle": "Routing Algorithms (Distance Vector, Link State), Congestion Control & QoS",
         "examType": "BPSC-TRE"
@@ -301,7 +301,7 @@ part3b_questions = [
         "correctOption": "E",
         "explanation": "Routing and forwarding data packets is the core responsibility of the Network Layer (Layer 3). Because the Network Layer is not listed among options A (Data Link), B (Transport), or C (Physical), the correct answer is (E) None of the above.",
         "unit": "Unit 7: Computer Networks",
-        "category": "Computer Science & Applications",
+        "category": "Computer Networks",
         "topicSlug": "routing-algorithms-congestion-cn",
         "topicTitle": "Routing Algorithms (Distance Vector, Link State), Congestion Control & QoS",
         "examType": "BPSC-TRE"
@@ -320,7 +320,7 @@ part3b_questions = [
         "correctOption": "D",
         "explanation": "Both multiport network Switches and Bridges operate at the Data Link Layer (Layer 2) to connect stations within the same local broadcast domain and forward frames based on hardware MAC addresses. Therefore, (D) More than one of the above is the official answer.",
         "unit": "Unit 7: Computer Networks",
-        "category": "Computer Science & Applications",
+        "category": "Computer Networks",
         "topicSlug": "data-link-layer-framing-error-control",
         "topicTitle": "Data Link Layer: Framing, Flow Control, Error Control, and MAC Protocols",
         "examType": "BPSC-TRE"
@@ -339,7 +339,7 @@ part3b_questions = [
         "correctOption": "B",
         "explanation": "Simple Mail Transfer Protocol (SMTP, running on TCP port 25/587) is the standard internet protocol for sending and relaying outgoing emails between mail servers. (POP3/IMAP are retrieval protocols).",
         "unit": "Unit 7: Computer Networks",
-        "category": "Computer Science & Applications",
+        "category": "Computer Networks",
         "topicSlug": "application-layer-dns-http-email-protocols",
         "topicTitle": "Application Layer Protocols: DNS, HTTP/HTTPS, Email (SMTP, POP3, IMAP), and FTP",
         "examType": "BPSC-TRE"
@@ -358,7 +358,7 @@ part3b_questions = [
         "correctOption": "D",
         "explanation": "A 32-bit subnet mask performs bitwise AND masking with an IP address to distinguish the Network ID portion (consecutive 1s) from the Host ID portion (consecutive 0s). Because both A and B are core purposes of the subnet mask, (D) More than one of the above is correct.",
         "unit": "Unit 7: Computer Networks",
-        "category": "Computer Science & Applications",
+        "category": "Computer Networks",
         "topicSlug": "tcp-ip-subnetting-cn",
         "topicTitle": "TCP/IP Protocol Suite, IPv4/IPv6 Addressing, Subnetting & CIDR",
         "examType": "BPSC-TRE"
@@ -377,7 +377,7 @@ part3b_questions = [
         "correctOption": "B",
         "explanation": "Bluetooth 5.0 introduced the 2M PHY mode, doubling the maximum raw data transmission speed from 1 Mbps (in Bluetooth 4.2) to 2 Mbps for low energy devices.",
         "unit": "Unit 12: Internet of Things",
-        "category": "Computer Science & Applications",
+        "category": "IoT & Embedded",
         "topicSlug": "iot-protocols-coap-mqtt-sensors",
         "topicTitle": "IoT Protocols, CoAP, MQTT, Sensors & Actuators",
         "examType": "BPSC-TRE"
@@ -396,7 +396,7 @@ part3b_questions = [
         "correctOption": "D",
         "explanation": "Waterfall (linear sequential), Agile (iterative incremental), and Boehm's Spiral model (risk-driven) are all classic, widely recognized SDLC methodologies. Thus, (D) More than one of the above is correct.",
         "unit": "Unit 8: Software Engineering",
-        "category": "Computer Science & Applications",
+        "category": "Software Engineering",
         "topicSlug": "software-engineering-models-metrics",
         "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
         "examType": "BPSC-TRE"
@@ -415,7 +415,7 @@ part3b_questions = [
         "correctOption": "C",
         "explanation": "Software Requirements Specifications (SRS) categorize requirements into Functional, Non-functional, System, and User requirements. 'Physical requirements' is not a standard software requirement classification.",
         "unit": "Unit 8: Software Engineering",
-        "category": "Computer Science & Applications",
+        "category": "Software Engineering",
         "topicSlug": "software-engineering-models-metrics",
         "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
         "examType": "BPSC-TRE"
@@ -434,7 +434,7 @@ part3b_questions = [
         "correctOption": "C",
         "explanation": "In software engineering, Verification answers: 'Are we building the product right?' (static checking of designs, code reviews, and specifications). Validation answers: 'Are we building the right product?' (dynamic testing against user expectations and business goals).",
         "unit": "Unit 8: Software Engineering",
-        "category": "Computer Science & Applications",
+        "category": "Software Engineering",
         "topicSlug": "software-testing-maintenance-se",
         "topicTitle": "Software Testing Strategies, Maintenance Models, Re-engineering & Reverse Engineering",
         "examType": "BPSC-TRE"
@@ -453,7 +453,7 @@ part3b_questions = [
         "correctOption": "E",
         "explanation": "The primary purpose of prototyping is to clarify ambiguous user requirements, validate design feasibility, and gather early customer feedback to avoid costly late revisions. None of A, B, or C describes this purpose accurately, so (E) None of the above is the official correct answer.",
         "unit": "Unit 8: Software Engineering",
-        "category": "Computer Science & Applications",
+        "category": "Software Engineering",
         "topicSlug": "software-engineering-models-metrics",
         "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
         "examType": "BPSC-TRE"
@@ -472,7 +472,7 @@ part3b_questions = [
         "correctOption": "B",
         "explanation": "Software engineering is the application of systematic, disciplined, and quantifiable engineering approaches to the development, operation, and maintenance of reliable software on time and within budget.",
         "unit": "Unit 8: Software Engineering",
-        "category": "Computer Science & Applications",
+        "category": "Software Engineering",
         "topicSlug": "software-engineering-models-metrics",
         "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
         "examType": "BPSC-TRE"
@@ -491,7 +491,7 @@ part3b_questions = [
         "correctOption": "D",
         "explanation": "The four foundational pillars of Object-Oriented Programming are Encapsulation, Abstraction, Inheritance, and Polymorphism. Since all three choices (A, B, C) are fundamental pillars, the answer is (D) More than one of the above.",
         "unit": "Unit 9: Object-Oriented Programming",
-        "category": "Computer Science & Applications",
+        "category": "OOP",
         "topicSlug": "oop-concepts-cpp-java",
         "topicTitle": "OOP Concepts in C++ and Java: Classes, Objects, Inheritance, Polymorphism & Virtual Functions",
         "examType": "BPSC-TRE"
@@ -510,7 +510,7 @@ part3b_questions = [
         "correctOption": "A",
         "explanation": "In Java, the `extends` keyword is used to inherit from a superclass (e.g. `class Dog extends Animal`). The `implements` keyword is used for interfaces.",
         "unit": "Unit 9: Object-Oriented Programming",
-        "category": "Computer Science & Applications",
+        "category": "OOP",
         "topicSlug": "java-multithreading-collections-framework",
         "topicTitle": "Java Multithreading, Synchronization, and Collections Framework",
         "examType": "BPSC-TRE"
@@ -529,7 +529,7 @@ part3b_questions = [
         "correctOption": "C",
         "explanation": "When no modifier is declared, Java applies default (package-private) accessibility, which restricts visibility to classes residing in the identical package.",
         "unit": "Unit 9: Object-Oriented Programming",
-        "category": "Computer Science & Applications",
+        "category": "OOP",
         "topicSlug": "java-multithreading-collections-framework",
         "topicTitle": "Java Multithreading, Synchronization, and Collections Framework",
         "examType": "BPSC-TRE"
@@ -548,7 +548,7 @@ part3b_questions = [
         "correctOption": "D",
         "explanation": "Inheritance establishes an 'is-a' relationship, enabling the subclass to inherit variables and methods from the superclass (A) as well as override inherited methods to provide specialized behavior (C). Thus, (D) More than one of the above is correct.",
         "unit": "Unit 9: Object-Oriented Programming",
-        "category": "Computer Science & Applications",
+        "category": "OOP",
         "topicSlug": "oop-concepts-cpp-java",
         "topicTitle": "OOP Concepts in C++ and Java: Classes, Objects, Inheritance, Polymorphism & Virtual Functions",
         "examType": "BPSC-TRE"
@@ -567,7 +567,7 @@ part3b_questions = [
         "correctOption": "A",
         "explanation": "HTML defines the structural and semantic foundation of web documents. Styling is handled by CSS, and interactivity is driven by JavaScript.",
         "unit": "Unit 10: Web-Based Application Development",
-        "category": "Computer Science & Applications",
+        "category": "Web Technologies",
         "topicSlug": "web-technologies-xml-security",
         "topicTitle": "Web Technologies: HTML5, CSS3, JavaScript, XML, and Web Security",
         "examType": "BPSC-TRE"
@@ -586,7 +586,7 @@ part3b_questions = [
         "correctOption": "E",
         "explanation": "HTML and CSS are purely client-side markup and stylesheet standards. C++ is a compiled systems language (not a traditional scripting language like PHP, Python, or Ruby). Hence, (E) None of the above is the official key.",
         "unit": "Unit 10: Web-Based Application Development",
-        "category": "Computer Science & Applications",
+        "category": "Web Technologies",
         "topicSlug": "php-dom-node-backend-architecture",
         "topicTitle": "PHP, DOM, Node.js, and Backend Web Architecture",
         "examType": "BPSC-TRE"
@@ -605,7 +605,7 @@ part3b_questions = [
         "correctOption": "C",
         "explanation": "Alan Turing proved in 1936 that the Halting Problem—determining whether an arbitrary program will finish running or run forever—is undecidable and cannot be computed by any algorithm or Turing machine.",
         "unit": "Unit 11: Theory of Computation",
-        "category": "Computer Science & Applications",
+        "category": "Theory of Computation",
         "topicSlug": "turing-machines-undecidability-toc",
         "topicTitle": "Turing Machines, Decidability, Undecidability & Halting Problem",
         "examType": "BPSC-TRE"
@@ -624,7 +624,7 @@ part3b_questions = [
         "correctOption": "B",
         "explanation": "A standard Turing machine has a single, infinite read/write tape that serves for both input and output storage, along with a tape head and a finite state control unit. It does not have a separate, dedicated 'output tape'.",
         "unit": "Unit 11: Theory of Computation",
-        "category": "Computer Science & Applications",
+        "category": "Theory of Computation",
         "topicSlug": "turing-machines-undecidability-toc",
         "topicTitle": "Turing Machines, Decidability, Undecidability & Halting Problem",
         "examType": "BPSC-TRE"
@@ -643,7 +643,7 @@ part3b_questions = [
         "correctOption": "D",
         "explanation": "Both Bluetooth Low Energy (BLE) and Wi-Fi (along with Zigbee) are ubiquitous short-range wireless technologies utilized extensively in smart home and IoT architectures. Therefore, (D) More than one of the above is correct.",
         "unit": "Unit 12: Internet of Things",
-        "category": "Computer Science & Applications",
+        "category": "IoT & Embedded",
         "topicSlug": "iot-protocols-coap-mqtt-sensors",
         "topicTitle": "IoT Protocols, CoAP, MQTT, Sensors & Actuators",
         "examType": "BPSC-TRE"
@@ -662,7 +662,7 @@ part3b_questions = [
         "correctOption": "C",
         "explanation": "MQTT (Message Queuing Telemetry Transport) is an extremely lightweight publish/subscribe messaging transport protocol optimized for resource-constrained devices, high latency, and low-bandwidth IoT networks.",
         "unit": "Unit 12: Internet of Things",
-        "category": "Computer Science & Applications",
+        "category": "IoT & Embedded",
         "topicSlug": "iot-protocols-coap-mqtt-sensors",
         "topicTitle": "IoT Protocols, CoAP, MQTT, Sensors & Actuators",
         "examType": "BPSC-TRE"
@@ -681,7 +681,7 @@ part3b_questions = [
         "correctOption": "D",
         "explanation": "Artificial Intelligence encompasses Machine Learning, Computer Vision, Robotics, and Natural Language Processing. Since A, B, and C are all prominent subfields of AI, (D) More than one of the above is correct.",
         "unit": "Unit 13: Artificial Intelligence",
-        "category": "Computer Science & Applications",
+        "category": "Artificial Intelligence",
         "topicSlug": "artificial-intelligence-search-heuristics",
         "topicTitle": "AI Search Strategies, Heuristics (A*, AO*), Game Playing & Knowledge Representation",
         "examType": "BPSC-TRE"
@@ -700,7 +700,7 @@ part3b_questions = [
         "correctOption": "A",
         "explanation": "A Decision Tree trains on labeled dataset tuples to perform classification or regression under supervised learning. (K-means is unsupervised clustering; Q-learning is reinforcement learning).",
         "unit": "Unit 13: Artificial Intelligence",
-        "category": "Computer Science & Applications",
+        "category": "Artificial Intelligence",
         "topicSlug": "artificial-intelligence-search-heuristics",
         "topicTitle": "AI Search Strategies, Heuristics (A*, AO*), Game Playing & Knowledge Representation",
         "examType": "BPSC-TRE"
@@ -719,7 +719,7 @@ part3b_questions = [
         "correctOption": "E",
         "explanation": "B2C (Amazon), C2B (freelance bidding/influencer sponsorships), and C2C (eBay/OLX) are all established, standard e-commerce operational transaction models. Since all are valid models, none is 'NOT a common model', making (E) None of the above the correct answer.",
         "unit": "Unit 14: Fundamentals of E-Commerce",
-        "category": "Computer Science & Applications",
+        "category": "E-Commerce",
         "topicSlug": "ecommerce-frameworks",
         "topicTitle": "E-Commerce Business Models, Frameworks & Payment Systems",
         "examType": "BPSC-TRE"
@@ -738,7 +738,7 @@ part3b_questions = [
         "correctOption": "B",
         "explanation": "Amazon is the archetype of a Business-to-Consumer (B2C) e-commerce retailer selling consumer goods directly to end users. (Alibaba is primarily B2B wholesale).",
         "unit": "Unit 14: Fundamentals of E-Commerce",
-        "category": "Computer Science & Applications",
+        "category": "E-Commerce",
         "topicSlug": "ecommerce-frameworks",
         "topicTitle": "E-Commerce Business Models, Frameworks & Payment Systems",
         "examType": "BPSC-TRE"
@@ -757,7 +757,7 @@ part3b_questions = [
         "correctOption": "C",
         "explanation": "Adobe Flash (originally Macromedia Flash) was the industry-standard multimedia authoring environment used to create rich interactive vector graphics, browser animations, audio/video synchronization, and web games. (Photoshop is an image editor, Word is a word processor).",
         "unit": "Unit 15: Computer Graphics & Multimedia",
-        "category": "Computer Science & Applications",
+        "category": "Multimedia",
         "topicSlug": "multimedia-formats",
         "topicTitle": "Multimedia Formats, Audio/Video Compression & Streaming Protocols",
         "examType": "BPSC-TRE"

@@ -69,7 +69,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "According to the opening lines of the passage: 'Kerala is just the place for you if you love variety. There is something here to please everyone.'",
     "unit": "Part I: Language (English)",
-    "category": "Language (Qualifying)",
+    "category": "English Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -102,7 +102,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The passage explicitly advises: 'Better still, take a trip to the spice gardens in the hills, to inhale the fragrance of fresh cardamoms...'",
     "unit": "Part I: Language (English)",
-    "category": "Language (Qualifying)",
+    "category": "English Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -135,7 +135,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The text states: 'Kerala\\'s cuisine is known for its spicy hot flavours.'",
     "unit": "Part I: Language (English)",
-    "category": "Language (Qualifying)",
+    "category": "English Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -168,7 +168,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "The passage states: 'The coconut and the spices give the food - especially the seafood a pungency that is enhanced by tamarind.'",
     "unit": "Part I: Language (English)",
-    "category": "Language (Qualifying)",
+    "category": "English Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -201,7 +201,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The passage confirms: 'Bargain-hunters will never have a problem since English is spoken and understood everywhere in Kerala.'",
     "unit": "Part I: Language (English)",
-    "category": "Language (Qualifying)",
+    "category": "English Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -234,7 +234,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The definite article 'the' is required because a specific airport from which the flight departs is being referred to in the context of catching the flight.",
     "unit": "Part I: Language (English)",
-    "category": "Language (Qualifying)",
+    "category": "English Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -267,7 +267,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The adjective 'early' begins with an initial vowel sound (/ɜːr/), so the indefinite article 'an' must precede it.",
     "unit": "Part I: Language (English)",
-    "category": "Language (Qualifying)",
+    "category": "English Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -300,7 +300,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "April has 30 days. If 30th April is Tuesday: 1st May is Wednesday; 8th May is Wednesday (7 days later); 9th May is Thursday; 10th May is Friday. Since Friday is not among options (A) Monday, (B) Thursday, or (C) Saturday, the correct answer is (E) None of the above.",
     "unit": "Part I: Language (English)",
-    "category": "Language (Qualifying)",
+    "category": "English Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -333,7 +333,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "गद्यांश में स्पष्ट उल्लेख है: 'एक बार रतन से नाराज होकर अजय भाग रहा था। रतन ने दौड़कर अजय को रोकना चाहा।'",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -366,7 +366,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "गद्यांश के अनुसार: 'रतन और अजय दिली दोस्त थे। इसलिए रतन अजय को अच्छा छात्र बनने के लिए सलाह देता था।'",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -399,7 +399,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "गद्यांश के अनुसार: 'रतन गरीब था...' और 'रतन गरीब होकर भी पढ़ने में तेज था।' चूंकि A (गरीब) और B (पढ़ने में तेज) दोनों सत्य हैं, अतः उत्तर (D) उपर्युक्त में से एक से अधिक है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -432,7 +432,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "गद्यांश में दोनों को 'दोस्त' तथा विशेष रूप से 'दिली दोस्त' कहा गया है। दोनों विकल्प सही होने के कारण उत्तर (D) उपर्युक्त में से एक से अधिक है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -465,7 +465,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "गद्यांश के अनुसार: 'सभी शिक्षक उसके व्यवहार से प्रसन्न रहते थे।'",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -498,7 +498,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "गद्यांश में उल्लिखित है कि अजय 'पढ़ने के बदले खेलने-कूदने और बदमाशी में अधिक ध्यान लगाता था'। खेलने-कूदने व बदमाशी विकल्पों में नहीं दिया गया है, अतः सही उत्तर (E) उपर्युक्त में से कोई नहीं है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -531,7 +531,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "गद्यांश के अनुसार: 'वे केवल वीर ही नहीं, बल्कि एक अच्छे राजनीतिज्ञ भी थे।'",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -564,7 +564,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "गद्यांश के अनुसार: 'उन्होंने लोगों में एक राष्ट्र की भावना भर दी और मराठा राज्य की स्थापना की।'",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -597,7 +597,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "गद्यांश की प्रथम पंक्ति है: 'शिवाजी भारत के महान् वीरों में से एक थे।'",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -630,7 +630,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "गद्यांश में लिखा है: 'उनके अच्छे गुणों के कारण सभी लोग उनका आदर करते थे।'",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -663,7 +663,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "'राजनीतिज्ञ' का अर्थ राजनीति का ज्ञाता अथवा कूटनीतिज्ञ/राजनेता (व्यक्ति) होता है। विकल्पों में दी गई परिभाषाएं 'राजनीति' (नीति) की हैं, राजनीतिज्ञ (व्यक्ति) की नहीं। अतः (E) उपर्युक्त में से कोई नहीं सही उत्तर है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -696,7 +696,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "गद्यांश छत्रपति शिवाजी के जीवन, चरित्र, शासन-कौशल और आदर्शों का समग्र निरूपण करता है ('हम लोगों को उनके जीवन से शिक्षा लेनी चाहिए'), अतः 'शिवाजी का जीवन' सर्वाधिक उपयुक्त शीर्षक है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -729,7 +729,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "'गंगा' और 'ब्रह्मपुत्र' दोनों विशिष्ट नदियों के नाम होने के कारण व्यक्तिवाचक संज्ञाएँ हैं, जबकि 'नदी' जातिवाचक संज्ञा है। अतः (D) उपर्युक्त में से एक से अधिक सही है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -762,7 +762,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "पुरुषवाचक सर्वनाम में वक्ता अपने लिए उत्तम पुरुष सर्वनाम ('मैं', 'हम') का प्रयोग करता है। 'तू' मध्यम पुरुष है तथा 'वह' अन्य पुरुष है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -795,7 +795,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "संज्ञा या सर्वनाम के जिस रूप से क्रिया के आधार (स्थान/समय) का बोध हो, उसे अधिकरण कारक कहते हैं। इसके परसर्ग 'में' और 'पर' हैं। अतः 'दुकान पर' में अधिकरण कारक है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -828,7 +828,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "'पुष्प' संस्कृत का तत्सम शब्द है (तद्भव 'फूल' होता है)। 'बच्चा' (तत्सम: वत्स) तथा 'चौदह' (तत्सम: चतुर्दश) तद्भव शब्द हैं।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -861,7 +861,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "'निरपराधी' अशुद्ध है (शुद्ध रूप 'निरपराध' होता है); 'महत्व' अशुद्ध है (शुद्ध रूप 'महत्त्व' द्वित्व त् के साथ); 'प्राणिक' अशुद्ध है (शुद्ध रूप 'प्राणि'/'प्राणी')। अतः तीनों अशुद्ध हैं, सही विकल्प (E) उपर्युक्त में से कोई नहीं है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -894,7 +894,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "'उत्कृष्ट' का विलोम शब्द 'निकृष्ट' होता है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -927,7 +927,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "'यह कविता अनेक भाव प्रकट करती है' व्याकरण एवं अर्थ की दृष्टि से सर्वथा शुद्ध वाक्य है। विकल्प A में 'भी' का अनावश्यक प्रयोग है तथा B में 'तो' व 'अवश्य' का दोहराव त्रुटिपूर्ण है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -960,7 +960,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "हिंदी में 'पानी', 'जीवन' (जल ही जीवन है/जल का अनेकार्थी पर्यायवाची) तथा 'अमृत' (पीयूष/जल) सभी संदर्भानुसार जल के पर्यायवाची माने जाते हैं। अतः (D) उपर्युक्त में से एक से अधिक सही है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -993,7 +993,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "जहाँ लोगों का औपचारिक या वैचारिक मिलन/एकत्रीकरण हो, उस सभा या मिलन को 'सम्मेलन' कहते हैं।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1026,7 +1026,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "'खटाई में पड़ना' मुहावरे का अर्थ कार्य में अड़चन या विघ्न आना तथा किसी मामले का झमेले/अनिश्चय में लटक जाना होता है। A और C दोनों अर्थ सटीक होने के कारण सही उत्तर (D) उपर्युक्त में से एक से अधिक है।",
     "unit": "Part I: Language (Hindi)",
-    "category": "Language (Qualifying)",
+    "category": "Hindi Language",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1059,7 +1059,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "Using the algebraic identity (a + b)^2 = a^2 + 2ab + b^2 with a = x and b = 1/x, we get (x + 1/x)^2 = x^2 + 2(x)(1/x) + 1/x^2 = x^2 + 1/x^2 + 2. None of options A, B, or C contains '+ 2', so the correct answer is (E) None of the above.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Elementary Mathematics",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1092,7 +1092,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Let CP = 100. Marked Price (MP) = 100 + 10 = 110. A discount of 10% on MP = 10% of 110 = 11. Selling Price (SP) = 110 - 11 = 99. Loss = CP - SP = 100 - 99 = 1, which represents a 1% loss.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Elementary Mathematics",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1125,7 +1125,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Prime factorizing 81 gives 81 = 3 * 3 * 3 * 3 = 3^4. A perfect cube requires powers of prime factors to be multiples of 3. Dividing 81 by 3 yields 81 / 3 = 27 = 3^3, which is a perfect cube.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Elementary Mathematics",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1158,7 +1158,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Let the numbers be 2x and 5x. Their difference is 5x - 2x = 3x = 66 => x = 22. Thus, the smaller number is 2(22) = 44, and the larger number is 5(22) = 110.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Elementary Mathematics",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1191,7 +1191,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "In any parallelogram, adjacent angles are supplementary: ∠A + ∠B = 180°. Given ∠A:∠B = 1:2, let ∠A = x and ∠B = 2x. Then x + 2x = 3x = 180° => x = 60°. Therefore, ∠A = 60°.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Elementary Mathematics",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1224,7 +1224,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Total surface area of a cylinder = 2πr(h + r). Substituting r = 7 cm and π = 22/7: 2 * (22/7) * 7 * (h + 7) = 968 => 44 * (h + 7) = 968 => h + 7 = 968 / 44 = 22 => h = 22 - 7 = 15 cm.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Elementary Mathematics",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1257,7 +1257,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Using exponent product rule a^p × a^q = a^(p+q), (-3)^((m+1)+5) = (-3)^7 => (-3)^(m+6) = (-3)^7. Equating powers: m + 6 = 7 => m = 1.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Elementary Mathematics",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1290,7 +1290,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "By definition of inverse variation, y ∝ 1/x, which directly implies x × y = k (where k is a non-zero constant).",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Elementary Mathematics",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1323,7 +1323,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Each of the 5 pieces has resistance r = R/5. When 5 identical resistors of value R/5 are connected in parallel, the equivalent resistance is R' = r / 5 = (R/5) / 5 = R / 25. Therefore, R / R' = R / (R/25) = 25.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "General Science",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1356,7 +1356,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "The rate at which heat is developed is power P = I^2 × R. With I = 15 A and R = 8 Ω: P = 15^2 × 8 = 225 × 8 = 1800 W (Joules/sec). Since 1800 W is not among the options (A: 220 W, B: 120 W, C: 210 W), the correct answer is (E) None of the above.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "General Science",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1389,7 +1389,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "For reading small print with high magnification, a convex (converging) lens of short focal length (e.g. 5 cm) is required (Magnification m ≈ 1 + D/f). The options only list a convex lens of 50 cm (very low magnification) and concave lenses (which produce diminished images). A convex lens of 5 cm is not listed, so (E) None of the above is the correct official answer.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "General Science",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1422,7 +1422,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The light entering the eye is refracted by the cornea and lens to converge and form a real, inverted image on the light-sensitive retina.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "General Science",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1455,7 +1455,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The vas deferens is a duct that transports sperm from the epididymis to the ejaculatory ducts, forming a key part of the male reproductive system.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "General Science",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1488,7 +1488,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The stamen is the male reproductive part of a plant consisting of a filament and an anther. The anther produces and stores pollen grains (microspores).",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "General Science",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1521,7 +1521,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Budding is a form of asexual reproduction characteristic of Yeast and Hydra, where a new organism develops from an outgrowth or bud due to cell division at one particular site. Amoeba reproduces by binary fission and Plasmodium by multiple fission.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "General Science",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1554,7 +1554,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Antacids (such as magnesium hydroxide/milk of magnesia and aluminium hydroxide) are basic compounds that neutralize excess hydrochloric acid in the stomach.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "General Science",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1587,7 +1587,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Under the CAA 2024 implementation framework, the Department of Posts (Postal Department / post offices) acts as the physical nodal verification center for document submission and biometric verification.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Current Affairs & Tech",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1620,7 +1620,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "India officially launched UPI and RuPay card services in Mauritius and Sri Lanka via video conferencing on February 12, 2024.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Current Affairs & Tech",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1653,7 +1653,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Gaganyaan ('Celestial Vehicle') is India\\'s maiden human spaceflight programme by ISRO aiming to demonstrate human spaceflight capability to Low Earth Orbit (LEO).",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Current Affairs & Tech",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1686,7 +1686,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "The G7 consists of the US, UK, Canada, France, Germany, Italy, and Japan. Russia was suspended indefinitely in 2014 following its annexation of Crimea, returning the forum to the G7.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Current Affairs & Tech",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1719,7 +1719,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Green hydrogen is produced by water electrolysis—splitting water molecules into hydrogen and oxygen (2H2O -> 2H2 + O2) using renewable electricity (solar or wind) with zero carbon emissions.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Current Affairs & Tech",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1752,7 +1752,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Both Artificial Intelligence (generative neural models), Deepfake voice/video synthesis, and AI conversational chatbots can be used together to recreate deceased personalities (digital resurrection / grief tech). Thus (D) More than one of the above is correct.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Current Affairs & Tech",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1785,7 +1785,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "In global cost-of-living indices (such as Numbeo 2024), Pakistan is ranked with a lower cost-of-living index than India, reflecting cheaper consumer price indices in local currency equivalents.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Current Affairs & Tech",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1818,7 +1818,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Dr. Rajendra Prasad, along with Acharya J.B. Kripalani, Mazharul Haque, Anugrah Narayan Sinha, and Brajkishore Prasad, accompanied and strongly assisted Mahatma Gandhi during the historic Champaran Satyagraha in 1917 against the Tinkathia system.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Geography & Bihar GK",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1851,7 +1851,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Mercury has a heavily cratered, geologically inactive surface that closely resembles Earth\\'s Moon, with no significant atmosphere to retain heat or weather craters.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Geography & Bihar GK",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1884,7 +1884,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "The East African Great Rift Valley (including Olduvai Gorge in Tanzania, Hadar and Omo in Ethiopia) has yielded the oldest hominid fossil remains, establishing it as the cradle of humankind.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Geography & Bihar GK",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1917,7 +1917,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Dry point settlements are rural settlements situated on higher, dry ground within low-lying or flood-prone regions to escape recurrent inundation while staying near fertile water basins.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Geography & Bihar GK",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1950,7 +1950,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Rohtas district is renowned as the 'Rice Bowl of Bihar' due to its extensive canal irrigation network from the Sone River and highest paddy production in the state.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Geography & Bihar GK",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -1983,7 +1983,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Tehran is located in northern Iran, nestled at the southern foot of the majestic Alborz (Alburz) mountain range.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Geography & Bihar GK",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2016,7 +2016,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Mahendragiri (1,501 m) in Odisha is prominently identified in Indian school geography textbooks as a major peak of the Eastern Ghats. (Anamudi is in Western Ghats, Kanchenjunga in the Himalayas).",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Geography & Bihar GK",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2049,7 +2049,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "According to environmental geography studies, traditional lopping for fuelwood and local grazing do not typically cause complete destruction of forest canopies, unlike commercial agricultural expansion and large river valley/mining projects.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Geography & Bihar GK",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2082,7 +2082,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Bhagalpur is universally renowned as the 'Silk City' (Resham Nagari) of Bihar, globally celebrated for its Bhagalpuri Tussar silk weaving.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Geography & Bihar GK",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2115,7 +2115,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Lord Chelmsford served as Viceroy of India from 1916 to 1921, during which the Rowlatt Act and Jallianwala Bagh massacre took place under his administration.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Indian National Movement",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2148,7 +2148,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Womesh Chandra Bonnerjee presided over the first session of the Indian National Congress held at Gokuldas Tejpal Sanskrit College, Bombay, attended by 72 delegates in December 1885.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Indian National Movement",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2181,7 +2181,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Dadabhai Naoroji—pioneering economist, author of 'Poverty and Un-British Rule in India', and thrice INC president—is honored as the 'Grand Old Man of India'.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Indian National Movement",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2214,7 +2214,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Both the Non-Cooperation Movement (1920) and the Quit India Movement (1942) were launched under Mahatma Gandhi\\'s direct leadership. (Swadeshi movement was launched in 1905). Since both A and B are correct, the answer is (D) More than one of the above.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Indian National Movement",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2247,7 +2247,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Vallabhbhai Patel led the successful non-violent peasant resistance in Bardoli, Gujarat against excessive tax increments in 1928, after which he was honored with the title 'Sardar'.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Indian National Movement",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2280,7 +2280,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The Home Rule Movement was pioneered by Bal Gangadhar Tilak (Indian Home Rule League at Belgaum) and Annie Besant (All India Home Rule League at Madras) in 1916. Sarojini Naidu was not a founder or leader of the Home Rule Leagues.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Indian National Movement",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2313,7 +2313,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "The Bihar Provincial Congress Committee was formed in 1908 at Patna with Nawab Sarfaraz Hussain Khan as President and Syed Hasan Imam as key leader. Dr. Rajendra Prasad and JP Narayan were not the founders/first presidents, so (E) None of the above is correct.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Indian National Movement",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2346,7 +2346,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The All India Kisan Sabha was founded at the Lucknow session of the Indian National Congress in April 1936 with Swami Sahajanand Saraswati as its first President and N. G. Ranga as General Secretary.",
     "unit": "Part II: General Studies",
-    "category": "General Studies",
+    "category": "Indian National Movement",
     "isGeneralPaper": true,
     "examType": "BPSC-TRE"
   },
@@ -2379,7 +2379,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Both NAND and NOR gates are functionally complete 'universal logic gates' that can individually implement any basic Boolean operation (AND, OR, NOT) and complex combinational logic without any other gate type. Since both A and B are universal gates, the answer is (D) More than one of the above.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "boolean-algebra-k-maps-co",
     "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
     "examType": "BPSC-TRE"
@@ -2413,7 +2413,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "Digital circuits represent and process information using discrete binary voltage levels (0 and 1, LOW and HIGH), not continuous analog voltages, and they are extensively used for ultra-high-speed operations. None of the listed statements A, B, or C is correct, making (E) None of the above the right choice.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "boolean-algebra-k-maps-co",
     "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
     "examType": "BPSC-TRE"
@@ -2447,7 +2447,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Modern computers, smartphones, and digital cameras are all embedded digital electronic systems functioning on binary microprocessors, logic arrays, and digital DSPs. Thus, (D) More than one of the above is correct.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "combinational-sequential-circuits-design",
     "topicTitle": "Combinational & Sequential Circuits Design",
     "examType": "BPSC-TRE"
@@ -2481,7 +2481,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "For any n-variable digital logic gate or Boolean function, the number of distinct input combinations in the truth table is given by 2^n. For n = 4 inputs, the number of combinations is 2^4 = 16.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "boolean-algebra-k-maps-co",
     "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
     "examType": "BPSC-TRE"
@@ -2515,7 +2515,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Level-triggered flip-flops/latches respond to the steady voltage level of the clock signal. A negative level-triggered circuit remains transparent and responds to inputs when the clock input is at a low/negative logic level (Clock = 0 / LOW).",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "combinational-sequential-circuits-design",
     "topicTitle": "Combinational & Sequential Circuits Design",
     "examType": "BPSC-TRE"
@@ -2549,7 +2549,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Performing bitwise AND on each column:\n  1 AND 1 = 1\n  0 AND 1 = 0\n  1 AND 0 = 0\n  0 AND 0 = 0\nYielding 1000 in binary.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "boolean-algebra-k-maps-co",
     "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
     "examType": "BPSC-TRE"
@@ -2583,7 +2583,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "A half adder takes two single-bit inputs (A, B) and generates two outputs: Sum = A ⊕ B (XOR gate) and Carry = A · B (AND gate).",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "combinational-sequential-circuits-design",
     "topicTitle": "Combinational & Sequential Circuits Design",
     "examType": "BPSC-TRE"
@@ -2617,7 +2617,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "All three (Masked ROM, Programmable ROM, and UV Erasable Programmable ROM) are established varieties of non-volatile Read Only Memory. Thus, (D) More than one of the above is correct.",
     "unit": "Unit 2: Computer Organization & Architecture",
-    "category": "Computer Science & Applications",
+    "category": "Computer Architecture",
     "topicSlug": "cache-memory-organization-co",
     "topicTitle": "Cache Memory Organization, Mapping Techniques, and Replacement Policies",
     "examType": "BPSC-TRE"
@@ -2651,7 +2651,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "PLA stands for Programmable Logic Array, a PLD device with both a programmable AND array and a programmable OR array used to implement sum-of-products Boolean functions.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "combinational-sequential-circuits-design",
     "topicTitle": "Combinational & Sequential Circuits Design",
     "examType": "BPSC-TRE"
@@ -2685,7 +2685,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "A 2^m-to-1 multiplexer requires m select lines to address any of the 2^m data input lines. For an 8-to-1 multiplexer, 2^m = 8 => m = log2(8) = 3 select lines.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "combinational-sequential-circuits-design",
     "topicTitle": "Combinational & Sequential Circuits Design",
     "examType": "BPSC-TRE"
@@ -2719,7 +2719,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "1234 in hexadecimal: 1234 / 16 = 77 rem 2; 77 / 16 = 4 rem 13 (D); 4 / 16 = 0 rem 4 => 4D2_16.\nIn binary: 4 = 0100, D = 1101, 2 = 0010 => 10011010010_2.\nIn octal: grouping 3 bits (010 011 010 010) => 2322_8.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "boolean-algebra-k-maps-co",
     "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
     "examType": "BPSC-TRE"
@@ -2753,7 +2753,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Booth's multiplication algorithm is an efficient hardware algorithm that multiplies two signed binary numbers in two's complement representation by encoding runs of consecutive 1s.",
     "unit": "Unit 2: Computer Organization & Architecture",
-    "category": "Computer Science & Applications",
+    "category": "Computer Architecture",
     "topicSlug": "combinational-sequential-circuits-design",
     "topicTitle": "Combinational & Sequential Circuits Design",
     "examType": "BPSC-TRE"
@@ -2787,7 +2787,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Hamming codes (error detection and single-bit correction), CRC (polynomial cyclic redundancy check), and Checksums are all standard error detection mechanisms in computer networks and digital logic. Thus, (D) More than one of the above is correct.",
     "unit": "Unit 7: Computer Networks",
-    "category": "Computer Science & Applications",
+    "category": "Computer Networks",
     "topicSlug": "data-link-layer-framing-error-control",
     "topicTitle": "Data Link Layer: Framing, Flow Control, Error Control, and MAC Protocols",
     "examType": "BPSC-TRE"
@@ -2821,7 +2821,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "In 8421 BCD, each decimal digit is encoded into 4 bits, valid only for decimal digits 0 through 9 (0000 to 1001). The maximum decimal value a valid single BCD digit can represent is 9. Values 10 to 15 (1010 to 1111) are invalid BCD codes. Since 9 is not among options A (2), B (10), or C (15), the correct answer is (E) None of the above.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "boolean-algebra-k-maps-co",
     "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
     "examType": "BPSC-TRE"
@@ -2855,7 +2855,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "Integer part: 1011_2 = 8 + 0 + 2 + 1 = 11.\nFractional part: .1101_2 = 1*(2^-1) + 1*(2^-2) + 0*(2^-3) + 1*(2^-4) = 0.5 + 0.25 + 0 + 0.0625 = 0.8125.\nTotal decimal value = 11.8125. Since 11.8125 is not listed in options A (11.75), B (12.125), or C (13.5), the answer is (E) None of the above.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "boolean-algebra-k-maps-co",
     "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
     "examType": "BPSC-TRE"
@@ -2889,7 +2889,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "De Morgan's laws ((A + B)' = A' · B' and (A · B)' = A' + B') allow engineers and mathematicians to simplify complex complemented Boolean logic expressions into simpler sum-of-products or product-of-sums forms.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "boolean-algebra-k-maps-co",
     "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
     "examType": "BPSC-TRE"
@@ -2923,7 +2923,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Don't care terms represent input combinations that either can never occur or whose output is irrelevant. In K-maps, they can be assigned 0 or 1 opportunistically to form larger groupings of 1s, thereby minimizing circuit literals and gate count.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Digital Logic",
     "topicSlug": "boolean-algebra-k-maps-co",
     "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
     "examType": "BPSC-TRE"
@@ -2957,7 +2957,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "Stacks, Queues, and Arrays are all linear data structures where elements are arranged sequentially. Non-linear data structures include Trees and Graphs. Since neither Tree nor Graph is listed in options A, B, or C, the correct answer is (E) None of the above.",
     "unit": "Unit 3: Programming & Data Structures",
-    "category": "Computer Science & Applications",
+    "category": "Data Structures",
     "topicSlug": "binary-search-trees-avl-dsa",
     "topicTitle": "Binary Search Trees, AVL Trees, and Balancing Operations",
     "examType": "BPSC-TRE"
@@ -2991,7 +2991,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "A Hash Table maps keys to bucket slots using a hash function, delivering average-case O(1) constant time lookup, insertion, and deletion.",
     "unit": "Unit 4: Algorithms",
-    "category": "Computer Science & Applications",
+    "category": "Algorithms",
     "topicSlug": "asymptotic-notation-algorithms",
     "topicTitle": "Asymptotic Notation, Recurrence Relations & Master Theorem",
     "examType": "BPSC-TRE"
@@ -3025,7 +3025,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "By definition of BST ordering: all keys in the left subtree must be less than the root key, and all keys in the right subtree must be greater than the root key.",
     "unit": "Unit 3: Programming & Data Structures",
-    "category": "Computer Science & Applications",
+    "category": "Data Structures",
     "topicSlug": "binary-search-trees-avl-dsa",
     "topicTitle": "Binary Search Trees, AVL Trees, and Balancing Operations",
     "examType": "BPSC-TRE"
@@ -3059,7 +3059,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Evaluating step-by-step using an evaluation stack:\n1. Push 10, push 5 -> pop both on '+' => 10 + 5 = 15 (stack: [15])\n2. Push 60, push 6 -> pop both on '/' => 60 / 6 = 10 (stack: [15, 10])\n3. On '*' -> pop 15 and 10 => 15 * 10 = 150 (stack: [150])\n4. Push 8 -> on '-' => 150 - 8 = 142.",
     "unit": "Unit 3: Programming & Data Structures",
-    "category": "Computer Science & Applications",
+    "category": "Data Structures",
     "topicSlug": "c-cpp-pointers-memory",
     "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
     "examType": "BPSC-TRE"
@@ -3093,7 +3093,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "In an AVL tree, the balance factor BalanceFactor(N) = Height(Left) - Height(Right) must be strictly within {-1, 0, +1}. The difference in heights can never exceed 1.",
     "unit": "Unit 3: Programming & Data Structures",
-    "category": "Computer Science & Applications",
+    "category": "Data Structures",
     "topicSlug": "binary-search-trees-avl-dsa",
     "topicTitle": "Binary Search Trees, AVL Trees, and Balancing Operations",
     "examType": "BPSC-TRE"
@@ -3127,7 +3127,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "In C, attempting to declare `int a[] = {1, 2, 3,} *p;` without a separating comma before the pointer or a proper declaration specifier causes a compile-time syntax error. Since 'Compilation / Syntax error' is not listed in options A, B, or C, the correct choice is (E) None of the above.",
     "unit": "Unit 3: Programming & Data Structures",
-    "category": "Computer Science & Applications",
+    "category": "Programming",
     "topicSlug": "c-cpp-pointers-memory",
     "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
     "examType": "BPSC-TRE"
@@ -3161,7 +3161,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "A pure First-In-First-Out (FIFO) queue cannot reverse its internal order solely through queue operations without using an auxiliary LIFO data structure (such as a stack or recursion stack). None of the fixed deletion/addition options can accomplish reversal on a standalone queue.",
     "unit": "Unit 3: Programming & Data Structures",
-    "category": "Computer Science & Applications",
+    "category": "Data Structures",
     "topicSlug": "c-cpp-pointers-memory",
     "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
     "examType": "BPSC-TRE"
@@ -3195,7 +3195,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "Binary search halves the search space at each iteration: T(N) = T(N/2) + O(1), giving an asymptotic order of O(log N). Since O(log N) is not listed in options A (N), B (N log N), or C (N^2), the answer is (E) None of the above.",
     "unit": "Unit 4: Algorithms",
-    "category": "Computer Science & Applications",
+    "category": "Algorithms",
     "topicSlug": "asymptotic-notation-algorithms",
     "topicTitle": "Asymptotic Notation, Recurrence Relations & Master Theorem",
     "examType": "BPSC-TRE"
@@ -3229,7 +3229,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "For any BST, the Inorder traversal is the sorted sequence: 10, 11, 12, 15, 16, 18, 19, 20. Given Preorder = [15, (10, 12, 11), (20, 18, 16, 19)]:\n- Root = 15\n- Left subtree keys < 15: preorder [10, 12, 11] => root 10, right child 12, left child of 12 is 11. Postorder for left subtree: 11, 12, 10.\n- Right subtree keys > 15: preorder [20, 18, 16, 19] => root 20, left child 18 (with left 16, right 19). Postorder for right subtree: 16, 19, 18, 20.\nCombining Left, Right, Root => 11, 12, 10, 16, 19, 18, 20, 15.",
     "unit": "Unit 3: Programming & Data Structures",
-    "category": "Computer Science & Applications",
+    "category": "Data Structures",
     "topicSlug": "binary-search-trees-avl-dsa",
     "topicTitle": "Binary Search Trees, AVL Trees, and Balancing Operations",
     "examType": "BPSC-TRE"
@@ -3263,7 +3263,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The number of structurally unique BSTs with n distinct keys is given by the n-th Catalan number: C_n = (2n)! / ((n+1)! n!). For n = 4: C_4 = (8)! / (5! × 4!) = 40320 / (120 × 24) = 40320 / 2880 = 14.",
     "unit": "Unit 3: Programming & Data Structures",
-    "category": "Computer Science & Applications",
+    "category": "Data Structures",
     "topicSlug": "binary-search-trees-avl-dsa",
     "topicTitle": "Binary Search Trees, AVL Trees, and Balancing Operations",
     "examType": "BPSC-TRE"
@@ -3297,7 +3297,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "In C, the `sizeof` operator is evaluated at compile time and does not evaluate side effects inside its operand. The expression `k /= i + j` has type `int`, so `sizeof(...)` yields 4. Because the assignment expression is never executed at runtime, `k` remains unchanged at 15. The output is `4 15`.",
     "unit": "Unit 3: Programming & Data Structures",
-    "category": "Computer Science & Applications",
+    "category": "Programming",
     "topicSlug": "c-cpp-pointers-memory",
     "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
     "examType": "BPSC-TRE"
@@ -3331,7 +3331,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Big-O notation f(n) = O(g(n)) formally provides an asymptotic upper bound: there exist positive constants c and n0 such that 0 <= f(n) <= c*g(n) for all n >= n0. Lower bound is Big-Omega (Ω) and tight bound is Big-Theta (Θ).",
     "unit": "Unit 4: Algorithms",
-    "category": "Computer Science & Applications",
+    "category": "Algorithms",
     "topicSlug": "asymptotic-notation-algorithms",
     "topicTitle": "Asymptotic Notation, Recurrence Relations & Master Theorem",
     "examType": "BPSC-TRE"
@@ -3365,7 +3365,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "The three classical steps of Divide and Conquer are: (1) Divide the problem into smaller subproblems, (2) Conquer the subproblems by solving them recursively, and (3) Combine the solutions to form the global answer. Since all three (A, B, C) are valid steps, none is 'NOT a step', making (E) None of the above the correct answer.",
     "unit": "Unit 4: Algorithms",
-    "category": "Computer Science & Applications",
+    "category": "Algorithms",
     "topicSlug": "asymptotic-notation-algorithms",
     "topicTitle": "Asymptotic Notation, Recurrence Relations & Master Theorem",
     "examType": "BPSC-TRE"
@@ -3399,7 +3399,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Merge Sort divides the unsorted list into two equal halves, recursively sorts each half (conquer), and then merges the sorted halves into one sorted list (combine).",
     "unit": "Unit 4: Algorithms",
-    "category": "Computer Science & Applications",
+    "category": "Algorithms",
     "topicSlug": "asymptotic-notation-algorithms",
     "topicTitle": "Asymptotic Notation, Recurrence Relations & Master Theorem",
     "examType": "BPSC-TRE"
@@ -3433,7 +3433,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "A spanning tree is a subgraph that includes all N vertices and is a tree (connected with no cycles). Any tree with N vertices must contain exactly N - 1 edges.",
     "unit": "Unit 4: Algorithms",
-    "category": "Computer Science & Applications",
+    "category": "Algorithms",
     "topicSlug": "minimum-spanning-trees-greedy-dsa",
     "topicTitle": "Minimum Spanning Trees: Prim's, Kruskal's, and Greedy Strategies",
     "examType": "BPSC-TRE"
@@ -3467,7 +3467,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Graph traversal algorithms specifically refer to methods of visiting vertices in a graph, such as Breadth-First Search (BFS) and Depth-First Search (DFS). Greedy, Divide and Conquer, and Dynamic Programming are general algorithmic design paradigms, not graph traversal algorithms. Since all three are NOT graph traversal algorithms, (D) More than one of the above is correct.",
     "unit": "Unit 1: Digital Logic & Discrete Structures",
-    "category": "Computer Science & Applications",
+    "category": "Algorithms",
     "topicSlug": "graph-theory-discrete-math",
     "topicTitle": "Graph Theory: Connectivity, Euler/Hamiltonian, Planarity & Trees",
     "examType": "BPSC-TRE"
@@ -3501,7 +3501,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The Single-Source Shortest Path problem can be solved in polynomial time by Dijkstra's algorithm (O((V + E) log V)) or Bellman-Ford (O(VE)), so it belongs to class P. Both TSP (decision) and SAT are classic NP-Complete problems.",
     "unit": "Unit 4: Algorithms",
-    "category": "Computer Science & Applications",
+    "category": "Algorithms",
     "topicSlug": "np-completeness-complexity-classes-dsa",
     "topicTitle": "NP-Completeness, Reductions, Complexity Classes & Approximation",
     "examType": "BPSC-TRE"
@@ -3535,7 +3535,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Because elements of an array are stored in contiguous memory locations, calculating the address of element i via BaseAddress + i × ElementSize enables O(1) direct random access.",
     "unit": "Unit 3: Programming & Data Structures",
-    "category": "Computer Science & Applications",
+    "category": "Data Structures",
     "topicSlug": "c-cpp-pointers-memory",
     "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
     "examType": "BPSC-TRE"
@@ -3569,7 +3569,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "The fundamental primitive operations on data structures are insertion, deletion, searching, traversal, sorting, and merging. Encryption is a cryptographic security transformation, not a data structure primitive.",
     "unit": "Unit 3: Programming & Data Structures",
-    "category": "Computer Science & Applications",
+    "category": "Data Structures",
     "topicSlug": "c-cpp-pointers-memory",
     "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
     "examType": "BPSC-TRE"
@@ -3603,7 +3603,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Operating systems are categorized by operational goals into Real-Time OS, Embedded OS, Network OS, Distributed OS, and Batch/Time-sharing systems. All listed are valid OS categories, so (D) More than one of the above is correct.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "cpu-scheduling-os",
     "topicTitle": "Process Management, Threads & CPU Scheduling Algorithms",
     "examType": "BPSC-TRE"
@@ -3637,7 +3637,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Paging and Segmentation are intentional memory management schemes used by an OS to allocate memory. Fragmentation (internal or external) is an undesirable side effect or inefficiency resulting from allocation, not a technique.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "memory-management-virtual-memory-os",
     "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
     "examType": "BPSC-TRE"
@@ -3671,7 +3671,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "NTFS (Windows New Technology File System), FAT32 (File Allocation Table 32), and HFS+ (Apple Hierarchical File System Plus) are all standard operating system file systems. Thus, (D) More than one of the above is correct.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "memory-interleaving-secondary-storage-raid",
     "topicTitle": "Memory Interleaving, Secondary Storage, and RAID Architecture",
     "examType": "BPSC-TRE"
@@ -3705,7 +3705,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Interrupts are broadly classified into Hardware interrupts (asynchronous signals from I/O peripherals) and Software interrupts (synchronous traps, system calls, or exceptions). 'Memory interrupt' is not a standard interrupt category in computer architecture.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "cpu-scheduling-os",
     "topicTitle": "Process Management, Threads & CPU Scheduling Algorithms",
     "examType": "BPSC-TRE"
@@ -3739,7 +3739,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "In paging, the process logical (virtual) address space is divided into fixed-size contiguous units called 'pages'. Physical memory is divided into fixed-size units of identical size called 'frames'.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "memory-management-virtual-memory-os",
     "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
     "examType": "BPSC-TRE"
@@ -3773,7 +3773,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Page offset bits (d) are determined solely by the page size: Page Size = 4 KB = 4 × 1024 bytes = 4096 bytes = 2^12 bytes. Therefore, d = log2(4096) = 12 bits.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "memory-management-virtual-memory-os",
     "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
     "examType": "BPSC-TRE"
@@ -3807,7 +3807,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "In segmentation hardware, each segment table entry holds a segment base (the starting physical memory address where the segment resides in RAM) and a segment limit (the length of the segment).",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "memory-management-virtual-memory-os",
     "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
     "examType": "BPSC-TRE"
@@ -3841,7 +3841,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Thrashing occurs when a computer spends more time servicing page faults and swapping pages between disk and RAM than executing actual application instructions, caused by an excessively high degree of multiprogramming and insufficient allocated frames.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "memory-management-virtual-memory-os",
     "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
     "examType": "BPSC-TRE"
@@ -3875,7 +3875,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "The total active virtual memory used by processes is 10 GB. Of this, 6 GB is resident in physical RAM. The remaining portion resident on secondary backing store (swap space) is 10 GB - 6 GB = 4 GB.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "memory-management-virtual-memory-os",
     "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
     "examType": "BPSC-TRE"
@@ -3909,7 +3909,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "A Translation Lookaside Buffer (TLB) is constructed using associative content-addressable memory (CAM) where all tags are compared simultaneously. Modern microarchitectures implement TLBs as fully associative or set-associative caches. Since both B (associative cache) and C (set-associative cache) are valid TLB organizations, (D) More than one of the above is the official answer.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "memory-management-virtual-memory-os",
     "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
     "examType": "BPSC-TRE"
@@ -3943,7 +3943,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Operating systems support standard file operations including Create, Open, Read, Write, Delete, Rename, and Reposition (Seek). Because Create, Delete, and Rename are all common file operations, the answer is (D) More than one of the above.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "memory-interleaving-secondary-storage-raid",
     "topicTitle": "Memory Interleaving, Secondary Storage, and RAID Architecture",
     "examType": "BPSC-TRE"
@@ -3977,7 +3977,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "Calculating cumulative head movements in FCFS order:\n|53 - 98| = 45\n|98 - 183| = 85\n|183 - 37| = 146\n|37 - 122| = 85\n|122 - 14| = 108\n|14 - 124| = 110\n|124 - 65| = 59\n|65 - 67| = 2\nTotal movements = 45 + 85 + 146 + 85 + 108 + 110 + 59 + 2 = 640 cylinders.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "memory-interleaving-secondary-storage-raid",
     "topicTitle": "Memory Interleaving, Secondary Storage, and RAID Architecture",
     "examType": "BPSC-TRE"
@@ -4011,7 +4011,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Threads in the same process share code (text section), data section (global variables), and operating system resources (open files, signals). Each thread retains its own private Thread ID, Program Counter, register set, and stack.",
     "unit": "Unit 5: Operating System",
-    "category": "Computer Science & Applications",
+    "category": "Operating Systems",
     "topicSlug": "process-synchronization-ipc-os",
     "topicTitle": "Process Synchronization, Critical Section, Mutexes & Semaphores",
     "examType": "BPSC-TRE"
@@ -4045,7 +4045,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Recognized data models for DBMS include Hierarchical, Network, Relational (RDBMS), Object-Oriented (OODBMS), and NoSQL/Document stores. 'Sequential DBMS' is not a recognized category of database management systems.",
     "unit": "Unit 6: Database Management System",
-    "category": "Computer Science & Applications",
+    "category": "Database Systems",
     "topicSlug": "relational-algebra-calculus-dbms",
     "topicTitle": "Relational Algebra, Tuple & Domain Calculus with DBMS Mapping",
     "examType": "BPSC-TRE"
@@ -4079,7 +4079,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "A Primary Key is an attribute or combination of attributes that uniquely identifies each tuple in a relation, enforcing entity integrity (values must be unique and cannot contain NULL). (Foreign keys establish relationships).",
     "unit": "Unit 6: Database Management System",
-    "category": "Computer Science & Applications",
+    "category": "Database Systems",
     "topicSlug": "relational-algebra-calculus-dbms",
     "topicTitle": "Relational Algebra, Tuple & Domain Calculus with DBMS Mapping",
     "examType": "BPSC-TRE"
@@ -4113,7 +4113,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "A relation is in Second Normal Form (2NF) if and only if it is in 1NF and no non-prime attribute is dependent on any proper subset of any candidate key (eliminating partial functional dependency).",
     "unit": "Unit 6: Database Management System",
-    "category": "Computer Science & Applications",
+    "category": "Database Systems",
     "topicSlug": "normalization-dbms",
     "topicTitle": "Database Normalization: Functional Dependencies, 1NF to BCNF & Lossless Decomposition",
     "examType": "BPSC-TRE"
@@ -4147,7 +4147,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "The standard SQL syntax `INSERT INTO table_name (columns) VALUES (values);` inserts new record tuples into a relation.",
     "unit": "Unit 6: Database Management System",
-    "category": "Computer Science & Applications",
+    "category": "Database Systems",
     "topicSlug": "sql-queries-views-triggers-dbms",
     "topicTitle": "Advanced SQL Queries, Subqueries, Views, Triggers, and Constraints",
     "examType": "BPSC-TRE"
@@ -4181,7 +4181,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Distributed databases face significant challenges in distributed concurrency control, two-phase commits, replication synchronization lag, and maintaining global consistency across networked nodes.",
     "unit": "Unit 6: Database Management System",
-    "category": "Computer Science & Applications",
+    "category": "Database Systems",
     "topicSlug": "data-warehousing-data-mining-dbms",
     "topicTitle": "Data Warehousing Architecture, OLAP, Data Mining & Association Rules",
     "examType": "BPSC-TRE"
@@ -4215,7 +4215,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "A router operates at the Network Layer (Layer 3) to interconnect multiple distinct logical networks (LANs/WANs) and forward IP packets across intermediate networks toward their destination using routing tables.",
     "unit": "Unit 7: Computer Networks",
-    "category": "Computer Science & Applications",
+    "category": "Computer Networks",
     "topicSlug": "routing-algorithms-congestion-cn",
     "topicTitle": "Routing Algorithms (Distance Vector, Link State), Congestion Control & QoS",
     "examType": "BPSC-TRE"
@@ -4249,7 +4249,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "Routing and forwarding data packets is the core responsibility of the Network Layer (Layer 3). Because the Network Layer is not listed among options A (Data Link), B (Transport), or C (Physical), the correct answer is (E) None of the above.",
     "unit": "Unit 7: Computer Networks",
-    "category": "Computer Science & Applications",
+    "category": "Computer Networks",
     "topicSlug": "routing-algorithms-congestion-cn",
     "topicTitle": "Routing Algorithms (Distance Vector, Link State), Congestion Control & QoS",
     "examType": "BPSC-TRE"
@@ -4283,7 +4283,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Both multiport network Switches and Bridges operate at the Data Link Layer (Layer 2) to connect stations within the same local broadcast domain and forward frames based on hardware MAC addresses. Therefore, (D) More than one of the above is the official answer.",
     "unit": "Unit 7: Computer Networks",
-    "category": "Computer Science & Applications",
+    "category": "Computer Networks",
     "topicSlug": "data-link-layer-framing-error-control",
     "topicTitle": "Data Link Layer: Framing, Flow Control, Error Control, and MAC Protocols",
     "examType": "BPSC-TRE"
@@ -4317,7 +4317,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Simple Mail Transfer Protocol (SMTP, running on TCP port 25/587) is the standard internet protocol for sending and relaying outgoing emails between mail servers. (POP3/IMAP are retrieval protocols).",
     "unit": "Unit 7: Computer Networks",
-    "category": "Computer Science & Applications",
+    "category": "Computer Networks",
     "topicSlug": "application-layer-dns-http-email-protocols",
     "topicTitle": "Application Layer Protocols: DNS, HTTP/HTTPS, Email (SMTP, POP3, IMAP), and FTP",
     "examType": "BPSC-TRE"
@@ -4351,7 +4351,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "A 32-bit subnet mask performs bitwise AND masking with an IP address to distinguish the Network ID portion (consecutive 1s) from the Host ID portion (consecutive 0s). Because both A and B are core purposes of the subnet mask, (D) More than one of the above is correct.",
     "unit": "Unit 7: Computer Networks",
-    "category": "Computer Science & Applications",
+    "category": "Computer Networks",
     "topicSlug": "tcp-ip-subnetting-cn",
     "topicTitle": "TCP/IP Protocol Suite, IPv4/IPv6 Addressing, Subnetting & CIDR",
     "examType": "BPSC-TRE"
@@ -4385,7 +4385,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Bluetooth 5.0 introduced the 2M PHY mode, doubling the maximum raw data transmission speed from 1 Mbps (in Bluetooth 4.2) to 2 Mbps for low energy devices.",
     "unit": "Unit 12: Internet of Things",
-    "category": "Computer Science & Applications",
+    "category": "IoT & Embedded",
     "topicSlug": "iot-protocols-coap-mqtt-sensors",
     "topicTitle": "IoT Protocols, CoAP, MQTT, Sensors & Actuators",
     "examType": "BPSC-TRE"
@@ -4419,7 +4419,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Waterfall (linear sequential), Agile (iterative incremental), and Boehm's Spiral model (risk-driven) are all classic, widely recognized SDLC methodologies. Thus, (D) More than one of the above is correct.",
     "unit": "Unit 8: Software Engineering",
-    "category": "Computer Science & Applications",
+    "category": "Software Engineering",
     "topicSlug": "software-engineering-models-metrics",
     "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
     "examType": "BPSC-TRE"
@@ -4453,7 +4453,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Software Requirements Specifications (SRS) categorize requirements into Functional, Non-functional, System, and User requirements. 'Physical requirements' is not a standard software requirement classification.",
     "unit": "Unit 8: Software Engineering",
-    "category": "Computer Science & Applications",
+    "category": "Software Engineering",
     "topicSlug": "software-engineering-models-metrics",
     "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
     "examType": "BPSC-TRE"
@@ -4487,7 +4487,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "In software engineering, Verification answers: 'Are we building the product right?' (static checking of designs, code reviews, and specifications). Validation answers: 'Are we building the right product?' (dynamic testing against user expectations and business goals).",
     "unit": "Unit 8: Software Engineering",
-    "category": "Computer Science & Applications",
+    "category": "Software Engineering",
     "topicSlug": "software-testing-maintenance-se",
     "topicTitle": "Software Testing Strategies, Maintenance Models, Re-engineering & Reverse Engineering",
     "examType": "BPSC-TRE"
@@ -4521,7 +4521,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "The primary purpose of prototyping is to clarify ambiguous user requirements, validate design feasibility, and gather early customer feedback to avoid costly late revisions. None of A, B, or C describes this purpose accurately, so (E) None of the above is the official correct answer.",
     "unit": "Unit 8: Software Engineering",
-    "category": "Computer Science & Applications",
+    "category": "Software Engineering",
     "topicSlug": "software-engineering-models-metrics",
     "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
     "examType": "BPSC-TRE"
@@ -4555,7 +4555,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Software engineering is the application of systematic, disciplined, and quantifiable engineering approaches to the development, operation, and maintenance of reliable software on time and within budget.",
     "unit": "Unit 8: Software Engineering",
-    "category": "Computer Science & Applications",
+    "category": "Software Engineering",
     "topicSlug": "software-engineering-models-metrics",
     "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
     "examType": "BPSC-TRE"
@@ -4589,7 +4589,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "The four foundational pillars of Object-Oriented Programming are Encapsulation, Abstraction, Inheritance, and Polymorphism. Since all three choices (A, B, C) are fundamental pillars, the answer is (D) More than one of the above.",
     "unit": "Unit 9: Object-Oriented Programming",
-    "category": "Computer Science & Applications",
+    "category": "OOP",
     "topicSlug": "oop-concepts-cpp-java",
     "topicTitle": "OOP Concepts in C++ and Java: Classes, Objects, Inheritance, Polymorphism & Virtual Functions",
     "examType": "BPSC-TRE"
@@ -4623,7 +4623,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "In Java, the `extends` keyword is used to inherit from a superclass (e.g. `class Dog extends Animal`). The `implements` keyword is used for interfaces.",
     "unit": "Unit 9: Object-Oriented Programming",
-    "category": "Computer Science & Applications",
+    "category": "OOP",
     "topicSlug": "java-multithreading-collections-framework",
     "topicTitle": "Java Multithreading, Synchronization, and Collections Framework",
     "examType": "BPSC-TRE"
@@ -4657,7 +4657,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "When no modifier is declared, Java applies default (package-private) accessibility, which restricts visibility to classes residing in the identical package.",
     "unit": "Unit 9: Object-Oriented Programming",
-    "category": "Computer Science & Applications",
+    "category": "OOP",
     "topicSlug": "java-multithreading-collections-framework",
     "topicTitle": "Java Multithreading, Synchronization, and Collections Framework",
     "examType": "BPSC-TRE"
@@ -4691,7 +4691,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Inheritance establishes an 'is-a' relationship, enabling the subclass to inherit variables and methods from the superclass (A) as well as override inherited methods to provide specialized behavior (C). Thus, (D) More than one of the above is correct.",
     "unit": "Unit 9: Object-Oriented Programming",
-    "category": "Computer Science & Applications",
+    "category": "OOP",
     "topicSlug": "oop-concepts-cpp-java",
     "topicTitle": "OOP Concepts in C++ and Java: Classes, Objects, Inheritance, Polymorphism & Virtual Functions",
     "examType": "BPSC-TRE"
@@ -4725,7 +4725,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "HTML defines the structural and semantic foundation of web documents. Styling is handled by CSS, and interactivity is driven by JavaScript.",
     "unit": "Unit 10: Web-Based Application Development",
-    "category": "Computer Science & Applications",
+    "category": "Web Technologies",
     "topicSlug": "web-technologies-xml-security",
     "topicTitle": "Web Technologies: HTML5, CSS3, JavaScript, XML, and Web Security",
     "examType": "BPSC-TRE"
@@ -4759,7 +4759,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "HTML and CSS are purely client-side markup and stylesheet standards. C++ is a compiled systems language (not a traditional scripting language like PHP, Python, or Ruby). Hence, (E) None of the above is the official key.",
     "unit": "Unit 10: Web-Based Application Development",
-    "category": "Computer Science & Applications",
+    "category": "Web Technologies",
     "topicSlug": "php-dom-node-backend-architecture",
     "topicTitle": "PHP, DOM, Node.js, and Backend Web Architecture",
     "examType": "BPSC-TRE"
@@ -4793,7 +4793,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Alan Turing proved in 1936 that the Halting Problem—determining whether an arbitrary program will finish running or run forever—is undecidable and cannot be computed by any algorithm or Turing machine.",
     "unit": "Unit 11: Theory of Computation",
-    "category": "Computer Science & Applications",
+    "category": "Theory of Computation",
     "topicSlug": "turing-machines-undecidability-toc",
     "topicTitle": "Turing Machines, Decidability, Undecidability & Halting Problem",
     "examType": "BPSC-TRE"
@@ -4827,7 +4827,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "A standard Turing machine has a single, infinite read/write tape that serves for both input and output storage, along with a tape head and a finite state control unit. It does not have a separate, dedicated 'output tape'.",
     "unit": "Unit 11: Theory of Computation",
-    "category": "Computer Science & Applications",
+    "category": "Theory of Computation",
     "topicSlug": "turing-machines-undecidability-toc",
     "topicTitle": "Turing Machines, Decidability, Undecidability & Halting Problem",
     "examType": "BPSC-TRE"
@@ -4861,7 +4861,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Both Bluetooth Low Energy (BLE) and Wi-Fi (along with Zigbee) are ubiquitous short-range wireless technologies utilized extensively in smart home and IoT architectures. Therefore, (D) More than one of the above is correct.",
     "unit": "Unit 12: Internet of Things",
-    "category": "Computer Science & Applications",
+    "category": "IoT & Embedded",
     "topicSlug": "iot-protocols-coap-mqtt-sensors",
     "topicTitle": "IoT Protocols, CoAP, MQTT, Sensors & Actuators",
     "examType": "BPSC-TRE"
@@ -4895,7 +4895,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "MQTT (Message Queuing Telemetry Transport) is an extremely lightweight publish/subscribe messaging transport protocol optimized for resource-constrained devices, high latency, and low-bandwidth IoT networks.",
     "unit": "Unit 12: Internet of Things",
-    "category": "Computer Science & Applications",
+    "category": "IoT & Embedded",
     "topicSlug": "iot-protocols-coap-mqtt-sensors",
     "topicTitle": "IoT Protocols, CoAP, MQTT, Sensors & Actuators",
     "examType": "BPSC-TRE"
@@ -4929,7 +4929,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "D",
     "explanation": "Artificial Intelligence encompasses Machine Learning, Computer Vision, Robotics, and Natural Language Processing. Since A, B, and C are all prominent subfields of AI, (D) More than one of the above is correct.",
     "unit": "Unit 13: Artificial Intelligence",
-    "category": "Computer Science & Applications",
+    "category": "Artificial Intelligence",
     "topicSlug": "artificial-intelligence-search-heuristics",
     "topicTitle": "AI Search Strategies, Heuristics (A*, AO*), Game Playing & Knowledge Representation",
     "examType": "BPSC-TRE"
@@ -4963,7 +4963,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "A",
     "explanation": "A Decision Tree trains on labeled dataset tuples to perform classification or regression under supervised learning. (K-means is unsupervised clustering; Q-learning is reinforcement learning).",
     "unit": "Unit 13: Artificial Intelligence",
-    "category": "Computer Science & Applications",
+    "category": "Artificial Intelligence",
     "topicSlug": "artificial-intelligence-search-heuristics",
     "topicTitle": "AI Search Strategies, Heuristics (A*, AO*), Game Playing & Knowledge Representation",
     "examType": "BPSC-TRE"
@@ -4997,7 +4997,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "E",
     "explanation": "B2C (Amazon), C2B (freelance bidding/influencer sponsorships), and C2C (eBay/OLX) are all established, standard e-commerce operational transaction models. Since all are valid models, none is 'NOT a common model', making (E) None of the above the correct answer.",
     "unit": "Unit 14: Fundamentals of E-Commerce",
-    "category": "Computer Science & Applications",
+    "category": "E-Commerce",
     "topicSlug": "ecommerce-frameworks",
     "topicTitle": "E-Commerce Business Models, Frameworks & Payment Systems",
     "examType": "BPSC-TRE"
@@ -5031,7 +5031,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "B",
     "explanation": "Amazon is the archetype of a Business-to-Consumer (B2C) e-commerce retailer selling consumer goods directly to end users. (Alibaba is primarily B2B wholesale).",
     "unit": "Unit 14: Fundamentals of E-Commerce",
-    "category": "Computer Science & Applications",
+    "category": "E-Commerce",
     "topicSlug": "ecommerce-frameworks",
     "topicTitle": "E-Commerce Business Models, Frameworks & Payment Systems",
     "examType": "BPSC-TRE"
@@ -5065,7 +5065,7 @@ export const BPSC_TRE_MOCK_EXAM: MockExam = {
     "correctOption": "C",
     "explanation": "Adobe Flash (originally Macromedia Flash) was the industry-standard multimedia authoring environment used to create rich interactive vector graphics, browser animations, audio/video synchronization, and web games. (Photoshop is an image editor, Word is a word processor).",
     "unit": "Unit 15: Computer Graphics & Multimedia",
-    "category": "Computer Science & Applications",
+    "category": "Multimedia",
     "topicSlug": "multimedia-formats",
     "topicTitle": "Multimedia Formats, Audio/Video Compression & Streaming Protocols",
     "examType": "BPSC-TRE"

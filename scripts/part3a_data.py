@@ -16,7 +16,7 @@ part3a_questions = [
         "correctOption": "D",
         "explanation": "Both NAND and NOR gates are functionally complete 'universal logic gates' that can individually implement any basic Boolean operation (AND, OR, NOT) and complex combinational logic without any other gate type. Since both A and B are universal gates, the answer is (D) More than one of the above.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "boolean-algebra-k-maps-co",
         "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
         "examType": "BPSC-TRE"
@@ -35,7 +35,7 @@ part3a_questions = [
         "correctOption": "E",
         "explanation": "Digital circuits represent and process information using discrete binary voltage levels (0 and 1, LOW and HIGH), not continuous analog voltages, and they are extensively used for ultra-high-speed operations. None of the listed statements A, B, or C is correct, making (E) None of the above the right choice.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "boolean-algebra-k-maps-co",
         "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
         "examType": "BPSC-TRE"
@@ -54,7 +54,7 @@ part3a_questions = [
         "correctOption": "D",
         "explanation": "Modern computers, smartphones, and digital cameras are all embedded digital electronic systems functioning on binary microprocessors, logic arrays, and digital DSPs. Thus, (D) More than one of the above is correct.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "combinational-sequential-circuits-design",
         "topicTitle": "Combinational & Sequential Circuits Design",
         "examType": "BPSC-TRE"
@@ -73,7 +73,7 @@ part3a_questions = [
         "correctOption": "C",
         "explanation": "For any n-variable digital logic gate or Boolean function, the number of distinct input combinations in the truth table is given by 2^n. For n = 4 inputs, the number of combinations is 2^4 = 16.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "boolean-algebra-k-maps-co",
         "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
         "examType": "BPSC-TRE"
@@ -92,7 +92,7 @@ part3a_questions = [
         "correctOption": "A",
         "explanation": "Level-triggered flip-flops/latches respond to the steady voltage level of the clock signal. A negative level-triggered circuit remains transparent and responds to inputs when the clock input is at a low/negative logic level (Clock = 0 / LOW).",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "combinational-sequential-circuits-design",
         "topicTitle": "Combinational & Sequential Circuits Design",
         "examType": "BPSC-TRE"
@@ -111,7 +111,7 @@ part3a_questions = [
         "correctOption": "A",
         "explanation": "Performing bitwise AND on each column:\n  1 AND 1 = 1\n  0 AND 1 = 0\n  1 AND 0 = 0\n  0 AND 0 = 0\nYielding 1000 in binary.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "boolean-algebra-k-maps-co",
         "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
         "examType": "BPSC-TRE"
@@ -130,7 +130,7 @@ part3a_questions = [
         "correctOption": "A",
         "explanation": "A half adder takes two single-bit inputs (A, B) and generates two outputs: Sum = A ⊕ B (XOR gate) and Carry = A · B (AND gate).",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "combinational-sequential-circuits-design",
         "topicTitle": "Combinational & Sequential Circuits Design",
         "examType": "BPSC-TRE"
@@ -149,7 +149,7 @@ part3a_questions = [
         "correctOption": "D",
         "explanation": "All three (Masked ROM, Programmable ROM, and UV Erasable Programmable ROM) are established varieties of non-volatile Read Only Memory. Thus, (D) More than one of the above is correct.",
         "unit": "Unit 2: Computer Organization & Architecture",
-        "category": "Computer Science & Applications",
+        "category": "Computer Architecture",
         "topicSlug": "cache-memory-organization-co",
         "topicTitle": "Cache Memory Organization, Mapping Techniques, and Replacement Policies",
         "examType": "BPSC-TRE"
@@ -168,7 +168,7 @@ part3a_questions = [
         "correctOption": "B",
         "explanation": "PLA stands for Programmable Logic Array, a PLD device with both a programmable AND array and a programmable OR array used to implement sum-of-products Boolean functions.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "combinational-sequential-circuits-design",
         "topicTitle": "Combinational & Sequential Circuits Design",
         "examType": "BPSC-TRE"
@@ -187,7 +187,7 @@ part3a_questions = [
         "correctOption": "B",
         "explanation": "A 2^m-to-1 multiplexer requires m select lines to address any of the 2^m data input lines. For an 8-to-1 multiplexer, 2^m = 8 => m = log2(8) = 3 select lines.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "combinational-sequential-circuits-design",
         "topicTitle": "Combinational & Sequential Circuits Design",
         "examType": "BPSC-TRE"
@@ -206,7 +206,7 @@ part3a_questions = [
         "correctOption": "A",
         "explanation": "1234 in hexadecimal: 1234 / 16 = 77 rem 2; 77 / 16 = 4 rem 13 (D); 4 / 16 = 0 rem 4 => 4D2_16.\nIn binary: 4 = 0100, D = 1101, 2 = 0010 => 10011010010_2.\nIn octal: grouping 3 bits (010 011 010 010) => 2322_8.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "boolean-algebra-k-maps-co",
         "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
         "examType": "BPSC-TRE"
@@ -225,7 +225,7 @@ part3a_questions = [
         "correctOption": "C",
         "explanation": "Booth's multiplication algorithm is an efficient hardware algorithm that multiplies two signed binary numbers in two's complement representation by encoding runs of consecutive 1s.",
         "unit": "Unit 2: Computer Organization & Architecture",
-        "category": "Computer Science & Applications",
+        "category": "Computer Architecture",
         "topicSlug": "combinational-sequential-circuits-design",
         "topicTitle": "Combinational & Sequential Circuits Design",
         "examType": "BPSC-TRE"
@@ -244,7 +244,7 @@ part3a_questions = [
         "correctOption": "D",
         "explanation": "Hamming codes (error detection and single-bit correction), CRC (polynomial cyclic redundancy check), and Checksums are all standard error detection mechanisms in computer networks and digital logic. Thus, (D) More than one of the above is correct.",
         "unit": "Unit 7: Computer Networks",
-        "category": "Computer Science & Applications",
+        "category": "Computer Networks",
         "topicSlug": "data-link-layer-framing-error-control",
         "topicTitle": "Data Link Layer: Framing, Flow Control, Error Control, and MAC Protocols",
         "examType": "BPSC-TRE"
@@ -263,7 +263,7 @@ part3a_questions = [
         "correctOption": "E",
         "explanation": "In 8421 BCD, each decimal digit is encoded into 4 bits, valid only for decimal digits 0 through 9 (0000 to 1001). The maximum decimal value a valid single BCD digit can represent is 9. Values 10 to 15 (1010 to 1111) are invalid BCD codes. Since 9 is not among options A (2), B (10), or C (15), the correct answer is (E) None of the above.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "boolean-algebra-k-maps-co",
         "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
         "examType": "BPSC-TRE"
@@ -282,7 +282,7 @@ part3a_questions = [
         "correctOption": "E",
         "explanation": "Integer part: 1011_2 = 8 + 0 + 2 + 1 = 11.\nFractional part: .1101_2 = 1*(2^-1) + 1*(2^-2) + 0*(2^-3) + 1*(2^-4) = 0.5 + 0.25 + 0 + 0.0625 = 0.8125.\nTotal decimal value = 11.8125. Since 11.8125 is not listed in options A (11.75), B (12.125), or C (13.5), the answer is (E) None of the above.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "boolean-algebra-k-maps-co",
         "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
         "examType": "BPSC-TRE"
@@ -301,7 +301,7 @@ part3a_questions = [
         "correctOption": "A",
         "explanation": "De Morgan's laws ((A + B)' = A' · B' and (A · B)' = A' + B') allow engineers and mathematicians to simplify complex complemented Boolean logic expressions into simpler sum-of-products or product-of-sums forms.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "boolean-algebra-k-maps-co",
         "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
         "examType": "BPSC-TRE"
@@ -320,7 +320,7 @@ part3a_questions = [
         "correctOption": "A",
         "explanation": "Don't care terms represent input combinations that either can never occur or whose output is irrelevant. In K-maps, they can be assigned 0 or 1 opportunistically to form larger groupings of 1s, thereby minimizing circuit literals and gate count.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Digital Logic",
         "topicSlug": "boolean-algebra-k-maps-co",
         "topicTitle": "Boolean Algebra, Karnaugh Maps (K-Maps), Prime Implicants & Combinational Logic",
         "examType": "BPSC-TRE"
@@ -339,7 +339,7 @@ part3a_questions = [
         "correctOption": "E",
         "explanation": "Stacks, Queues, and Arrays are all linear data structures where elements are arranged sequentially. Non-linear data structures include Trees and Graphs. Since neither Tree nor Graph is listed in options A, B, or C, the correct answer is (E) None of the above.",
         "unit": "Unit 3: Programming & Data Structures",
-        "category": "Computer Science & Applications",
+        "category": "Data Structures",
         "topicSlug": "binary-search-trees-avl-dsa",
         "topicTitle": "Binary Search Trees, AVL Trees, and Balancing Operations",
         "examType": "BPSC-TRE"
@@ -358,7 +358,7 @@ part3a_questions = [
         "correctOption": "C",
         "explanation": "A Hash Table maps keys to bucket slots using a hash function, delivering average-case O(1) constant time lookup, insertion, and deletion.",
         "unit": "Unit 4: Algorithms",
-        "category": "Computer Science & Applications",
+        "category": "Algorithms",
         "topicSlug": "asymptotic-notation-algorithms",
         "topicTitle": "Asymptotic Notation, Recurrence Relations & Master Theorem",
         "examType": "BPSC-TRE"
@@ -377,7 +377,7 @@ part3a_questions = [
         "correctOption": "B",
         "explanation": "By definition of BST ordering: all keys in the left subtree must be less than the root key, and all keys in the right subtree must be greater than the root key.",
         "unit": "Unit 3: Programming & Data Structures",
-        "category": "Computer Science & Applications",
+        "category": "Data Structures",
         "topicSlug": "binary-search-trees-avl-dsa",
         "topicTitle": "Binary Search Trees, AVL Trees, and Balancing Operations",
         "examType": "BPSC-TRE"
@@ -396,7 +396,7 @@ part3a_questions = [
         "correctOption": "A",
         "explanation": "Evaluating step-by-step using an evaluation stack:\n1. Push 10, push 5 -> pop both on '+' => 10 + 5 = 15 (stack: [15])\n2. Push 60, push 6 -> pop both on '/' => 60 / 6 = 10 (stack: [15, 10])\n3. On '*' -> pop 15 and 10 => 15 * 10 = 150 (stack: [150])\n4. Push 8 -> on '-' => 150 - 8 = 142.",
         "unit": "Unit 3: Programming & Data Structures",
-        "category": "Computer Science & Applications",
+        "category": "Data Structures",
         "topicSlug": "c-cpp-pointers-memory",
         "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
         "examType": "BPSC-TRE"
@@ -415,7 +415,7 @@ part3a_questions = [
         "correctOption": "B",
         "explanation": "In an AVL tree, the balance factor BalanceFactor(N) = Height(Left) - Height(Right) must be strictly within {-1, 0, +1}. The difference in heights can never exceed 1.",
         "unit": "Unit 3: Programming & Data Structures",
-        "category": "Computer Science & Applications",
+        "category": "Data Structures",
         "topicSlug": "binary-search-trees-avl-dsa",
         "topicTitle": "Binary Search Trees, AVL Trees, and Balancing Operations",
         "examType": "BPSC-TRE"
@@ -434,7 +434,7 @@ part3a_questions = [
         "correctOption": "E",
         "explanation": "In C, attempting to declare `int a[] = {1, 2, 3,} *p;` without a separating comma before the pointer or a proper declaration specifier causes a compile-time syntax error. Since 'Compilation / Syntax error' is not listed in options A, B, or C, the correct choice is (E) None of the above.",
         "unit": "Unit 3: Programming & Data Structures",
-        "category": "Computer Science & Applications",
+        "category": "Programming",
         "topicSlug": "c-cpp-pointers-memory",
         "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
         "examType": "BPSC-TRE"
@@ -453,7 +453,7 @@ part3a_questions = [
         "correctOption": "E",
         "explanation": "A pure First-In-First-Out (FIFO) queue cannot reverse its internal order solely through queue operations without using an auxiliary LIFO data structure (such as a stack or recursion stack). None of the fixed deletion/addition options can accomplish reversal on a standalone queue.",
         "unit": "Unit 3: Programming & Data Structures",
-        "category": "Computer Science & Applications",
+        "category": "Data Structures",
         "topicSlug": "c-cpp-pointers-memory",
         "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
         "examType": "BPSC-TRE"
@@ -472,7 +472,7 @@ part3a_questions = [
         "correctOption": "E",
         "explanation": "Binary search halves the search space at each iteration: T(N) = T(N/2) + O(1), giving an asymptotic order of O(log N). Since O(log N) is not listed in options A (N), B (N log N), or C (N^2), the answer is (E) None of the above.",
         "unit": "Unit 4: Algorithms",
-        "category": "Computer Science & Applications",
+        "category": "Algorithms",
         "topicSlug": "asymptotic-notation-algorithms",
         "topicTitle": "Asymptotic Notation, Recurrence Relations & Master Theorem",
         "examType": "BPSC-TRE"
@@ -491,7 +491,7 @@ part3a_questions = [
         "correctOption": "B",
         "explanation": "For any BST, the Inorder traversal is the sorted sequence: 10, 11, 12, 15, 16, 18, 19, 20. Given Preorder = [15, (10, 12, 11), (20, 18, 16, 19)]:\n- Root = 15\n- Left subtree keys < 15: preorder [10, 12, 11] => root 10, right child 12, left child of 12 is 11. Postorder for left subtree: 11, 12, 10.\n- Right subtree keys > 15: preorder [20, 18, 16, 19] => root 20, left child 18 (with left 16, right 19). Postorder for right subtree: 16, 19, 18, 20.\nCombining Left, Right, Root => 11, 12, 10, 16, 19, 18, 20, 15.",
         "unit": "Unit 3: Programming & Data Structures",
-        "category": "Computer Science & Applications",
+        "category": "Data Structures",
         "topicSlug": "binary-search-trees-avl-dsa",
         "topicTitle": "Binary Search Trees, AVL Trees, and Balancing Operations",
         "examType": "BPSC-TRE"
@@ -510,7 +510,7 @@ part3a_questions = [
         "correctOption": "C",
         "explanation": "The number of structurally unique BSTs with n distinct keys is given by the n-th Catalan number: C_n = (2n)! / ((n+1)! n!). For n = 4: C_4 = (8)! / (5! × 4!) = 40320 / (120 × 24) = 40320 / 2880 = 14.",
         "unit": "Unit 3: Programming & Data Structures",
-        "category": "Computer Science & Applications",
+        "category": "Data Structures",
         "topicSlug": "binary-search-trees-avl-dsa",
         "topicTitle": "Binary Search Trees, AVL Trees, and Balancing Operations",
         "examType": "BPSC-TRE"
@@ -529,7 +529,7 @@ part3a_questions = [
         "correctOption": "C",
         "explanation": "In C, the `sizeof` operator is evaluated at compile time and does not evaluate side effects inside its operand. The expression `k /= i + j` has type `int`, so `sizeof(...)` yields 4. Because the assignment expression is never executed at runtime, `k` remains unchanged at 15. The output is `4 15`.",
         "unit": "Unit 3: Programming & Data Structures",
-        "category": "Computer Science & Applications",
+        "category": "Programming",
         "topicSlug": "c-cpp-pointers-memory",
         "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
         "examType": "BPSC-TRE"
@@ -548,7 +548,7 @@ part3a_questions = [
         "correctOption": "B",
         "explanation": "Big-O notation f(n) = O(g(n)) formally provides an asymptotic upper bound: there exist positive constants c and n0 such that 0 <= f(n) <= c*g(n) for all n >= n0. Lower bound is Big-Omega (Ω) and tight bound is Big-Theta (Θ).",
         "unit": "Unit 4: Algorithms",
-        "category": "Computer Science & Applications",
+        "category": "Algorithms",
         "topicSlug": "asymptotic-notation-algorithms",
         "topicTitle": "Asymptotic Notation, Recurrence Relations & Master Theorem",
         "examType": "BPSC-TRE"
@@ -567,7 +567,7 @@ part3a_questions = [
         "correctOption": "E",
         "explanation": "The three classical steps of Divide and Conquer are: (1) Divide the problem into smaller subproblems, (2) Conquer the subproblems by solving them recursively, and (3) Combine the solutions to form the global answer. Since all three (A, B, C) are valid steps, none is 'NOT a step', making (E) None of the above the correct answer.",
         "unit": "Unit 4: Algorithms",
-        "category": "Computer Science & Applications",
+        "category": "Algorithms",
         "topicSlug": "asymptotic-notation-algorithms",
         "topicTitle": "Asymptotic Notation, Recurrence Relations & Master Theorem",
         "examType": "BPSC-TRE"
@@ -586,7 +586,7 @@ part3a_questions = [
         "correctOption": "B",
         "explanation": "Merge Sort divides the unsorted list into two equal halves, recursively sorts each half (conquer), and then merges the sorted halves into one sorted list (combine).",
         "unit": "Unit 4: Algorithms",
-        "category": "Computer Science & Applications",
+        "category": "Algorithms",
         "topicSlug": "asymptotic-notation-algorithms",
         "topicTitle": "Asymptotic Notation, Recurrence Relations & Master Theorem",
         "examType": "BPSC-TRE"
@@ -605,7 +605,7 @@ part3a_questions = [
         "correctOption": "B",
         "explanation": "A spanning tree is a subgraph that includes all N vertices and is a tree (connected with no cycles). Any tree with N vertices must contain exactly N - 1 edges.",
         "unit": "Unit 4: Algorithms",
-        "category": "Computer Science & Applications",
+        "category": "Algorithms",
         "topicSlug": "minimum-spanning-trees-greedy-dsa",
         "topicTitle": "Minimum Spanning Trees: Prim's, Kruskal's, and Greedy Strategies",
         "examType": "BPSC-TRE"
@@ -624,7 +624,7 @@ part3a_questions = [
         "correctOption": "D",
         "explanation": "Graph traversal algorithms specifically refer to methods of visiting vertices in a graph, such as Breadth-First Search (BFS) and Depth-First Search (DFS). Greedy, Divide and Conquer, and Dynamic Programming are general algorithmic design paradigms, not graph traversal algorithms. Since all three are NOT graph traversal algorithms, (D) More than one of the above is correct.",
         "unit": "Unit 1: Digital Logic & Discrete Structures",
-        "category": "Computer Science & Applications",
+        "category": "Algorithms",
         "topicSlug": "graph-theory-discrete-math",
         "topicTitle": "Graph Theory: Connectivity, Euler/Hamiltonian, Planarity & Trees",
         "examType": "BPSC-TRE"
@@ -643,7 +643,7 @@ part3a_questions = [
         "correctOption": "C",
         "explanation": "The Single-Source Shortest Path problem can be solved in polynomial time by Dijkstra's algorithm (O((V + E) log V)) or Bellman-Ford (O(VE)), so it belongs to class P. Both TSP (decision) and SAT are classic NP-Complete problems.",
         "unit": "Unit 4: Algorithms",
-        "category": "Computer Science & Applications",
+        "category": "Algorithms",
         "topicSlug": "np-completeness-complexity-classes-dsa",
         "topicTitle": "NP-Completeness, Reductions, Complexity Classes & Approximation",
         "examType": "BPSC-TRE"
@@ -662,7 +662,7 @@ part3a_questions = [
         "correctOption": "C",
         "explanation": "Because elements of an array are stored in contiguous memory locations, calculating the address of element i via BaseAddress + i × ElementSize enables O(1) direct random access.",
         "unit": "Unit 3: Programming & Data Structures",
-        "category": "Computer Science & Applications",
+        "category": "Data Structures",
         "topicSlug": "c-cpp-pointers-memory",
         "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
         "examType": "BPSC-TRE"
@@ -681,7 +681,7 @@ part3a_questions = [
         "correctOption": "A",
         "explanation": "The fundamental primitive operations on data structures are insertion, deletion, searching, traversal, sorting, and merging. Encryption is a cryptographic security transformation, not a data structure primitive.",
         "unit": "Unit 3: Programming & Data Structures",
-        "category": "Computer Science & Applications",
+        "category": "Data Structures",
         "topicSlug": "c-cpp-pointers-memory",
         "topicTitle": "C/C++ Pointers, Memory Management, and Dynamic Structures",
         "examType": "BPSC-TRE"
@@ -700,7 +700,7 @@ part3a_questions = [
         "correctOption": "D",
         "explanation": "Operating systems are categorized by operational goals into Real-Time OS, Embedded OS, Network OS, Distributed OS, and Batch/Time-sharing systems. All listed are valid OS categories, so (D) More than one of the above is correct.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "cpu-scheduling-os",
         "topicTitle": "Process Management, Threads & CPU Scheduling Algorithms",
         "examType": "BPSC-TRE"
@@ -719,7 +719,7 @@ part3a_questions = [
         "correctOption": "C",
         "explanation": "Paging and Segmentation are intentional memory management schemes used by an OS to allocate memory. Fragmentation (internal or external) is an undesirable side effect or inefficiency resulting from allocation, not a technique.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "memory-management-virtual-memory-os",
         "topicTitle": "Memory Management, Paging, Segmentation, and Virtual Memory",
         "examType": "BPSC-TRE"
@@ -738,7 +738,7 @@ part3a_questions = [
         "correctOption": "D",
         "explanation": "NTFS (Windows New Technology File System), FAT32 (File Allocation Table 32), and HFS+ (Apple Hierarchical File System Plus) are all standard operating system file systems. Thus, (D) More than one of the above is correct.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "memory-interleaving-secondary-storage-raid",
         "topicTitle": "Memory Interleaving, Secondary Storage, and RAID Architecture",
         "examType": "BPSC-TRE"
@@ -757,7 +757,7 @@ part3a_questions = [
         "correctOption": "B",
         "explanation": "Interrupts are broadly classified into Hardware interrupts (asynchronous signals from I/O peripherals) and Software interrupts (synchronous traps, system calls, or exceptions). 'Memory interrupt' is not a standard interrupt category in computer architecture.",
         "unit": "Unit 5: Operating System",
-        "category": "Computer Science & Applications",
+        "category": "Operating Systems",
         "topicSlug": "cpu-scheduling-os",
         "topicTitle": "Process Management, Threads & CPU Scheduling Algorithms",
         "examType": "BPSC-TRE"

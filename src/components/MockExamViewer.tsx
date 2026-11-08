@@ -73,7 +73,7 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
       if (q.category) set.add(q.category);
       else if (q.unit) set.add(q.unit.split(":")[0]);
     });
-    return Array.from(set);
+    return Array.from(set).sort();
   }, [exam]);
 
   const currentQuestion = exam.questions[currentIndex] || exam.questions[0];
@@ -586,11 +586,16 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
                   className="w-full text-xs bg-[#F9F9F8] border border-[#E6E4DF] rounded-lg p-2 text-[#2F3437] focus:outline-none focus:border-[#2F3437]"
                 >
                   <option value="ALL">All Sections ({exam.questions.length})</option>
-                  {sections.map((sec) => (
-                    <option key={sec} value={sec}>
-                      {sec}
-                    </option>
-                  ))}
+                  {sections.map((sec) => {
+                    const count = exam.questions.filter(
+                      (q) => q.category === sec || (q.unit && q.unit.startsWith(sec))
+                    ).length;
+                    return (
+                      <option key={sec} value={sec}>
+                        {sec} ({count})
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
             )}
