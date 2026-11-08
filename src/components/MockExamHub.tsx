@@ -24,7 +24,7 @@ export default function MockExamHub() {
               href="/portal"
               className="px-3 py-1.5 bg-white border border-[#D8D2C7] hover:border-[#151515] text-[#151515] transition-all"
             >
-              54 Modules
+              56 Modules
             </Link>
             <Link
               href="/formulas"
@@ -78,7 +78,7 @@ export default function MockExamHub() {
         </div>
 
         {/* ── Mock Exam Cards Grid ─────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {ALL_MOCK_EXAMS.map((exam) => (
             <MockExamCard key={exam.id} exam={exam} />
           ))}
@@ -87,7 +87,7 @@ export default function MockExamHub() {
         {/* ── Legal & Exam Statutory Footer ─────────────────────────── */}
         <footer className="mt-16 pt-8 border-t border-[#E6E4DF] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#787774] font-sans">
           <p>
-            True Exam Preparation (TEP) is an independent non-commercial study platform. Not affiliated with NTA, UGC, or BSEB.
+            True Exam Preparation (TEP) is an independent non-commercial study platform. Not affiliated with NTA, UGC, BSEB, or BPSC.
           </p>
           <div className="flex items-center gap-4">
             <Link href="/disclaimer" className="hover:text-[#2F3437] transition-colors">
@@ -107,7 +107,12 @@ export default function MockExamHub() {
 }
 
 function MockExamCard({ exam }: { exam: MockExam }) {
-  const isUGC = exam.id === "ugc-net";
+  const badgeStyle =
+    exam.examType === "UGC-NET"
+      ? "bg-[#FAF4E5] text-[#8F6A1E] border border-[#F2DEB5]"
+      : exam.examType === "BPSC-TRE"
+      ? "bg-[#FDF2E9] text-[#B44318] border border-[#FBD38D]"
+      : "bg-[#EBF3EC] text-[#2D6A4F] border border-[#C3DCC8]";
 
   return (
     <div className="bg-white border border-[#E6E4DF] rounded-2xl p-6 sm:p-7 shadow-xs hover:border-[#2F3437] transition-all flex flex-col justify-between">
@@ -116,11 +121,7 @@ function MockExamCard({ exam }: { exam: MockExam }) {
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
             <span
-              className={`px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider ${
-                isUGC
-                  ? "bg-[#FAF4E5] text-[#8F6A1E] border border-[#F2DEB5]"
-                  : "bg-[#EBF3EC] text-[#2D6A4F] border border-[#C3DCC8]"
-              }`}
+              className={`px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider ${badgeStyle}`}
             >
               {exam.examType}
             </span>

@@ -401,8 +401,8 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
                 })}
               </div>
 
-              {/* Topic Brush-Up Card (Always Visible in Practice or When Answered) */}
-              {currentQuestion.topicSlug && (
+              {/* Topic Brush-Up Card for CS or General Paper Info Card */}
+              {currentQuestion.topicSlug ? (
                 <div className="mb-6 p-4 rounded-xl bg-[#FAF4E5]/80 border border-[#F2DEB5] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <span className="text-xl">[MODULE]</span>
@@ -419,11 +419,30 @@ export default function MockExamViewer({ exam, initialMode = "practice" }: MockE
                     href={`/dashboard/${currentQuestion.topicSlug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded-lg bg-white border border-[#8F6A1E] text-[#8F6A1E] text-xs font-bold hover:bg-[#8F6A1E] hover:text-white transition-all shrink-0 flex items-center gap-1 shadow-xs"
+                    className="px-3 py-1.5 rounded-lg bg-white border border-[#8F6A1E] text-[#8F6A1E] text-xs font-bold hover:bg-[#8F6A1E] hover:text-white transition-all shrink-0 flex items-center gap-1 shadow-xs cursor-pointer"
                   >
                     <span>Read Topic Notes</span>
                     <span>↗</span>
                   </Link>
+                </div>
+              ) : (
+                <div className="mb-6 p-4 rounded-xl bg-[#F7F5F0] border border-[#DDD7CD] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-2.5 py-1 rounded text-[11px] font-mono font-bold bg-[#151515] text-white uppercase tracking-wider shrink-0">
+                      [GENERAL PAPER]
+                    </span>
+                    <div>
+                      <div className="text-[11px] font-bold text-[#746F68] uppercase tracking-wider">
+                        {currentQuestion.category || "General Section"} • Non-Domain Paper
+                      </div>
+                      <div className="text-xs sm:text-sm font-bold text-[#2F3437]">
+                        {currentQuestion.unit}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-[#746F68] font-mono bg-white px-2.5 py-1 rounded border border-[#E6E4DF] shrink-0">
+                    Self-Contained Derivation Below
+                  </div>
                 </div>
               )}
 

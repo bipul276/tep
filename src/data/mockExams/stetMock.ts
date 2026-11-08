@@ -38,7 +38,7 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     "Section C: General Skills (GK, Environment, Math, Logical Reasoning)"
   ],
   questions: [
-  {
+{
     "id": 1,
     "originalNumber": 1,
     "question": "What is the simplified expression for the Boolean function F(A, B, C, D) = Σ(0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14) using the K-map method?",
@@ -3062,11 +3062,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "D",
     "explanation": "Modern holistic pedagogical philosophy holds that the overarching purpose of classroom education is the comprehensive development of the student's cognitive, emotional, and social personality.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 102,
@@ -3092,11 +3091,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "The group discussion method stimulates two-way dialogue, critical thinking, active peer engagement, and learner-centered classroom participation.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 103,
@@ -3122,11 +3120,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "Autonomous learning (self-regulated learning) empowers students to take ownership of setting goals, monitoring comprehension, and acquiring knowledge independently.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 104,
@@ -3152,11 +3149,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "D",
     "explanation": "Broad educational aims reflect philosophical ideals (citizenship, character, aesthetic appreciation), encompass abstract values, and cannot be measured by a single daily lesson test.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 105,
@@ -3182,11 +3178,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "D",
     "explanation": "The psychomotor domain encompasses physical movement, motor skills, coordination, and muscular activity—including drawing maps, crafting models, and kinesthetic sports.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 106,
@@ -3212,11 +3207,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "'Heuriskein' in Greek means 'to find' or 'to discover / investigate', signifying problem-solving by discovery rather than rote instruction.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Artificial Intelligence: Search Strategies, A* Algorithm, and Alpha-Beta Pruning",
-    "topicSlug": "artificial-intelligence-search-heuristics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 107,
@@ -3242,11 +3236,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "B",
     "explanation": "Professor Henry Edward Armstrong pioneered the Heuristic Method of science teaching, placing the student in the attitude of an original discoverer.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 108,
@@ -3272,11 +3265,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "Set induction hooks the learner's attention by probing and arousing their existing schema (previous knowledge) to build a bridge to new concepts.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 109,
@@ -3302,11 +3294,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Dr. Maria Montessori developed self-correcting didactic sensory apparatus (pink tower, cylinder blocks) for early childhood development.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 110,
@@ -3332,11 +3323,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Modern constructive pedagogy requires child-centric/student-centric lesson design structured around learner needs, abilities, and learning outcomes.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 111,
@@ -3362,11 +3352,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "D",
     "explanation": "Philosophers excel in introspective self-reflection (Intrapersonal Intelligence), while sculptors manipulate 3D spatial forms and volumes (Visual-Spatial Intelligence).",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 112,
@@ -3392,11 +3381,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "In Weiner's Attribution Theory, attributing outcomes to internal, controllable factors ('I did not put in adequate study effort') promotes growth mindset, whereas blaming teachers or friends is external attribution.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 113,
@@ -3422,11 +3410,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "Metacognition ('thinking about thinking') involves self-monitoring and cognitive reflection. Asking how one's own understanding has evolved over time requires metacognitive self-evaluation.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 114,
@@ -3452,11 +3439,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Micro-teaching provides focused, scaled-down practice of specific teaching skills with immediate peer feedback during teacher training internships.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 115,
@@ -3482,11 +3468,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "B",
     "explanation": "Objectivity—evaluating evidence free from personal bias, prejudice, or superstition—is the hallmark of a genuine scientific mindset.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 116,
@@ -3512,11 +3497,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Hybrid academic libraries provide both physical books/journals and digital databases, e-books, and scholarly portals.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 117,
@@ -3542,11 +3526,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "A library is an intellectual sanctuary dedicated to self-directed reading, research, inquiry, and lifelong learning.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 118,
@@ -3572,11 +3555,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "Effective classroom questions stimulate conceptual inquiry, critical evaluation, and higher-order thinking (Bloom's analysis and synthesis).",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 119,
@@ -3602,11 +3584,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Subject matter mastery is the primary prerequisite of teaching; without deep subject knowledge, pedagogy loses credibility and effectiveness.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 120,
@@ -3632,11 +3613,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "B",
     "explanation": "Differentiated instruction requires teachers to adapt flexibly across diverse methodologies (inquiry, lecture, laboratory, cooperative learning).",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 121,
@@ -3662,11 +3642,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "In cognitive hierarchies, raw Data is processed into Information, which is contextualized and internalized as Knowledge.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Data Warehousing, OLAP, and Data Mining: Schemas, Operations, and Apriori Algorithm",
-    "topicSlug": "data-warehousing-data-mining-dbms",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 122,
@@ -3692,11 +3671,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Formative assessment provides ongoing diagnostic feedback during instruction to guide remediation (Assessment FOR learning), in contrast to summative assessment (Assessment OF learning).",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Testing, Metrics, and Maintenance: Black-Box, White-Box, and Mutation Testing",
-    "topicSlug": "software-testing-maintenance-se",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 123,
@@ -3722,11 +3700,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Attitude and interest inventories commonly employ graduated Rating Scales (such as Likert 5-point scales) to quantify affective domain values.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Testing, Metrics, and Maintenance: Black-Box, White-Box, and Mutation Testing",
-    "topicSlug": "software-testing-maintenance-se",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 124,
@@ -3752,11 +3729,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "D",
     "explanation": "Standard curriculum design models are Subject-Centered, Learner-Centered, and Problem-Centered. 'Teacher-centered' is an instructional delivery style, not a valid curriculum framework.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 125,
@@ -3782,11 +3758,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "D",
     "explanation": "Curriculum theory identifies three functions: Conservative (transmitting heritage), Creative (fostering innovation), and Critical (evaluating society).",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 126,
@@ -3812,11 +3787,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "Religious and political fundamentalism undermines secular tolerance, constitutional liberties, and democratic dialogue.",
-    "unit": "General Awareness & Society",
-    "topicTitle": "Software Quality Assurance, CMMI Maturity Levels, and ISO 9000 Standards",
-    "topicSlug": "software-engineering-cmmi",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "General Awareness"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 127,
@@ -3842,11 +3816,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "Progressive education emphasizes establishing empathetic, supportive rapport as a guide and facilitator rather than an authoritarian ruler.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Engineering SDLC Models, COCOMO Estimation, Function Points & Cyclomatic Complexity",
-    "topicSlug": "software-engineering-models-metrics",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 128,
@@ -3872,11 +3845,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Reflective learning requires identifying error root causes and translating diagnostic insights into targeted improvement.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Software Testing, Metrics, and Maintenance: Black-Box, White-Box, and Mutation Testing",
-    "topicSlug": "software-testing-maintenance-se",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 129,
@@ -3902,11 +3874,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "A chalkboard appeals purely to visual perception, classifying it as a traditional visual display aid.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 130,
@@ -3932,11 +3903,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "B",
     "explanation": "Television simultaneously stimulates both sight and hearing, making it an audio-visual aid.",
-    "unit": "Art of Teaching & Pedagogy",
-    "topicTitle": "Multimedia Systems: Audio Compression (MP3 vs MIDI), Video Standards (MPEG), and Animation Principles",
-    "topicSlug": "multimedia-formats",
+    "unit": "General Paper: Art of Teaching & Pedagogy",
     "examType": "STET",
-    "category": "Art of Teaching"
+    "category": "Art of Teaching",
+    "isGeneralPaper": true
   },
   {
     "id": 131,
@@ -3962,11 +3932,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "The Santhal Hul rebellion occurred in 1855-1856 led by Sidhu and Kanhu Murmu (not in the 1820s). The Ahoms revolted in 1828, Ramosi in 1822, and Pagal Panthis in 1825.",
-    "unit": "General Awareness: History",
-    "topicTitle": "Software Quality Assurance, CMMI Maturity Levels, and ISO 9000 Standards",
-    "topicSlug": "software-engineering-cmmi",
+    "unit": "General Paper: General Knowledge & Heritage",
     "examType": "STET",
-    "category": "General Knowledge"
+    "category": "General Knowledge",
+    "isGeneralPaper": true
   },
   {
     "id": 132,
@@ -3992,11 +3961,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "D",
     "explanation": "India spans ~30° of longitude (from 68°7'E in Gujarat to 97°25'E in Arunachal Pradesh). Earth rotates 1° every 4 minutes: 30° × 4 min = 120 minutes = 2 hours. Sun rises 2 hours later in Gujarat: 5:00 AM + 2 hours = ~7:00 AM.",
-    "unit": "General Awareness: Geography",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: General Knowledge & Heritage",
     "examType": "STET",
-    "category": "General Knowledge"
+    "category": "General Knowledge",
+    "isGeneralPaper": true
   },
   {
     "id": 133,
@@ -4022,11 +3990,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "Under SEBI and FEMA guidelines, a single Foreign Portfolio Investor (FPI) can invest up to a maximum of 10% of the paid-up equity capital of an Indian company; holdings of 10% or more are classified as Foreign Direct Investment (FDI).",
-    "unit": "General Awareness: Economics",
-    "topicTitle": "E-Commerce Frameworks, EDI, and Secure Electronic Payment Systems",
-    "topicSlug": "ecommerce-frameworks",
+    "unit": "General Paper: General Knowledge & Heritage",
     "examType": "STET",
-    "category": "General Knowledge"
+    "category": "General Knowledge",
+    "isGeneralPaper": true
   },
   {
     "id": 134,
@@ -4052,11 +4019,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "D",
     "explanation": "Dr. Rajendra Prasad, Anugrah Narayan Sinha, J.B. Kripalani, and Mahadev Desai assisted Gandhi in Champaran in 1917. Loknayak Jayaprakash Narayan was a schoolboy in 1917 and joined the freedom movement later during the 1930s and 1942 Quit India Movement.",
-    "unit": "General Awareness: Bihar History",
-    "topicTitle": "Software Quality Assurance, CMMI Maturity Levels, and ISO 9000 Standards",
-    "topicSlug": "software-engineering-cmmi",
+    "unit": "General Paper: General Knowledge & Heritage",
     "examType": "STET",
-    "category": "General Knowledge"
+    "category": "General Knowledge",
+    "isGeneralPaper": true
   },
   {
     "id": 135,
@@ -4082,11 +4048,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Visva-Bharati University was founded by Nobel Laureate Rabindranath Tagore in 1921 in Santiniketan, West Bengal.",
-    "unit": "General Awareness: Culture",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "General Paper: General Knowledge & Heritage",
     "examType": "STET",
-    "category": "General Knowledge"
+    "category": "General Knowledge",
+    "isGeneralPaper": true
   },
   {
     "id": 136,
@@ -4112,11 +4077,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "D",
     "explanation": "Human physical exertion during sports involves contraction of skeletal muscle fibers, utilizing muscular mechanical energy.",
-    "unit": "General Science",
-    "topicTitle": "Instruction Pipelining, Hazards, Speedup & Branch Prediction",
-    "topicSlug": "instruction-pipelining-hazards-co",
+    "unit": "General Paper: Environmental Science & Ecology",
     "examType": "STET",
-    "category": "General Science"
+    "category": "Environmental Science",
+    "isGeneralPaper": true
   },
   {
     "id": 137,
@@ -4142,11 +4106,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "B",
     "explanation": "Bora saul is an indigenous glutinous sticky rice widely cultivated and consumed in Assam during festivals such as Bihu.",
-    "unit": "General Science & Geography",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: Environmental Science & Ecology",
     "examType": "STET",
-    "category": "General Knowledge"
+    "category": "Environmental Science",
+    "isGeneralPaper": true
   },
   {
     "id": 138,
@@ -4172,11 +4135,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Combustion is an exothermic chemical reaction between a fuel and oxygen, releasing thermal energy (heat) and electromagnetic radiation (light).",
-    "unit": "General Science",
-    "topicTitle": "Instruction Pipelining, Hazards, Speedup & Branch Prediction",
-    "topicSlug": "instruction-pipelining-hazards-co",
+    "unit": "General Paper: Environmental Science & Ecology",
     "examType": "STET",
-    "category": "General Science"
+    "category": "Environmental Science",
+    "isGeneralPaper": true
   },
   {
     "id": 139,
@@ -4202,11 +4164,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "Snakes do not possess chewing dentition or molars; their jaw bones unhinge to allow them to swallow prey whole. Stating that they chew their prey is incorrect.",
-    "unit": "General Science",
-    "topicTitle": "Artificial Intelligence: Search Strategies, A* Algorithm, and Alpha-Beta Pruning",
-    "topicSlug": "artificial-intelligence-search-heuristics",
+    "unit": "General Paper: Environmental Science & Ecology",
     "examType": "STET",
-    "category": "General Science"
+    "category": "Environmental Science",
+    "isGeneralPaper": true
   },
   {
     "id": 140,
@@ -4232,11 +4193,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "D",
     "explanation": "Positioning Gujarat at origin (0,0): Uttar Pradesh lies to the North and East (North-East), while Andhra Pradesh lies to the South and East (South-East).",
-    "unit": "General Awareness: Geography",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: Environmental Science & Ecology",
     "examType": "STET",
-    "category": "Reasoning"
+    "category": "Environmental Science",
+    "isGeneralPaper": true
   },
   {
     "id": 141,
@@ -4262,11 +4222,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "Cube, cuboid, sphere, and cylinder each have three spatial dimensions (length, width, height) and volume. Circles, semi-circles, and triangles are 2D planar figures.",
-    "unit": "General Mathematics & Graphics",
-    "topicTitle": "Computer Graphics: 2D & 3D Geometric Transformations and Homogeneous Coordinates",
-    "topicSlug": "computer-graphics-transformations",
+    "unit": "General Paper: Mathematical Aptitude",
     "examType": "STET",
-    "category": "Mathematics"
+    "category": "Mathematical Aptitude",
+    "isGeneralPaper": true
   },
   {
     "id": 142,
@@ -4292,11 +4251,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Examine consecutive differences:\n6 - 1 = 5\n15 - 6 = 9 (difference increased by 4)\nNext difference: 9 + 4 = 13 -> 15 + 13 = 28\nNext difference: 13 + 4 = 17 -> 28 + 17 = 45\nNext difference: 17 + 4 = 21 -> 45 + 21 = 66\nNext difference: 21 + 4 = 25 -> 66 + 25 = 91.\nThe missing number is 28.",
-    "unit": "Quantitative Aptitude",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: Mathematical Aptitude",
     "examType": "STET",
-    "category": "Reasoning"
+    "category": "Mathematical Aptitude",
+    "isGeneralPaper": true
   },
   {
     "id": 143,
@@ -4322,11 +4280,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "B",
     "explanation": "Let the whole number be x.\nResult 1 = 100 + x\nResult 2 = 100 - x\nSum = (100 + x) + (100 - x) = 100 + 100 + (x - x) = 200.",
-    "unit": "Quantitative Aptitude",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: Mathematical Aptitude",
     "examType": "STET",
-    "category": "Mathematics"
+    "category": "Mathematical Aptitude",
+    "isGeneralPaper": true
   },
   {
     "id": 144,
@@ -4352,11 +4309,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "An odd number of terms has (2k + 1) terms. Grouping terms in pairs: (5 - 5) + (5 - 5) + ... + (5 - 5) + 5 = 0 + 0 + ... + 5 = 5. (An even number of terms would sum to 0).",
-    "unit": "Quantitative Aptitude",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: Mathematical Aptitude",
     "examType": "STET",
-    "category": "Mathematics"
+    "category": "Mathematical Aptitude",
+    "isGeneralPaper": true
   },
   {
     "id": 145,
@@ -4382,11 +4338,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "B",
     "explanation": "Comparing numbers:\n10.500 > 1.500 > 1.055 > 1.050 > 1.005 > 0.155.\nOption B accurately lists them in descending sequence.",
-    "unit": "Quantitative Aptitude",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: Mathematical Aptitude",
     "examType": "STET",
-    "category": "Mathematics"
+    "category": "Mathematical Aptitude",
+    "isGeneralPaper": true
   },
   {
     "id": 146,
@@ -4412,11 +4367,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "C",
     "explanation": "Monday is day 1 or day 2 of the week; April is month 4. Friday is 4 days after Monday (+4 days), and August is 4 months after April (Month 4 + 4 = Month 8 = August).",
-    "unit": "Verbal Reasoning",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: Logical & Verbal Reasoning",
     "examType": "STET",
-    "category": "Reasoning"
+    "category": "Reasoning",
+    "isGeneralPaper": true
   },
   {
     "id": 147,
@@ -4442,11 +4396,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "B",
     "explanation": "Kidneys, lungs, and ears exist as symmetrical bilateral pairs in the human body (2 kidneys, 2 lungs, 2 ears). The human heart is a single, singular organ.",
-    "unit": "General Reasoning",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: Logical & Verbal Reasoning",
     "examType": "STET",
-    "category": "Reasoning"
+    "category": "Reasoning",
+    "isGeneralPaper": true
   },
   {
     "id": 148,
@@ -4472,11 +4425,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "D",
     "explanation": "This consists of two interleaved series:\nOdd positions: 60 -> 120 (×2) -> 240 (×2)\nEven positions: 30 -> 15 (÷2) -> 15 ÷ 2 = 7.5 (or 7 1/2).",
-    "unit": "Quantitative Aptitude",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: Logical & Verbal Reasoning",
     "examType": "STET",
-    "category": "Reasoning"
+    "category": "Reasoning",
+    "isGeneralPaper": true
   },
   {
     "id": 149,
@@ -4502,11 +4454,10 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "The cipher replaces each letter with its reverse alphabet complement (A <-> Z, B <-> Y, C <-> X, etc. where pos(L) + pos(R) = 27):\nL (12) -> O (15) [12 + 15 = 27]\nI (9) -> R (18) [9 + 18 = 27]\nF (6) -> U (21) [6 + 21 = 27]\nE (5) -> V (22) [5 + 22 = 27]\nLIFE is encoded as ORUV.",
-    "unit": "Verbal Reasoning",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: Logical & Verbal Reasoning",
     "examType": "STET",
-    "category": "Reasoning"
+    "category": "Reasoning",
+    "isGeneralPaper": true
   },
   {
     "id": 150,
@@ -4532,11 +4483,11 @@ export const BIHAR_STET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "A",
     "explanation": "'Her mother's son' is Sita's brother. The 'only son of Sita's brother' means Nikhil is the nephew of Sita. Therefore, Sita is Nikhil's Aunt (Paternal or Maternal Aunt).",
-    "unit": "Verbal Reasoning",
-    "topicTitle": "Combinatorics, Discrete Probability, and Bayes' Theorem",
-    "topicSlug": "combinatorics-probability-discrete-math",
+    "unit": "General Paper: Logical & Verbal Reasoning",
     "examType": "STET",
-    "category": "Reasoning"
+    "category": "Reasoning",
+    "isGeneralPaper": true
   }
-]
+  ]
 };
+

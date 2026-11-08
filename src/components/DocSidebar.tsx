@@ -121,7 +121,7 @@ export function DocSidebar({ syllabus, isOpen = false, onClose }: DocSidebarProp
 
           <div className="flex items-center gap-2">
             <span className="font-mono text-[11px] font-semibold text-[#6C6760] bg-white border border-[#D8D2C7] px-2 py-0.5">
-              {completedCount}/54
+              {completedCount}/{syllabus.reduce((acc: number, g: SyllabusUnitGroup) => acc + g.topics.length, 0) || 56}
             </span>
             {onClose && (
               <button

@@ -3,7 +3,7 @@ import LandingPage from "@/components/LandingPage";
 export const metadata = {
   title: "True Exam Preparation Computer Science — Master CS. Dominate NET & STET.",
   description:
-    "True Exam Preparation Computer Science (TEP). Monochrome Bento Grid portal for UGC NET Computer Science & Bihar STET Paper 2. 54 comprehensive modules, formula sheets, and CBT mock exams.",
+    "True Exam Preparation Computer Science (TEP). Monochrome Bento Grid portal for UGC NET, Bihar STET, and BPSC TRE Computer Science. 56 comprehensive modules, formula sheets, and CBT mock exams.",
 };
 
 /**

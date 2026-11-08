@@ -35,7 +35,7 @@ export default function LandingPage() {
               href="/portal"
               className="hover:text-[#151515] transition-colors"
             >
-              54 Modules
+              56 Modules
             </Link>
             <Link
               href="/formulas"
@@ -61,7 +61,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-4">
             {isClient && completedCount > 0 && (
               <span className="font-mono text-xs bg-white text-[#151515] border border-[#D8D2C7] px-3 py-1.5 hidden sm:inline-block">
-                Read: {completedCount}/54
+                Read: {completedCount}/56
               </span>
             )}
             <Link
@@ -99,7 +99,7 @@ export default function LandingPage() {
                 </h1>
 
                 <p className="text-sm sm:text-base text-[#524E48] leading-relaxed max-w-md mb-8">
-                  The definitive Computer Science preparation portal for UGC NET and Bihar STET. 54 textbook-quality modules, KaTeX formula engine, and authentic CBT examination papers.
+                  The definitive Computer Science preparation portal for UGC NET, Bihar STET, and BPSC TRE. 56 textbook-quality modules, KaTeX formula engine, and authentic CBT examination papers.
                 </p>
 
                 {/* Flat Charcoal CTA Button */}
@@ -127,7 +127,7 @@ export default function LandingPage() {
                 
                 <div className="relative z-10">
                   <div className="text-4xl sm:text-5xl font-black font-mono tracking-tight text-white mb-2">
-                    54+
+                    56+
                   </div>
                   <div className="text-sm font-bold uppercase tracking-wider text-white/95 mb-3">
                     Exhaustive Modules
@@ -270,7 +270,7 @@ export default function LandingPage() {
               href="/portal"
               className="font-sans text-xs sm:text-sm font-semibold px-4 py-2 border border-[#151515] text-[#151515] hover:bg-[#151515] hover:text-white transition-all inline-flex items-center gap-1.5"
             >
-              <span>View All 54 Modules</span>
+              <span>View All 56 Modules</span>
               <span>→</span>
             </Link>
           </div>
@@ -349,21 +349,27 @@ export default function LandingPage() {
                 Authentic CBT Examination
               </h4>
               <p className="text-xs sm:text-sm text-[#524E48] leading-relaxed">
-                Full-length UGC NET (100 Questions) and Bihar STET (150 Questions) Computer Science test simulators with authentic timers, question palettes, and topic-tagged analytics.
+                Full-length UGC NET (100 Qs), Bihar STET (150 Qs), and BPSC TRE 4.0 (150 Qs) Computer Science test simulators with authentic 5-option palettes, timers, and topic-tagged analytics.
               </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3">
               <Link
                 href="/mock-exams/ugc-net"
                 className="font-sans text-xs font-bold uppercase tracking-wider text-[#151515] hover:text-[#FF6A35] inline-flex items-center gap-1"
               >
-                <span>UGC NET CBT →</span>
+                <span>UGC NET →</span>
               </Link>
               <Link
                 href="/mock-exams/bihar-stet"
                 className="font-sans text-xs font-bold uppercase tracking-wider text-[#151515] hover:text-[#FF6A35] inline-flex items-center gap-1"
               >
                 <span>STET CBT →</span>
+              </Link>
+              <Link
+                href="/mock-exams/bpsc-tre-4"
+                className="font-sans text-xs font-bold uppercase tracking-wider text-[#151515] hover:text-[#FF6A35] inline-flex items-center gap-1"
+              >
+                <span>BPSC TRE 4.0 →</span>
               </Link>
             </div>
           </div>
@@ -381,7 +387,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="font-mono text-xs font-semibold text-[#151515] bg-[#FAF8F5] p-2.5 border border-[#E2DCD3]">
-              AUDITED: 54/54 MODULES VERIFIED
+              AUDITED: 56/56 MODULES VERIFIED
             </div>
           </div>
         </div>

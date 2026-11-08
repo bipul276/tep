@@ -1,0 +1,213 @@
+---
+title: "Python Programming, Data Structures, and File Handling"
+unit: "Unit 3: Programming & Data Structures"
+examType: "Common"
+priority: "High"
+readTime: "30 min"
+slug: "python-programming-data-structures"
+description: "Master Python syntax, immutable vs mutable types (lists, tuples, dicts, sets), string slicing, recursion, functions (*args, **kwargs, lambda), file handling (text, binary, pickle), and NCERT Class 11-12 curriculum tested in BPSC TRE 1.0/TRE 4.0."
+tags: ["Python", "Programming", "Data Structures", "File Handling", "BPSC-TRE", "NCERT", "STET"]
+---
+
+# Python Programming, Data Structures, and File Handling
+
+Python programming forms the core foundation of the **NCERT Class 11 & 12 Computer Science (Code 083)** curriculum and was heavily tested in **BPSC TRE 1.0 (Class 11-12 Computer Science)**. Candidates must master **variable mutability**, **slicing semantics**, **dictionary operations**, **scope rules (LEGB)**, **file pointer mechanics (`seek`/`tell`)**, and **serialization via the `pickle` module**.
+
+---
+
+## 1. Python Data Types and Mutability
+
+In Python, every entity is an object. Data types are fundamentally categorized into **mutable** (can be altered in-place without changing object identity) and **immutable** (any modification creates a new object in memory).
+
+| Category | Data Types | Memory Semantics |
+| :--- | :--- | :--- |
+| **Immutable** | `int`, `float`, `bool`, `str`, `tuple`, `frozenset`, `bytes` | Modifying the value allocates a new object with a new `id()`. |
+| **Mutable** | `list`, `dict`, `set`, `bytearray` | Modified in-place; memory address `id()` remains identical. |
+
+### Memory Identity & Mutability Trap
+```python
+# Immutable: Strings and Integers
+a = 10
+old_id = id(a)
+a += 1
+assert id(a) != old_id  # New integer object created in memory!
+
+# Mutable: Lists
+lst = [1, 2, 3]
+old_id = id(lst)
+lst.append(4)
+assert id(lst) == old_id  # Modified in-place!
+```
+
+> [!WARNING]
+> **Exam Trap (Singleton Tuples)**: In Python, `t = (5)` is evaluated as an `int`, not a `tuple`! To declare a single-element tuple, a trailing comma is required: `t = (5,)` (`type(t) == tuple`).
+
+---
+
+## 2. Advanced String Slicing & Sequence Indexing
+
+Python sequences (strings, lists, tuples) support **extended slice syntax**:
+$$\mathbf{\text{sequence}[ \text{start} : \text{stop} : \text{step} ]}$$
+
+- **`start`**: Index where slicing begins (inclusive). Default is $0$ (if $\text{step} > 0$) or $-1$ (if $\text{step} < 0$).
+- **`stop`**: Index where slicing terminates (exclusive).
+- **`step`**: Stride increment. Negative step reverses iteration direction.
+
+### Negative Indexing Mechanics
+```
+ Index:    0    1    2    3    4    5
+ String:   P    Y    T    H    O    N
+-Index:   -6   -5   -4   -3   -2   -1
+```
+
+```python
+s = "COMPUTER"
+
+# Standard Slicing
+s[1:4]      # 'OMP' (indices 1, 2, 3)
+s[:3]       # 'COM' (indices 0, 1, 2)
+s[4:]       # 'UTER' (from index 4 to end)
+
+# Step & Reverse Slicing (BPSC TRE Favorite)
+s[::-1]     # 'RETUPMOC' (reverses entire string)
+s[::2]      # 'CMTR' (every 2nd character)
+s[6:1:-2]   # 'ETP' (starts at 6 ('E'), steps -2 to index 4 ('T'), index 2 ('P'))
+```
+
+---
+
+## 3. Core Data Structures: Lists, Tuples, Dictionaries, and Sets
+
+### A. Lists (`list`)
+- Ordered, heterogeneous, dynamic array.
+- Common methods: `append(x)` (adds element to end), `extend(iterable)` (appends elements of iterable), `insert(idx, x)`, `pop([idx])` (removes and returns item at index, default last), `remove(x)` (removes first occurrence of value x).
+
+```python
+# List Comprehension
+squares = [x**2 for x in range(10) if x % 2 == 0]
+# [0, 4, 16, 36, 64]
+```
+
+### B. Dictionaries (`dict`)
+- Unordered (ordered since Python 3.7+), key-value mapping.
+- **Key Invariant**: Keys must be **hashable** (immutable types: `int`, `str`, `tuple` containing only immutables). A `list` or `dict` cannot serve as a dictionary key.
+
+```python
+d = {"bihar": "patna", "up": "lucknow"}
+d.get("delhi", "new delhi")  # Returns default without throwing KeyError
+d.keys()                     # dict_keys(['bihar', 'up'])
+d.values()                   # dict_values(['patna', 'lucknow'])
+d.items()                    # dict_items([('bihar', 'patna'), ('up', 'lucknow')])
+```
+
+### C. Sets (`set`)
+- Unordered collection of unique hashable elements.
+- Set operations: Union `|` or `s1.union(s2)`, Intersection `&`, Difference `-`, Symmetric Difference `^`.
+
+---
+
+## 4. Functions, Parameter Passing, Scope (LEGB) & Recursion
+
+### Parameter Passing: Call by Object Reference
+In Python, arguments are passed via **Call by Object Reference (Call by Sharing)**:
+- Passing a mutable object (e.g. `list`) allows in-place modifications to persist outside the function.
+- Passing an immutable object (e.g. `int`, `str`) behaves similarly to call-by-value because rebinding creates a new local object.
+
+```python
+def modify(lst, num):
+    lst.append(99)  # In-place mutation affects original list
+    num = num + 10  # Local rebinding; outer integer is unchanged
+
+a_list = [1, 2]
+n = 5
+modify(a_list, n)
+print(a_list)  # [1, 2, 99]
+print(n)       # 5
+```
+
+### LEGB Scope Hierarchy
+When resolving a variable name, Python searches in this strict order:
+$$\mathbf{L} \text{ocal} \longrightarrow \mathbf{E} \text{nclosing} \longrightarrow \mathbf{G} \text{lobal} \longrightarrow \mathbf{B} \text{uilt-in}$$
+
+Use the `global` keyword to modify module-level variables inside a function, and `nonlocal` to modify variables in enclosing nested functions.
+
+### Anonymous Lambda Functions
+$$\lambda \text{ arguments} : \text{expression}$$
+```python
+sq = lambda x: x * x
+print(sq(6))  # 36
+
+# Combined with map and filter
+evens = list(filter(lambda x: x % 2 == 0, [1, 2, 3, 4, 5, 6]))  # [2, 4, 6]
+```
+
+---
+
+## 5. File Handling in Python (Text, Binary, Pickle & CSV)
+
+BPSC TRE exams consistently test file opening modes, cursor repositioning, and serialization.
+
+### File Modes Matrix
+| Mode | Meaning | File Pointer Position | Overwrites Existing? | Creates if Missing? |
+| :--- | :--- | :--- | :--- | :--- |
+| `'r'` | Read only (text) | Beginning ($0$) | No | Raises `FileNotFoundError` |
+| `'w'` | Write only (text) | Beginning ($0$) | **Yes (Truncates to 0)** | Yes |
+| `'a'` | Append (text) | End of file | No (Preserves data) | Yes |
+| `'r+'` | Read and Write | Beginning ($0$) | No (Overwrites at cursor) | Raises `FileNotFoundError` |
+| `'w+'` | Write and Read | Beginning ($0$) | **Yes (Truncates to 0)** | Yes |
+| `'rb'` / `'wb'` | Read/Write Binary | Beginning ($0$) | As above for binary bytes | As above |
+
+### Cursor Repositioning: `tell()` and `seek()`
+- **`f.tell()`**: Returns the current byte offset position of the file pointer.
+- **`f.seek(offset, whence)`**: Repositions the file pointer.
+  - `whence = 0` (default): Relative to file beginning.
+  - `whence = 1`: Relative to current cursor position.
+  - `whence = 2`: Relative to file end.
+
+### Binary Object Serialization: The `pickle` Module
+Used to serialize (pickle) and deserialize (unpickle) Python object hierarchies to and from binary files:
+- **`pickle.dump(object, file_handle)`**: Serializes `object` and writes it to an open binary file (`'wb'`).
+- **`pickle.load(file_handle)`**: Reads from an open binary file (`'rb'`) and reconstructs the Python object.
+
+```python
+import pickle
+
+data = {"exam": "BPSC TRE", "paper": "Computer Science", "marks": 150}
+
+# Storing to binary file
+with open("exam_data.dat", "wb") as f:
+    pickle.dump(data, f)
+
+# Reading from binary file
+with open("exam_data.dat", "rb") as f:
+    loaded_data = pickle.load(f)
+assert loaded_data["marks"] == 150
+```
+
+---
+
+## 6. Exception Handling & Common NCERT Traps
+
+```python
+try:
+    val = int("invalid")
+except ValueError as e:
+    print("Caught ValueError")
+except (TypeError, ZeroDivisionError):
+    print("Caught multiple exceptions")
+else:
+    print("Runs ONLY if NO exception was raised in try block")
+finally:
+    print("ALWAYS runs (cleanup, closing file streams)")
+```
+
+### High-Yield Exam Traps Summary
+1. **Division Operator (`/` vs `//`)**:
+   - `7 / 2` evaluates to `3.5` (always returns `float` in Python 3).
+   - `7 // 2` evaluates to `3` (floor division integer).
+   - `-7 // 2` evaluates to `-4` (rounds down toward negative infinity!).
+2. **Exponent Operator (`**`)**:
+   - `2 ** 3` evaluates to `8`.
+   - Right-associative: `2 ** 3 ** 2 = 2 ** (3 ** 2) = 2 ** 9 = 512`.
+3. **Default Mutable Parameter Pitfall**:
+   - Default arguments are evaluated **once** when the function definition is executed, not at each call. A function `def append_to(val, lst=[])` will accumulate items across calls!

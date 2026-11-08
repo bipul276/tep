@@ -104,7 +104,7 @@ export function setLastVisitedTopic(slug: string): void {
 /**
  * React hook to observe and manipulate completion progress across the app.
  */
-export function useStudyProgress(totalTopics: number = 54) {
+export function useStudyProgress(totalTopics: number = 56) {
   const [completedSlugs, setCompletedSlugs] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 

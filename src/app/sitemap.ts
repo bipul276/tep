@@ -66,7 +66,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  // All 54 Topic Documentation Pages
+  // All 56 Topic Documentation Pages
   const topicRoutes: MetadataRoute.Sitemap = getAllSlugs().map((slug) => ({
     url: `${baseUrl}/dashboard/${slug}`,
     lastModified: currentDate,

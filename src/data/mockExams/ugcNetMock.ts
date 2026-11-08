@@ -33,7 +33,7 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     "Paper 1: ICT, Higher Education & Reading Comprehension"
   ],
   questions: [
-  {
+{
     "id": 1,
     "originalNumber": 31,
     "question": "Which of the following is an example of IEEE 802.3?",
@@ -207,11 +207,10 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "3",
     "explanation": "Coliform bacteria reside naturally in the intestines of warm-blooded animals and are excreted in feces (C). Because they correlate directly with fecal matter, testing for them indicates bacterial contamination in water supplies (A, D). Statement B is incorrect because pathogenic strains (e.g., E. coli O157:H7) cause severe food and waterborne diseases.",
-    "unit": "Paper 1: ICT & Environment",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "Paper 1: People, Development & Environment",
     "examType": "UGC-NET",
-    "category": "Paper 1 General"
+    "category": "Paper 1: Environment",
+    "isGeneralPaper": true
   },
   {
     "id": 7,
@@ -237,11 +236,10 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "3",
     "explanation": "The Northern Hemisphere contains ~68% of Earth's landmass (A) and hosts ~90% of global population and heavy industrial activity burning fossil fuels (C). The Southern Hemisphere is predominantly ocean covered (B), acting as an extensive carbon sink that moderates CO2 concentration.",
-    "unit": "Paper 1: ICT & Environment",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "Paper 1: People, Development & Environment",
     "examType": "UGC-NET",
-    "category": "Paper 1 General"
+    "category": "Paper 1: Environment",
+    "isGeneralPaper": true
   },
   {
     "id": 8,
@@ -267,11 +265,10 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "4",
     "explanation": "Natural mined uranium consists of ~99.28% U-238 and only ~0.71% fissile U-235. The industrial isotope separation process that raises the proportion of U-235 to 3-5% for power reactors or >90% for weapons is called Uranium Enrichment.",
-    "unit": "Paper 1: ICT & Environment",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "Paper 1: People, Development & Environment",
     "examType": "UGC-NET",
-    "category": "Paper 1 General"
+    "category": "Paper 1: Environment",
+    "isGeneralPaper": true
   },
   {
     "id": 9,
@@ -297,11 +294,10 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "4",
     "explanation": "Wastewater purification stages: 1. Screening (D: coarse removal of large floating debris) -> 2. Primary Sedimentation (B: gravitational settling of settleable solids) -> 3. Filtration (C: filtration through sand/carbon beds) -> 4. Disinfection (A: chlorination or ozonation to destroy pathogens). Correct sequence: D, B, C, A.",
-    "unit": "Paper 1: ICT & Environment",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "Paper 1: People, Development & Environment",
     "examType": "UGC-NET",
-    "category": "Paper 1 General"
+    "category": "Paper 1: Environment",
+    "isGeneralPaper": true
   },
   {
     "id": 10,
@@ -327,11 +323,10 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "4",
     "explanation": "The Richter Scale measures quantitative magnitude (total seismic energy released at the hypocenter) and has a single invariant value for a given earthquake. The Modified Mercalli Scale (MMS) measures qualitative intensity (observed effects and structural destruction), decreasing with distance from the epicenter. Richter is logarithmic, and MMS has exactly 12 Roman numeral tiers (I to XII). Statements A and C are correct.",
-    "unit": "Paper 1: ICT & Environment",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "Paper 1: People, Development & Environment",
     "examType": "UGC-NET",
-    "category": "Paper 1 General"
+    "category": "Paper 1: Environment",
+    "isGeneralPaper": true
   },
   {
     "id": 11,
@@ -357,11 +352,10 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "2",
     "explanation": "In ancient Indian Vedic education, the Diksha Guru imparted spiritual initiation, character building, and philosophical enlightenment to both young women (Brahmavadinis) and young men (Sadyovadhus).",
-    "unit": "Paper 1: Higher Education",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "Paper 1: Higher Education System",
     "examType": "UGC-NET",
-    "category": "Paper 1 General"
+    "category": "Paper 1: Higher Education",
+    "isGeneralPaper": true
   },
   {
     "id": 12,
@@ -387,11 +381,10 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "2",
     "explanation": "UNESCO (United Nations Educational, Scientific and Cultural Organization) is the designated UN agency entrusted with leading and coordinating the Global Education for All (EFA) agenda and Sustainable Development Goal 4 (SDG-4).",
-    "unit": "Paper 1: Higher Education",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "Paper 1: Higher Education System",
     "examType": "UGC-NET",
-    "category": "Paper 1 General"
+    "category": "Paper 1: Higher Education",
+    "isGeneralPaper": true
   },
   {
     "id": 13,
@@ -417,11 +410,10 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "1",
     "explanation": "Historical timeline: University of Madras established in 1857 following Wood's Despatch (A); Lord Curzon's Indian Universities Act introduced in 1904 (B); University Grants Commission (UGC) established as statutory body in 1956 (C); First National Policy on Education formulated in 1968 based on Kothari Commission report (D). Sequence: A -> B -> C -> D.",
-    "unit": "Paper 1: Higher Education",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "Paper 1: Higher Education System",
     "examType": "UGC-NET",
-    "category": "Paper 1 General"
+    "category": "Paper 1: Higher Education",
+    "isGeneralPaper": true
   },
   {
     "id": 14,
@@ -447,11 +439,10 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "4",
     "explanation": "NEP 1986 prescribed that the apex national higher education coordinating body should plan resource allocations (A), advise central/state governments on educational policies (C), and facilitate inter-institutional and interdisciplinary research interfaces (D).",
-    "unit": "Paper 1: Higher Education",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "Paper 1: Higher Education System",
     "examType": "UGC-NET",
-    "category": "Paper 1 General"
+    "category": "Paper 1: Higher Education",
+    "isGeneralPaper": true
   },
   {
     "id": 15,
@@ -477,11 +468,10 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     ],
     "correctOption": "4",
     "explanation": "NIEPA (National Institute of Educational Planning and Administration) promotes capacity building and research in educational planning and management (A -> IV). RUSA upgrades state colleges into model degree colleges (B -> III). QAA (Quality Assurance Agency) sets and assures academic quality benchmarks (C -> I). HEFA (Higher Education Financing Agency) is a non-bank financial institution that disburses low-interest infrastructure loans to premier institutions (D -> II).",
-    "unit": "Paper 1: Higher Education",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
+    "unit": "Paper 1: Higher Education System",
     "examType": "UGC-NET",
-    "category": "Paper 1 General"
+    "category": "Paper 1: Higher Education",
+    "isGeneralPaper": true
   },
   {
     "id": 16,
@@ -508,10 +498,9 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     "correctOption": "3",
     "explanation": "Direct citation from the comprehension passage: 'educated young men and women settle far away from their parents... Their children go away in search of green pastures leaving them alone.'",
     "unit": "Paper 1: Reading Comprehension",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
     "examType": "UGC-NET",
-    "category": "Reading Comprehension"
+    "category": "Paper 1: Reading Comprehension",
+    "isGeneralPaper": true
   },
   {
     "id": 17,
@@ -538,10 +527,9 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     "correctOption": "3",
     "explanation": "As stated in the text: 'The UNO proclaimed the year 1999 as International Year for the Aged.'",
     "unit": "Paper 1: Reading Comprehension",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
     "examType": "UGC-NET",
-    "category": "Reading Comprehension"
+    "category": "Paper 1: Reading Comprehension",
+    "isGeneralPaper": true
   },
   {
     "id": 18,
@@ -568,10 +556,9 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     "correctOption": "1",
     "explanation": "From the reading passage: 'parents cannot be evicted from a house without due process of law under section 105 of the Criminal Procedure Code.'",
     "unit": "Paper 1: Reading Comprehension",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
     "examType": "UGC-NET",
-    "category": "Reading Comprehension"
+    "category": "Paper 1: Reading Comprehension",
+    "isGeneralPaper": true
   },
   {
     "id": 19,
@@ -598,10 +585,9 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     "correctOption": "4",
     "explanation": "From the passage: 'A magistrate can order a person to maintain his/her old parents under the Maintenance of Parents Act.'",
     "unit": "Paper 1: Reading Comprehension",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
     "examType": "UGC-NET",
-    "category": "Reading Comprehension"
+    "category": "Paper 1: Reading Comprehension",
+    "isGeneralPaper": true
   },
   {
     "id": 20,
@@ -628,10 +614,9 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     "correctOption": "3",
     "explanation": "From the passage concluding sentence: 'The Domestic Violence Act also provides parents with the rights to seek relief from any kind of abuse.'",
     "unit": "Paper 1: Reading Comprehension",
-    "topicTitle": "Web Technologies, XML, and Application Security: HTTP, DOM, and Cyber Defense",
-    "topicSlug": "web-technologies-xml-security",
     "examType": "UGC-NET",
-    "category": "Reading Comprehension"
+    "category": "Paper 1: Reading Comprehension",
+    "isGeneralPaper": true
   },
   {
     "id": 21,
@@ -3033,5 +3018,6 @@ export const UGC_NET_MOCK_EXAM: MockExam = {
     "examType": "UGC-NET",
     "category": "Computer Graphics"
   }
-]
+  ]
 };
+
